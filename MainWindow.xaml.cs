@@ -16,6 +16,17 @@ namespace quasar_radio
         }
 
         /// <summary>
+        /// CenterScreen ignora la barra de tareas y los monitores con origen negativo,
+        /// y dejaba la barra de titulo de la consola (900 px) fuera del panel de 900 px.
+        /// Aquí se encaja la ventana en el area util del monitor que la recibe.
+        /// </summary>
+        protected override void OnSourceInitialized(EventArgs e)
+        {
+            base.OnSourceInitialized(e);
+            WindowFitting.FitToWorkArea(this);
+        }
+
+        /// <summary>
         /// Unica ventana que puede apagar la aplicacion (ShutdownMode.OnMainWindowClose).
         /// Cerrar un modulo no cierra Quasar; cerrar Quasar con aire activo si pregunta.
         /// </summary>

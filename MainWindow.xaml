@@ -9,11 +9,19 @@
 
     <!-- F1..F12 -> pads 1..12: ver StudioKeys.cs, declarada igual en cada ventana de modulo. -->
 
+    <Window.Resources>
+        <!-- Celda de texto que se recorta con puntos suspensivos y deja leer el titulo
+             entero por tooltip (D3: "Sweet child of mine (umba" sin puntos ni tooltip). -->
+        <Style x:Key="TrimmingCell" TargetType="TextBlock">
+            <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+            <Setter Property="ToolTip" Value="{Binding Text, RelativeSource={RelativeSource Self}}"/>
+        </Style>
+    </Window.Resources>
 
     <Grid Margin="12">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/> <!-- Header / Studio Bar -->
-            <RowDefinition Height="210"/>  <!-- Dashboard / Dual Deck A & B Panel -->
+            <RowDefinition Height="Auto" MinHeight="210"/> <!-- Dashboard / Dual Deck A & B Panel: Auto para que el VU master no se recorte (D1) -->
             <RowDefinition Height="*"/>    <!-- Rejilla de Emisión & Tabs -->
             <RowDefinition Height="Auto"/> <!-- Status Footer Bar -->
         </Grid.RowDefinitions>
@@ -820,7 +828,7 @@
                         </Button>
                     </UniformGrid>
 
-                    <StackPanel Grid.Row="2" VerticalAlignment="Bottom" Margin="0,8,0,0">
+                    <StackPanel Grid.Row="2" Margin="0,8,0,0">
                         <!-- VUMÉTROS ESTÉREO BROADCAST -->
                         <TextBlock Text="NIVEL DE SALIDA MASTER (VU METER)" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,0,0,2"/>
                         <Grid Margin="0,2">
@@ -955,12 +963,12 @@
                             </DataGridTemplateColumn>
 
                             <DataGridTextColumn Header="Hora Salida" Binding="{Binding EstimatedPlayTimeFormatted}" Width="80" FontFamily="{StaticResource Sys.Font.Clock}"/>
-                            <DataGridTextColumn Header="Título" Binding="{Binding Title}" Width="2*"/>
-                            <DataGridTextColumn Header="Artista" Binding="{Binding Artist}" Width="1.5*"/>
-                            <DataGridTextColumn Header="Duración" Binding="{Binding DurationFormatted}" Width="60" FontFamily="{StaticResource Sys.Font.Clock}"/>
+                            <DataGridTextColumn Header="Título" Binding="{Binding Title}" Width="2*" ElementStyle="{StaticResource TrimmingCell}"/>
+                            <DataGridTextColumn Header="Artista" Binding="{Binding Artist}" Width="1.5*" ElementStyle="{StaticResource TrimmingCell}"/>
+                            <DataGridTextColumn Header="Duración" Binding="{Binding DurationFormatted}" Width="74" FontFamily="{StaticResource Sys.Font.Clock}"/>
                             <DataGridTextColumn Header="Intro" Binding="{Binding IntroSeconds, StringFormat='{}{0:0.0}s'}" Width="50" FontFamily="{StaticResource Sys.Font.Clock}"/>
                             <DataGridTextColumn Header="BPM" Binding="{Binding BpmFormatted}" Width="60"/>
-                            <DataGridTextColumn Header="Género" Binding="{Binding Genre}" Width="70"/>
+                            <DataGridTextColumn Header="Género" Binding="{Binding Genre}" Width="80" ElementStyle="{StaticResource TrimmingCell}"/>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>
@@ -1020,19 +1028,22 @@
                                   BorderThickness="1" BorderBrush="{DynamicResource Brush.Border.Default}" RowHeight="26">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Icon" Binding="{Binding IconSymbol}" Width="35"/>
-                                <DataGridTextColumn Header="Título" Binding="{Binding Title}" Width="2*"/>
-                                <DataGridTextColumn Header="Artista" Binding="{Binding Artist}" Width="1.5*"/>
-                                <DataGridTextColumn Header="Duración" Binding="{Binding DurationFormatted}" Width="65" FontFamily="{StaticResource Sys.Font.Clock}"/>
+                                <DataGridTextColumn Header="Título" Binding="{Binding Title}" Width="2*" ElementStyle="{StaticResource TrimmingCell}"/>
+                                <DataGridTextColumn Header="Artista" Binding="{Binding Artist}" Width="1.5*" ElementStyle="{StaticResource TrimmingCell}"/>
+                                <DataGridTextColumn Header="Duración" Binding="{Binding DurationFormatted}" Width="74" FontFamily="{StaticResource Sys.Font.Clock}"/>
                             </DataGrid.Columns>
                         </DataGrid>
 
-                        <UniformGrid Grid.Row="3" Columns="5" Margin="0,6,0,0">
-                            <Button Command="{Binding AddTrackFromDbToPlaylistCommand}" Style="{StaticResource StudioButtonStyle}" Content="+ Encolar" Margin="0,0,2,0"/>
-                            <Button Command="{Binding PlayAux1Command}" Style="{StaticResource StudioButtonStyle}" Content="▶ PFL AUX 1" Margin="2,0,2,0"/>
-                            <Button Command="{Binding GenerateAutoPlaylistCommand}" Style="{StaticResource StudioButtonStyle}" Content="⚡ AUTO PLAYLIST" Margin="2,0,2,0"/>
-                            <Button Command="{Binding GenerateSmartPlaylistCommand}" Style="{StaticResource StudioButtonStyle}" Content="🧠 SMART PLAYLIST" Margin="2,0,2,0" Background="{DynamicResource Brush.Accent.Info}" BorderBrush="{DynamicResource Brush.Accent}"/>
-                            <Button Command="{Binding ClearRotationHistoryCommand}" Style="{StaticResource StudioButtonStyle}" Content="🗑️ LIMPIAR HISTORIAL" Margin="2,0,0,0" Background="{DynamicResource Brush.Accent.OrangeDeep}" BorderBrush="{DynamicResource Brush.Accent.Orange}"/>
-                        </UniformGrid>
+                        <!-- D3: UniformGrid recortaba "AUTO PLAYLI"/"LIMPIAR HIS" porque el
+                             ancho de celda dependia de la ventana. Con WrapPanel el boton
+                             conserva su ancho y la fila que sobre baja sola. -->
+                        <WrapPanel Grid.Row="3" Margin="0,2,0,0">
+                            <Button Command="{Binding AddTrackFromDbToPlaylistCommand}" Style="{StaticResource StudioButtonStyle}" Content="+ Encolar" Width="152" Height="30" FontSize="11" Padding="4,0" Margin="0,0,4,4"/>
+                            <Button Command="{Binding PlayAux1Command}" Style="{StaticResource StudioButtonStyle}" Content="▶ PFL AUX 1" Width="152" Height="30" FontSize="11" Padding="4,0" Margin="0,0,4,4"/>
+                            <Button Command="{Binding GenerateAutoPlaylistCommand}" Style="{StaticResource StudioButtonStyle}" Content="⚡ AUTO PLAYLIST" Width="152" Height="30" FontSize="11" Padding="4,0" Margin="0,0,4,4"/>
+                            <Button Command="{Binding GenerateSmartPlaylistCommand}" Style="{StaticResource StudioButtonStyle}" Content="🧠 SMART PLAYLIST" Width="152" Height="30" FontSize="11" Padding="4,0" Margin="0,0,4,4" Background="{DynamicResource Brush.Accent.Info}" BorderBrush="{DynamicResource Brush.Accent}"/>
+                            <Button Command="{Binding ClearRotationHistoryCommand}" Style="{StaticResource StudioButtonStyle}" Content="🗑️ LIMPIAR HISTORIAL" Width="152" Height="30" FontSize="10" Padding="4,0" Margin="0,0,4,4" Background="{DynamicResource Brush.Accent.OrangeDeep}" BorderBrush="{DynamicResource Brush.Accent.Orange}"/>
+                        </WrapPanel>
                     </Grid>
                 </TabItem>
 
@@ -1472,12 +1483,12 @@
 
                         <!-- CONTROLES DE ESTADÍSTICAS -->
                         <Border Grid.Row="1" Background="{DynamicResource Brush.Surface.Panel}" CornerRadius="5" Padding="10" Margin="0,0,0,8" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
-                            <UniformGrid Columns="4">
-                                <Button Command="{Binding GenerateStatisticsReportCommand}" Style="{StaticResource StudioButtonStyle}" Content="📊 GENERAR REPORTE" Margin="0,0,4,0" Background="{DynamicResource Brush.Accent.Info}" BorderBrush="{DynamicResource Brush.Accent}"/>
-                                <Button Command="{Binding SaveStatisticsCommand}" Style="{StaticResource StudioButtonStyle}" Content="💾 GUARDAR" Margin="4,0,4,0"/>
-                                <Button Command="{Binding LoadStatisticsCommand}" Style="{StaticResource StudioButtonStyle}" Content="📂 CARGAR" Margin="4,0,4,0"/>
-                                <Button Command="{Binding ClearStatisticsCommand}" Style="{StaticResource StudioButtonStyle}" Content="🗑️ LIMPIAR" Margin="4,0,0,0" Background="{DynamicResource Brush.Accent.OrangeDeep}" BorderBrush="{DynamicResource Brush.Accent.Orange}"/>
-                            </UniformGrid>
+                            <WrapPanel HorizontalAlignment="Center">
+                                <Button Command="{Binding GenerateStatisticsReportCommand}" Style="{StaticResource StudioButtonStyle}" Content="📊 GENERAR REPORTE" Width="246" Height="30" FontSize="11" Padding="4,0" Margin="0,0,4,0" Background="{DynamicResource Brush.Accent.Info}" BorderBrush="{DynamicResource Brush.Accent}"/>
+                                <Button Command="{Binding SaveStatisticsCommand}" Style="{StaticResource StudioButtonStyle}" Content="💾 GUARDAR" Width="246" Height="30" FontSize="11" Padding="4,0" Margin="0,0,4,0"/>
+                                <Button Command="{Binding LoadStatisticsCommand}" Style="{StaticResource StudioButtonStyle}" Content="📂 CARGAR" Width="246" Height="30" FontSize="11" Padding="4,0"/>
+                                <Button Command="{Binding ClearStatisticsCommand}" Style="{StaticResource StudioButtonStyle}" Content="🗑️ LIMPIAR" Width="246" Height="30" FontSize="11" Padding="4,0" Margin="0,0,4,0" Background="{DynamicResource Brush.Accent.OrangeDeep}" BorderBrush="{DynamicResource Brush.Accent.Orange}"/>
+                            </WrapPanel>
                         </Border>
 
                         <!-- INFORMACIÓN -->
@@ -1501,15 +1512,23 @@
 
         <!-- ================= STATUS FOOTER BAR ================= -->
         <Border Grid.Row="3" Background="{DynamicResource Brush.Surface.Panel}" CornerRadius="4" Padding="10,5" Margin="0,8,0,0" BorderBrush="{DynamicResource Brush.Border.Subtle}" BorderThickness="1">
-            <DockPanel>
-                <TextBlock Text="{Binding StatusText}" Foreground="{DynamicResource Brush.Accent.Success}" FontSize="11" FontWeight="SemiBold" DockPanel.Dock="Left"/>
-                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+            <!-- El DockPanel con LastChildFill por defecto hacia que el bloque de la derecha
+                 ocupara lo que dejaba el estado y lo pegara al "Invitado" (D3). -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0" Text="{Binding StatusText}" Foreground="{DynamicResource Brush.Accent.Success}" FontSize="11" FontWeight="SemiBold"
+                           TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
                     <TextBlock x:Name="CurrentUserText" Foreground="{DynamicResource Brush.Text.Muted}" FontSize="10" VerticalAlignment="Center" Margin="0,0,12,0"/>
                     <Button x:Name="ManageUsersButton" Content="USUARIOS" Click="OnManageUsersClick" Background="{DynamicResource Brush.Surface.FooterButton}" Foreground="{DynamicResource Brush.Text.High}" BorderThickness="0" Padding="8,3" Margin="0,0,6,0"/>
                     <Button Content="CERRAR SESIÓN" Click="OnLogoutClick" Background="{DynamicResource Brush.Surface.DangerSoft}" Foreground="{DynamicResource Brush.Text.High}" BorderThickness="0" Padding="8,3" Margin="0,0,12,0"/>
                     <TextBlock Text="Quasar Radio Pro v3.0" Foreground="{DynamicResource Brush.Text.Faint}" FontSize="10" VerticalAlignment="Center"/>
                 </StackPanel>
-            </DockPanel>
+            </Grid>
         </Border>
     </Grid>
 </Window>

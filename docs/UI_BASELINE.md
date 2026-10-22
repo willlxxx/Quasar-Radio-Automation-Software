@@ -11,6 +11,8 @@ Estas dos imágenes son la referencia visual contra la que se compara todo el pl
 
 ## 1. Defectos visibles que la captura demuestra
 
+**Estado tras UI-3a (2026-10-22): D1, D2, D3 y D6 corregidos y medidos — ver §6.** Siguen abiertos D4 (logo ilegible), D5 (pestañas en dos hileras) y D7 (los `HRS*_O` de 2 s que hay que reponer desde tu respaldo).
+
 **D1 · El VU de salida master no se ve.** `MainWindow.xaml:988-1005` mete el medidor en un `StackPanel` con `VerticalAlignment="Bottom"` dentro de una fila `*`. El contenido es más alto que la fila, así que el desbordamiento **recorta por arriba**: en las dos capturas aparecen "DETECTOR SILENCIO" y "VOLUMEN MASTER", pero nunca "NIVEL DE SALIDA MASTER (VU METER)" ni los dos `LedVuMeterControl`. El operador está emitiendo sin ver su nivel de salida. Es el defecto más grave de los cuatro y es puramente de layout.
 
 **D2 · La consola no cabe en la pantalla del fundador.** `Height="900"` con barra de título y taskbar en un panel de 1600 × 900 deja el pie de ventana cortado: en `consola_antes_1440.png` se ven los bordes de la fila de botones asomando bajo la taskbar. La pantalla base real es **1600 × 860 útil**, no 1440 × 900.
@@ -95,3 +97,37 @@ Verificación en vivo (lanzando desde `bin/Debug/net10.0-windows`, con `-Working
 | Procesos huérfanos tras cada ejecución | `RESTANTES=0` en las 6 ejecuciones |
 
 **Pendiente de su contraseña:** abrir Biblioteca de verdad (ventana no modal, geometría guardada, recarga al cerrar) y probar F1–F12 con foco en otra ventana. No intento acceder a `users.json` ni adivinar credenciales. También queda comprobar que el `LibraryManagementWindow` arranca con la propiedad adjunta nueva: el `build` valida el BAML pero no el parse en caliente de una ventana que no puedo abrir sin sesión.
+
+## 6. Después de UI-3a · la consola cabe y el VU master se ve
+
+Corte pequeño y verificable antes de reescribir la consola (UI-3b): arreglar los cuatro defectos de layout que se podían demostrar con una captura (D1, D2, D3 y D6), sin mover todavía las 8 pestañas. Compilación en 0 errores / 0 advertencias.
+
+- **D1 · `MainWindow.xaml:16`** — la fila de los decks pasa de `Height="210"` a `Height="Auto" MinHeight="210"`, y el `StackPanel` del VU master pierde el `VerticalAlignment="Bottom"` (`MainWindow.xaml:834`). Con fila fija, el contenido del panel master (≈306 px) no cabía en 210 y el desbordamiento se recortaba **por arriba**: se leía "DETECTOR SILENCIO" y "VOLUMEN MASTER" pero nunca la etiqueta ni los dos medidores.
+- **D2 · `WindowFitting.cs`** (nuevo) — encaja la ventana en el **área útil del monitor que la recibe**, no de la pantalla entera: `CenterScreen` ignoraba los 40 px de barra de tareas y dejaba la consola de 900 px con la barra de título fuera. Lee el monitor con `MonitorFromWindow` + `GetMonitorInfo` y convierte a DIP con `VisualTreeHelper.GetDpi`, así que también sirve en un panel con origen negativo. **Solo actúa si hace falta**: si la geometría guardada ya está bien, no mueve nada (no rompe lo que graba `ModuleNavigator`). Se engancha en `MainWindow.OnSourceInitialized` y, para los módulos, en `ModuleNavigator.ApplyGeometry` vía `window.FitWhenReady()`.
+- **D3 · botones de pestaña** — `UniformGrid` → `WrapPanel` con ancho fijo: BASE DE DATOS (5 botones, 152 px → 3 + 2) y ESTADÍSTICAS (4 botones, 246 px → 2 × 2). La celda del `UniformGrid` dependía del ancho de la ventana, por eso salía "AUTO PLAYLI" y "LIMPIAR HIS".
+- **Pie de ventana** — el `DockPanel` del footer tenía `LastChildFill` por defecto, así que el bloque derecho ocupaba lo que dejaba el estado y el `"Invitado"` pegaba encima del mensaje. Pasa a `Grid` de dos columnas (`*` con `TextTrimming` + `Auto`).
+- **Rejilla** — `Duración` 60 → 74 px (el encabezado se cortaba en "Duració") y `Género` 70 → 80; nueva `Style x:Key="TrimmingCell"` en `Window.Resources` aplicada a Título / Artista / Género en las dos tablas: recorte con puntos suspensivos y tooltip con el texto completo.
+
+- **D6 · El "100%" del volumen ya no cae encima del deslizador.** Se arregla solo con lo de D1: al tener la fila el alto que pide el contenido, la fila `DockPanel` (VOLUMEN MASTER / 100%) y el `Slider` dejan de solaparse. Comprobado en el recorte del panel master, no asumido.
+
+Verificación en vivo (`scripts/ui/verificar_consola.ps1`, lanzando desde `bin/Debug/net10.0-windows` con `-WorkingDirectory` fijado; tema Studio Dark Neon):
+
+| Comprobación | Antes | Después |
+|---|---|---|
+| Rect de la consola en el panel 1600 × 900 (área útil 1600 × 860) | 1440 × 900 en `80,-20`, barra de título fuera | **`80,0 1440x860`**, y `dentro_arriba / dentro_abajo / dentro_izq / dentro_der = True` |
+| "NIVEL DE SALIDA MASTER (VU METER)" | no aparece en el árbol visual | `1016,210 471x13`, `dentro=True` |
+| `LedVuMeterControl` del master | recortado | dos barras de `180x20` en `1044,232` y `1284,232`, `IsOffscreen=False` |
+| Idéntico con la ventana maximizada (`-8,-8 1616x876`) | — | etiqueta en `1042,202` y los dos VU en `1085,224` / `1356,224` |
+| Botones de BASE DE DATOS | "AUTO PLAYLI", "LIMPIAR HIS" | "+ Encolar · PFL AUX 1 · AUTO PLAYLIST" y "SMART PLAYLIST · LIMPIAR HISTORIAL" ([`botones_db_despues_ui3a.png`](ui-baseline/botones_db_despues_ui3a.png)) |
+| Botones de ESTADÍSTICAS | "GENERAR REPORTE" cortado | 2 × 2 con las 4 etiquetas completas ([`botones_stats_despues_ui3a.png`](ui-baseline/botones_stats_despues_ui3a.png)) |
+| Pie de ventana | "…desde carpeta.Invitado" | estado a la izquierda, acciones a la derecha ([`pie_antes_ui3a.png`](ui-baseline/pie_antes_ui3a.png) → [`pie_despues_ui3a.png`](ui-baseline/pie_despues_ui3a.png)) |
+| Procesos huérfanos | — | `RESTANTES=0` en las 5 ejecuciones |
+
+Evidencia completa: [`consola_despues_ui3a.png`](ui-baseline/consola_despues_ui3a.png), [`consola_max_despues_ui3a.png`](ui-baseline/consola_max_despues_ui3a.png), el par del VU master [`master_vu_antes_ui3a.png`](ui-baseline/master_vu_antes_ui3a.png) → [`master_vu_despues_ui3a.png`](ui-baseline/master_vu_despues_ui3a.png) y la rejilla [`rejilla_despues_ui3a.png`](ui-baseline/rejilla_despues_ui3a.png).
+
+**Cómo se vuelve a pasar esta comprobación** (el script vive en el repo para que la fase siguiente no lo reescriba): `powershell -File scripts\ui\verificar_consola.ps1 [-Tag ui4] [-Tab 'ESTAD'] [-Maximize]`. Abre la app ella sola desde `bin/Debug/net10.0-windows`, y **aborta si ya hay una instancia abierta** para no mediar contra tu sesión de cabina. Necesita guardarse en UTF-8 **con BOM** (PowerShell 5.1 rompe los acentos de la ruta sin él). Cada ejecución cierra la app y reporta `SALIO_SIN_MATARLO` y `RESTANTES`.
+
+**Dos cosas que esta fase no arregla y anoto para UI-3b:** (1) D4 (el logo "QUASAR RADIO" ilegible) y D5 (las 8 pestañas en dos hileras) siguen igual; D5 desaparece al repartir las pestañas en ventanas de módulo. (2) El `WrapPanel` de las pestañas es un parche de contención: en UI-3b esos botones se van a su ventana de módulo y el parche se borra, no se copia.
+
+**Hallazgo nuevo (H5) · cerrar con aire activo ya no es limpio.** En una de las ejecuciones el cierre por UIA dejó el proceso vivo (`SALIO_SIN_MATARLO=False`) y el script lo mató: es el `OnClosing` de UI-2 haciendo su trabajo — el `MessageBox` de confirmación bloquea el `Close()` y la automatización no tiene quien lo acepte. Con el playout arrancado, la prueba de cierre elegante hay que hacerla a mano o respondiendo al diálogo; el script no puede firmar "cerró solo" en ese caso.
+

@@ -175,7 +175,9 @@ Implementación: mapa `ModuleKey → (singleton de ventana, rect guardado)`. Las
 
 **UI-2 · Navegación y ciclo de vida.** ✅ **Entregado 2026-10-22** (estructura; las ventanas nuevas la irán ocupando en UI-4/UI-5). `ModuleNavigator` con `Open/IsOpen/Toggle/EnsureAdmin` + `ModuleClosed`, ventanas de módulo transient y **no modales**, una sola instancia por módulo, geometría en `%APPDATA%\QuasarRadio\layout.json` con escritura atómica y validación multi-monitor, `StudioKeys.CartWall` para F1–F12 en cualquier ventana, y `OnClosing` protegido en la consola. *Aceptación: abrir Biblioteca dos veces no crea una segunda (✅ por código: `Open` reactiva la existente); cerrar DSP no corta el aire (✅ la aplicación solo se apaga con la consola, y pregunta si hay aire); F1–F12 funcionan con foco en cualquier ventana (⚠️ pendiente de pulsación real: disparar un pad suena en cabina y no lo hago sin él delante).* Detalle y evidencia en §5 de `docs/UI_BASELINE.md`. **Dos condicionantes nuevos, medidos en UI-1:** (a) hoy `LoginWindow` y `UserManagementWindow` se abren con `ShowDialog()` (`MainWindow.xaml.cs:34,44`) y el plan pide ventanas de módulo **no modales** — hay que decidir el trato de los diálogos; (b) las cuentas existen (`admin`, `willlxxx`) pero la consola arranca **sin sesión**, así que los controles gated por `IsAdmin` nacen apagados: el operador ve un botón LIBRERÍA muerto y un selector de tema inservible. UI-2 convierte esa pared en una puerta: el comando siempre es ejecutable y `IModuleNavigator.EnsureAdmin()` pide el acceso al abrir, que es lo que ya hacía el botón `USUARIOS`.
 
-**UI-3 · Consola al aire.** Layout nuevo de la §4.1, franja de módulos, botonera fija, barra de estado. Se retiran las 8 pestañas. *Aceptación: la consola no contiene DSP, Streaming, Grabación ni Estadísticas; ≤ 350 líneas.*
+**UI-3a · Layout de la consola actual.** ✅ **Entregado 2026-10-22** (corte previo a la reescritura, para no dejar a un operador emitiendo sin ver su nivel de salida). D1 resuelto: la fila de decks pasa a `Auto`/`MinHeight=210` y el VU master se pinta (medido: etiqueta en `1016,210` y dos barras `180x20`, también maximizada). D2 resuelto con `WindowFitting.cs`: la consola se encaja en el **área útil** del monitor que la recibe (`80,0 1440x860` en el panel 1600 × 900, barra de título dentro) y solo se mueve si hace falta, para no pisarle la geometría a `ModuleNavigator`. D3 contenido con `WrapPanel` en BASE DE DATOS y ESTADÍSTICAS, encabezados de `Duración`/`Género` con hueco, `TrimmingCell` (puntos suspensivos + tooltip) en las dos tablas, y el pie de ventana re-organizado en `Grid`. *Aceptación: las 4 comprobaciones de `scripts/ui/verificar_consola.ps1` en True y `RESTANTES=0` en las 5 ejecuciones.* Ver §6 de `docs/UI_BASELINE.md`. **No entra en esta fase:** D4 (logo ilegible), D5 (pestañas en dos hileras) y el parche de `WrapPanel`, que se borra cuando esas funciones tengan su ventana en UI-4/UI-5.
+
+**UI-3b · Consola al aire.** Layout nuevo de la §4.1, franja de módulos, botonera fija, barra de estado. Se retiran las 8 pestañas. *Aceptación: la consola no contiene DSP, Streaming, Grabación ni Estadísticas; ≤ 350 líneas.*
 
 **UI-4 · Biblioteca y Programación** (los dos de mayor uso, y donde más se justifica el monitor secundario). *Aceptación: editar metadatos en lote y re-generar auto-playlist sin salir de Biblioteca; rejilla horaria editable con vista día/semana.*
 
@@ -198,16 +200,19 @@ Cada fase se entrega con `dotnet build quasar_radio.sln` en 0 errores / 0 advert
 
 ## 10. Cómo se mide que mejoró
 
-| Métrica | Antes (UI-0) | Tras UI-1 | Objetivo |
-|---|---|---|---|
-| Líneas de `MainWindow.xaml` | 1.680 | 1.527 | ≤ 350 (UI-3) |
-| Literales hex en vistas | 328 | **0 en todos los `.xaml` fuera de `Themes/`** | 0 (solo en `Tokens.xaml`) ✔ |
-| Literales `FontFamily` en vistas | 14 | **0** (todos vía `Sys.Font.Clock`) | 0 ✔ |
-| Estilos/plantillas duplicados | ~45 en línea + 8 locales | 36 en línea + 1 local (`LibraryManagementWindow`) | 100% en `Controls.xaml` (UI-3/UI-4) |
-| Pestañas de la suite | 8 dentro de la consola | 8 | 0 (6 ventanas + 3 diálogos) |
-| Enlaces efectivos del tema | 7 en toda la app | 234 `DynamicResource` solo en la consola; 4 ventanas sin un solo hex | todas las superficies ✔ |
-| Propiedades de reenvío en `MainViewModel` | 69 contadas | 66 | 0 (UI-3) |
-| Contraste del texto más usado | 3,4:1 (footer, calculado sobre `#0F111A`) | **5,4:1** | ≥ 4,5:1 ✔; críticos ≥ 7:1 |
-| Atajos F1–F12 válidos con | solo la consola (12 `KeyBinding` copiados) | **cualquier ventana** (`StudioKeys.CartWall`, 1 declaración) ✔ | cualquier ventana |
-| Ventanas de módulo abiertas a la vez | 1 (modal: bloquea la consola) | N no modales, una por módulo ✔ | idem |
-| Estado de un módulo al reabrir | perdido | perdido (la ventana se destruye al cerrar) | conservado (ocultar, no destruir) → UI-3 |
+| Métrica | Antes (UI-0) | Tras UI-1/2 | Tras UI-3a | Objetivo |
+|---|---|---|---|---|
+| Líneas de `MainWindow.xaml` | 1.680 | 1.527 | 1.534 (+7 del `WrapPanel`/tooltip) | ≤ 350 (UI-3b) |
+| Literales hex en vistas | 328 | **0 en todos los `.xaml` fuera de `Themes/`** | 0 | 0 (solo en `Tokens.xaml`) ✔ |
+| Literales `FontFamily` en vistas | 14 | **0** (todos vía `Sys.Font.Clock`) | 0 | 0 ✔ |
+| Estilos/plantillas duplicados | ~45 en línea + 8 locales | 36 en línea + 1 local (`LibraryManagementWindow`) | igual | 100% en `Controls.xaml` (UI-3b/UI-4) |
+| Pestañas de la suite | 8 dentro de la consola | 8 | 8 (solo cambió cómo se ajustan sus botones) | 0 (6 ventanas + 3 diálogos) |
+| Enlaces efectivos del tema | 7 en toda la app | 234 `DynamicResource` solo en la consola; 4 ventanas sin un solo hex | 234 | todas las superficies ✔ |
+| Propiedades de reenvío en `MainViewModel` | 69 contadas | 66 | 66 | 0 (UI-3b) |
+| Contraste del texto más usado | 3,4:1 (footer, calculado sobre `#0F111A`) | **5,4:1** | 5,4:1 | ≥ 4,5:1 ✔; críticos ≥ 7:1 |
+| Atajos F1–F12 válidos con | solo la consola (12 `KeyBinding` copiados) | **cualquier ventana** (`StudioKeys.CartWall`, 1 declaración) ✔ | idem | cualquier ventana |
+| Ventanas de módulo abiertas a la vez | 1 (modal: bloquea la consola) | N no modales, una por módulo ✔ | idem | idem |
+| Estado de un módulo al reabrir | perdido | perdido (la ventana se destruye al cerrar) | perdido | conservado (ocultar, no destruir) → UI-3b |
+| **VU de salida master visible** | **no** (recortado por arriba, D1) | no | **sí**: etiqueta en `1016,210` y dos barras `180x20`, también maximizada | siempre |
+| **Consola dentro del área útil del panel 1600 × 900** | **no**: `80,-20 1440x900`, barra de título fuera (D2) | no | **sí**: `80,0 1440x860`, los 4 bordes dentro (`WindowFitting`) | idem, y por monitor en UI-6 |
+| **Etiquetas recortadas** | sí: "AUTO PLAYLI", "LIMPIAR HIS", "Duració" y el pie pegado (D3) | sí | **no**: `WrapPanel` en las dos pestañas, `TrimmingCell` con tooltip en las tablas, pie en `Grid` | 0 |

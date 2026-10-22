@@ -184,6 +184,10 @@ namespace quasar_radio
 
         private void ApplyGeometry(Window window, ModuleKey key)
         {
+            // Aunque la geometria guardada quepa en el virtual screen, el monitor pudo
+            // cambiar de tamano o de barra de tareas: al aparecer se vuelve a encajar.
+            window.FitWhenReady();
+
             if (!_geometry.TryGetValue(key, out var saved) || saved == null || !saved.IsSane())
             {
                 window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
