@@ -1,8 +1,16 @@
-﻿<Application x:Class="quasar_radio.App"
+<Application x:Class="quasar_radio.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:quasar_radio">
     <Application.Resources>
-         
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!-- El orden importa: Tokens define, Controls consume, Tema sobrescribe.
+                     ThemeService sustituye SIEMPRE el indice 2 (el hueco de tema). -->
+                <ResourceDictionary Source="Themes/Tokens.xaml" />
+                <ResourceDictionary Source="Themes/Controls.xaml" />
+                <ResourceDictionary Source="Themes/Theme.StudioDarkNeon.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

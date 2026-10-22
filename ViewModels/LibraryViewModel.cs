@@ -13,6 +13,7 @@ namespace quasar_radio
         private readonly AudioDatabaseService _databaseService;
         private readonly SmartRotationEngine _rotationEngine;
         private readonly ObservableCollection<TrackItem> _playlist;
+        private readonly IModuleNavigator _navigator;
 
         public AudioDatabaseService DatabaseService => _databaseService;
         public SmartRotationEngine RotationEngine => _rotationEngine;
@@ -48,11 +49,13 @@ namespace quasar_radio
         public LibraryViewModel(
             AudioDatabaseService databaseService,
             SmartRotationEngine rotationEngine,
-            ObservableCollection<TrackItem> playlist)
+            ObservableCollection<TrackItem> playlist,
+            IModuleNavigator navigator)
         {
             _databaseService = databaseService ?? throw new ArgumentNullException(nameof(databaseService));
             _rotationEngine = rotationEngine ?? throw new ArgumentNullException(nameof(rotationEngine));
             _playlist = playlist ?? throw new ArgumentNullException(nameof(playlist));
+            _navigator = navigator ?? throw new ArgumentNullException(nameof(navigator));
 
             bool CanOperate() => App.Auth.IsAuthorized(UserRole.Operator);
             bool IsAdmin() => App.Auth.IsAuthorized(UserRole.Admin);
@@ -61,7 +64,20 @@ namespace quasar_radio
             GenerateAutoPlaylistCommand = new RelayCommand(o => GenerateAutoPlaylist(), o => CanOperate());
             ClearRotationHistoryCommand = new RelayCommand(o => ClearRotationHistory(), o => IsAdmin());
             GenerateSmartPlaylistCommand = new RelayCommand(o => GenerateSmartPlaylist(), o => CanOperate());
-            OpenLibraryManagementCommand = new RelayCommand(o => OpenLibraryManagement(), o => IsAdmin());
+
+            // Abrir Gestion de libreria ya no depende de estar autenticado: el boton
+            // estaba apagado y no decia por que. El permiso se comprueba al abrir
+            // (ModuleNavigator.EnsureAdmin) y ahi se pide el acceso si hace falta.
+            OpenLibraryManagementCommand = new RelayCommand(o => OpenLibraryManagement());
+
+            // Con la ventana no modal, la recarga de la base va al cierre del modulo.
+            _navigator.ModuleClosed += (_, key) =>
+            {
+                if (key != ModuleKey.Library) return;
+                _databaseService.LoadLibrary();
+                StatusText = "Gestión de librería cerrada. Base de datos actualizada.";
+                _logger.Information("Gestión de librería cerrada");
+            };
 
             _databaseService.LoadLibrary();
         }
@@ -141,15 +157,20 @@ namespace quasar_radio
 
         private void OpenLibraryManagement()
         {
-            var libraryWindow = new LibraryManagementWindow
+            if (!_navigator.EnsureAdmin())
             {
-                Owner = Application.Current.MainWindow
-            };
-            libraryWindow.ShowDialog();
+                StatusText = "Hace falta una cuenta de administrador para gestionar la librería.";
+                return;
+            }
 
-            _databaseService.LoadLibrary();
-            StatusText = "Gestión de librería cerrada. Base de datos actualizada.";
-            _logger.Information("Gestión de librería cerrada");
+            if (_navigator.IsOpen(ModuleKey.Library))
+            {
+                StatusText = "Gestión de librería ya está abierta.";
+                return;
+            }
+
+            _navigator.Open(ModuleKey.Library);
+            StatusText = "Gestión de librería abierta en su propia ventana.";
         }
     }
 }

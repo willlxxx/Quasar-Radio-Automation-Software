@@ -135,7 +135,7 @@ Ordenado por riesgo de antena, no por elegancia. Cada fase termina con `dotnet b
 
 1. **SQLite para metadata y estadísticas**, manteniendo los archivos de audio en carpetas. Se abandona el JSON plano de
    `TrackMetadataService`, `StatisticsService` y `AudioDatabaseService`.
-2. **WPF se queda**; no hay migración de interfaz en este plan.
+2. **WPF se queda**; no hay migración de interfaz en este plan. Lo que sí hay es reestructuración de la interfaz dentro de WPF, en su propio documento: [`PLAN_MEJORA_INTERFAZ.md`](PLAN_MEJORA_INTERFAZ.md).
 3. **Sí a mover el reloj de emisión fuera del hilo UI** (Fase 3.6), ejecutándose después de unificar la cadena de audio.
 4. **Rotación y planificación entran primero en pruebas unitarias** (`SmartRotationEngine`, `CommercialScheduler`).
 
@@ -144,6 +144,8 @@ estable (`%APPDATA%\QuasarRadio` o una carpeta fija elegida por ti) y añade res
 `AudioDatabaseService`. Sin eso, cualquier `dotnet clean` sigue siendo un riesgo de pérdida de contenido.
 
 ## 5. Fuera de alcance por ahora
+
+La **modernización de la interfaz** (ventanas de módulo separadas: Biblioteca, Programación, DSP, Streaming, Configuración, Reportes) salió de "fuera de alcance" por petición del fundador el 2026-10-22 y tiene plan propio: [`PLAN_MEJORA_INTERFAZ.md`](PLAN_MEJORA_INTERFAZ.md). Sus dos puntos de contacto con este plan (reloj de emisión y `DataPaths`) están listados allí en §7.
 
 Metería en otra ronda: licencia/activación, base de datos multi-estación, control por red desde navegador, y cualquier cambio visual de marca. Son funciones nuevas, no deuda arquitectónica, y mezclarlas con el refactor dispara el riesgo.
 

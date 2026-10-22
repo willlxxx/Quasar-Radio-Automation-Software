@@ -5,19 +5,20 @@
         Title="Gestión de Librería Musical - Quasar Radio Pro" 
         Height="800" Width="1400"
         WindowStartupLocation="CenterScreen"
-        Background="#0B0D14" 
-        Foreground="#E0E6ED"
+        local:StudioKeys.CartWall="True"
+        Background="{DynamicResource Brush.Surface.Deep}" 
+        Foreground="{DynamicResource Brush.Text.Default}"
         ResizeMode="CanResize">
 
     <Window.Resources>
         <Style TargetType="Button" x:Key="StudioButtonStyle">
-            <Setter Property="Background" Value="#1E2330"/>
-            <Setter Property="Foreground" Value="#FFFFFF"/>
+            <Setter Property="Background" Value="{DynamicResource Brush.Surface.Raised}"/>
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.High}"/>
             <Setter Property="FontSize" Value="11"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="Padding" Value="10,6"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="BorderBrush" Value="#2D3548"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Strong}"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
@@ -30,11 +31,11 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#2A3245"/>
-                                <Setter Property="BorderBrush" Value="#00B0FF"/>
+                                <Setter Property="Background" Value="{DynamicResource Brush.Surface.Hover}"/>
+                                <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Info}"/>
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter Property="Background" Value="#151922"/>
+                                <Setter Property="Background" Value="{DynamicResource Brush.Surface.Pressed}"/>
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="False">
                                 <Setter Property="Opacity" Value="0.4"/>
@@ -46,38 +47,38 @@
         </Style>
 
         <Style TargetType="Button" x:Key="AccentButtonStyle" BasedOn="{StaticResource StudioButtonStyle}">
-            <Setter Property="Background" Value="#00B0FF"/>
-            <Setter Property="BorderBrush" Value="#00E5FF"/>
+            <Setter Property="Background" Value="{DynamicResource Brush.Accent.Info}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent}"/>
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#00E5FF"/>
+                    <Setter Property="Background" Value="{DynamicResource Brush.Accent}"/>
                 </Trigger>
             </Style.Triggers>
         </Style>
 
         <Style TargetType="Button" x:Key="SuccessButtonStyle" BasedOn="{StaticResource StudioButtonStyle}">
-            <Setter Property="Background" Value="#00C853"/>
-            <Setter Property="BorderBrush" Value="#00E676"/>
+            <Setter Property="Background" Value="{DynamicResource Brush.Accent.Play}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Success}"/>
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#00E676"/>
+                    <Setter Property="Background" Value="{DynamicResource Brush.Accent.Success}"/>
                 </Trigger>
             </Style.Triggers>
         </Style>
 
         <Style TargetType="Button" x:Key="DangerButtonStyle" BasedOn="{StaticResource StudioButtonStyle}">
-            <Setter Property="Background" Value="#D50000"/>
-            <Setter Property="BorderBrush" Value="#FF1744"/>
+            <Setter Property="Background" Value="{DynamicResource Brush.Accent.Stop}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Danger}"/>
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#FF1744"/>
+                    <Setter Property="Background" Value="{DynamicResource Brush.Accent.Danger}"/>
                 </Trigger>
             </Style.Triggers>
         </Style>
 
         <Style TargetType="TabItem">
-            <Setter Property="Background" Value="#11141F"/>
-            <Setter Property="Foreground" Value="#A0AEC0"/>
+            <Setter Property="Background" Value="{DynamicResource Brush.Surface.Panel}"/>
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}"/>
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="FontSize" Value="12"/>
             <Setter Property="Padding" Value="12,8"/>
@@ -89,8 +90,8 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsSelected" Value="True">
-                                <Setter TargetName="Border" Property="Background" Value="#1A202C"/>
-                                <Setter Property="Foreground" Value="#00E5FF"/>
+                                <Setter TargetName="Border" Property="Background" Value="{DynamicResource Brush.Surface.Header}"/>
+                                <Setter Property="Foreground" Value="{DynamicResource Brush.Accent}"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -99,25 +100,25 @@
         </Style>
 
         <Style TargetType="ComboBox">
-            <Setter Property="Background" Value="#0B0D14"/>
-            <Setter Property="Foreground" Value="#FFFFFF"/>
-            <Setter Property="BorderBrush" Value="#2D3548"/>
+            <Setter Property="Background" Value="{DynamicResource Brush.Surface.Deep}"/>
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.High}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Strong}"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Padding" Value="8"/>
         </Style>
 
         <Style TargetType="ComboBoxItem">
-            <Setter Property="Background" Value="#0B0D14"/>
-            <Setter Property="Foreground" Value="#E0E6ED"/>
+            <Setter Property="Background" Value="{DynamicResource Brush.Surface.Deep}"/>
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Default}"/>
             <Setter Property="Padding" Value="8"/>
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#1A202C"/>
-                    <Setter Property="Foreground" Value="#00E5FF"/>
+                    <Setter Property="Background" Value="{DynamicResource Brush.Surface.Header}"/>
+                    <Setter Property="Foreground" Value="{DynamicResource Brush.Accent}"/>
                 </Trigger>
                 <Trigger Property="IsSelected" Value="True">
-                    <Setter Property="Background" Value="#1A202C"/>
-                    <Setter Property="Foreground" Value="#00E5FF"/>
+                    <Setter Property="Background" Value="{DynamicResource Brush.Surface.Header}"/>
+                    <Setter Property="Foreground" Value="{DynamicResource Brush.Accent}"/>
                 </Trigger>
             </Style.Triggers>
         </Style>
@@ -131,7 +132,7 @@
         </Grid.RowDefinitions>
 
         <!-- HEADER -->
-        <Border Grid.Row="0" Background="#1A202C" CornerRadius="8" Padding="16,12" Margin="0,0,0,12" BorderBrush="#262D3D" BorderThickness="1">
+        <Border Grid.Row="0" Background="{DynamicResource Brush.Surface.Header}" CornerRadius="8" Padding="16,12" Margin="0,0,0,12" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -141,8 +142,8 @@
                 <StackPanel Grid.Column="0" Orientation="Horizontal">
                     <TextBlock Text="🎵" FontSize="24" Margin="0,0,12,0" VerticalAlignment="Center"/>
                     <StackPanel VerticalAlignment="Center">
-                        <TextBlock Text="GESTIÓN DE LIBRERÍA MUSICAL" FontSize="18" FontWeight="Bold" Foreground="#FFFFFF"/>
-                        <TextBlock Text="Administración avanzada de tracks, metadatos y puntos CUE" FontSize="12" Foreground="#8A99AD" Margin="0,2,0,0"/>
+                        <TextBlock Text="GESTIÓN DE LIBRERÍA MUSICAL" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.High}"/>
+                        <TextBlock Text="Administración avanzada de tracks, metadatos y puntos CUE" FontSize="12" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,2,0,0"/>
                     </StackPanel>
                 </StackPanel>
 
@@ -154,7 +155,7 @@
         </Border>
 
         <!-- CONTENIDO PRINCIPAL CON TABS -->
-        <TabControl Grid.Row="1" Background="#11141F" BorderBrush="#262D3D" BorderThickness="1">
+        <TabControl Grid.Row="1" Background="{DynamicResource Brush.Surface.Panel}" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
             
             <!-- TAB 1: BÚSQUEDA Y FILTROS -->
             <TabItem Header="🔍 BÚSQUEDA Y FILTROS">
@@ -167,7 +168,7 @@
                     </Grid.RowDefinitions>
 
                     <!-- Filtros Principales -->
-                    <Border Grid.Row="0" Background="#161B26" CornerRadius="6" Padding="12" Margin="0,0,0,8" BorderBrush="#262D3D" BorderThickness="1">
+                    <Border Grid.Row="0" Background="{DynamicResource Brush.Surface.Card}" CornerRadius="6" Padding="12" Margin="0,0,0,8" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
@@ -177,28 +178,28 @@
                             </Grid.ColumnDefinitions>
 
                             <StackPanel Grid.Column="0" Margin="0,0,8,0">
-                                <TextBlock Text="Búsqueda General" FontSize="11" FontWeight="Bold" Foreground="#00E5FF" Margin="0,0,0,4"/>
+                                <TextBlock Text="Búsqueda General" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent}" Margin="0,0,0,4"/>
                                 <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" 
-                                         Background="#0B0D14" Foreground="#FFFFFF" BorderBrush="#2D3548" 
+                                         Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Strong}" 
                                          Padding="8" FontSize="11" Height="32"/>
                             </StackPanel>
 
                             <StackPanel Grid.Column="1" Margin="0,0,8,0">
-                                <TextBlock Text="Filtro Año" FontSize="11" FontWeight="Bold" Foreground="#00E5FF" Margin="0,0,0,4"/>
+                                <TextBlock Text="Filtro Año" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent}" Margin="0,0,0,4"/>
                                 <ComboBox ItemsSource="{Binding GetYearRange()}" SelectedItem="{Binding FilterYear}" 
                                           Style="{StaticResource {x:Type ComboBox}}"
                                           FontSize="11" Height="32"/>
                             </StackPanel>
 
                             <StackPanel Grid.Column="2" Margin="0,0,8,0">
-                                <TextBlock Text="Filtro Artista" FontSize="11" FontWeight="Bold" Foreground="#00E5FF" Margin="0,0,0,4"/>
+                                <TextBlock Text="Filtro Artista" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent}" Margin="0,0,0,4"/>
                                 <TextBox Text="{Binding FilterArtist, UpdateSourceTrigger=PropertyChanged}" 
-                                         Background="#0B0D14" Foreground="#FFFFFF" BorderBrush="#2D3548" 
+                                         Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Strong}" 
                                          Padding="8" FontSize="11" Height="32"/>
                             </StackPanel>
 
                             <StackPanel Grid.Column="3">
-                                <TextBlock Text="Acciones" FontSize="11" FontWeight="Bold" Foreground="#00E5FF" Margin="0,0,0,4"/>
+                                <TextBlock Text="Acciones" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent}" Margin="0,0,0,4"/>
                                 <UniformGrid Columns="2" Height="32">
                                     <Button Command="{Binding SearchCommand}" Style="{StaticResource AccentButtonStyle}" Content="🔍 Buscar" Margin="0,0,4,0"/>
                                     <Button Command="{Binding SmartSearchCommand}" Style="{StaticResource StudioButtonStyle}" Content="🧠 Smart" Margin="4,0,0,0"/>
@@ -208,7 +209,7 @@
                     </Border>
 
                     <!-- Filtros Avanzados -->
-                    <Border Grid.Row="1" Background="#161B26" CornerRadius="6" Padding="12" Margin="0,0,0,8" BorderBrush="#262D3D" BorderThickness="1">
+                    <Border Grid.Row="1" Background="{DynamicResource Brush.Surface.Card}" CornerRadius="6" Padding="12" Margin="0,0,0,8" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
@@ -219,30 +220,30 @@
                             </Grid.ColumnDefinitions>
 
                             <StackPanel Grid.Column="0" Margin="0,0,8,0">
-                                <TextBlock Text="Prioridad Mínima" FontSize="10" Foreground="#8A99AD" Margin="0,0,0,2"/>
+                                <TextBlock Text="Prioridad Mínima" FontSize="10" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,0,0,2"/>
                                 <ComboBox ItemsSource="{Binding GetPriorityRange()}" SelectedItem="{Binding FilterMinPriority}" 
                                           Style="{StaticResource {x:Type ComboBox}}"
                                           FontSize="10" Height="26"/>
                             </StackPanel>
 
                             <StackPanel Grid.Column="1" Margin="0,0,8,0">
-                                <TextBlock Text="Prioridad Máxima" FontSize="10" Foreground="#8A99AD" Margin="0,0,0,2"/>
+                                <TextBlock Text="Prioridad Máxima" FontSize="10" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,0,0,2"/>
                                 <ComboBox ItemsSource="{Binding GetPriorityRange()}" SelectedItem="{Binding FilterMaxPriority}" 
                                           Style="{StaticResource {x:Type ComboBox}}"
                                           FontSize="10" Height="26"/>
                             </StackPanel>
 
                             <StackPanel Grid.Column="2" Margin="0,0,8,0">
-                                <TextBlock Text="BPM Mínimo" FontSize="10" Foreground="#8A99AD" Margin="0,0,0,2"/>
+                                <TextBlock Text="BPM Mínimo" FontSize="10" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,0,0,2"/>
                                 <TextBox Text="{Binding FilterMinBpm, UpdateSourceTrigger=PropertyChanged}" 
-                                         Background="#0B0D14" Foreground="#FFFFFF" BorderBrush="#2D3548" 
+                                         Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Strong}" 
                                          Padding="6" FontSize="10" Height="26"/>
                             </StackPanel>
 
                             <StackPanel Grid.Column="3" Margin="0,0,8,0">
-                                <TextBlock Text="BPM Máximo" FontSize="10" Foreground="#8A99AD" Margin="0,0,0,2"/>
+                                <TextBlock Text="BPM Máximo" FontSize="10" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,0,0,2"/>
                                 <TextBox Text="{Binding FilterMaxBpm, UpdateSourceTrigger=PropertyChanged}" 
-                                         Background="#0B0D14" Foreground="#FFFFFF" BorderBrush="#2D3548" 
+                                         Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Strong}" 
                                          Padding="6" FontSize="10" Height="26"/>
                             </StackPanel>
 
@@ -255,18 +256,18 @@
                     <!-- Resultados -->
                     <DataGrid Grid.Row="2" ItemsSource="{Binding SearchResults}" SelectedItem="{Binding SelectedTrack}"
                               AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True"
-                              Background="#0B0D14" Foreground="#E0E6ED" RowBackground="#11141F" 
-                              AlternatingRowBackground="#161B26" GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="#1F2636"
-                              BorderThickness="1" BorderBrush="#262D3D" RowHeight="28" SelectionMode="Single">
+                              Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.Default}" RowBackground="{DynamicResource Brush.Surface.Panel}" 
+                              AlternatingRowBackground="{DynamicResource Brush.Surface.Card}" GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="{DynamicResource Brush.Border.Subtle}"
+                              BorderThickness="1" BorderBrush="{DynamicResource Brush.Border.Default}" RowHeight="28" SelectionMode="Single">
                         <DataGrid.Resources>
                             <Style TargetType="DataGridColumnHeader">
-                                <Setter Property="Background" Value="#1A202C"/>
-                                <Setter Property="Foreground" Value="#A0AEC0"/>
+                                <Setter Property="Background" Value="{DynamicResource Brush.Surface.Header}"/>
+                                <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}"/>
                                 <Setter Property="FontWeight" Value="Bold"/>
                                 <Setter Property="Height" Value="30"/>
                                 <Setter Property="Padding" Value="8,0"/>
                                 <Setter Property="BorderThickness" Value="0,0,1,1"/>
-                                <Setter Property="BorderBrush" Value="#2D3748"/>
+                                <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Header}"/>
                             </Style>
                             <Style TargetType="DataGridCell">
                                 <Setter Property="Padding" Value="8,0"/>
@@ -281,8 +282,8 @@
                                 </Setter>
                                 <Style.Triggers>
                                     <Trigger Property="IsSelected" Value="True">
-                                        <Setter Property="Background" Value="#005599"/>
-                                        <Setter Property="Foreground" Value="#FFFFFF"/>
+                                        <Setter Property="Background" Value="{DynamicResource Brush.Selection.Deep}"/>
+                                        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.High}"/>
                                     </Trigger>
                                 </Style.Triggers>
                             </Style>
@@ -297,21 +298,21 @@
                             <DataGridTextColumn Header="Año" Binding="{Binding Year}" Width="60"/>
                             <DataGridTextColumn Header="Prioridad" Binding="{Binding PriorityFormatted}" Width="90"/>
                             <DataGridTextColumn Header="BPM" Binding="{Binding BpmFormatted}" Width="70"/>
-                            <DataGridTextColumn Header="Duración" Binding="{Binding DurationFormatted}" Width="70" FontFamily="Consolas"/>
+                            <DataGridTextColumn Header="Duración" Binding="{Binding DurationFormatted}" Width="70" FontFamily="{StaticResource Sys.Font.Clock}"/>
                             <DataGridTextColumn Header="Repro." Binding="{Binding PlayCount}" Width="50"/>
                         </DataGrid.Columns>
                     </DataGrid>
 
                     <!-- Estadísticas -->
-                    <Border Grid.Row="3" Background="#161B26" CornerRadius="6" Padding="12" Margin="0,8,0,0" BorderBrush="#262D3D" BorderThickness="1">
+                    <Border Grid.Row="3" Background="{DynamicResource Brush.Surface.Card}" CornerRadius="6" Padding="12" Margin="0,8,0,0" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
                         <DockPanel>
                             <TextBlock Text="📊" FontSize="16" DockPanel.Dock="Left" Margin="0,0,8,0"/>
-                            <TextBlock Text="{Binding StatisticsText}" FontSize="11" Foreground="#00E5FF" DockPanel.Dock="Left"/>
+                            <TextBlock Text="{Binding StatisticsText}" FontSize="11" Foreground="{DynamicResource Brush.Accent}" DockPanel.Dock="Left"/>
                             <UniformGrid Columns="4" DockPanel.Dock="Right" HorizontalAlignment="Right">
                                 <ComboBox ItemsSource="{Binding GetSortOptions()}" SelectedItem="{Binding SortBy}" 
                                           Style="{StaticResource {x:Type ComboBox}}"
                                           FontSize="10" Height="26" Margin="0,0,4,0"/>
-                                <CheckBox Content="Ascendente" IsChecked="{Binding SortAscending}" Foreground="#FFFFFF" FontSize="10" VerticalAlignment="Center" Margin="4,0,4,0"/>
+                                <CheckBox Content="Ascendente" IsChecked="{Binding SortAscending}" Foreground="{DynamicResource Brush.Text.High}" FontSize="10" VerticalAlignment="Center" Margin="4,0,4,0"/>
                                 <Button Command="{Binding UpdateStatisticsCommand}" Style="{StaticResource StudioButtonStyle}" Content="🔄 Stats" Margin="4,0,4,0" Height="26"/>
                             </UniformGrid>
                         </DockPanel>
@@ -329,18 +330,18 @@
                     </Grid.RowDefinitions>
 
                     <!-- Selección de Track -->
-                    <Border Grid.Row="0" Background="#161B26" CornerRadius="6" Padding="12" Margin="0,0,0,8" BorderBrush="#262D3D" BorderThickness="1">
+                    <Border Grid.Row="0" Background="{DynamicResource Brush.Surface.Card}" CornerRadius="6" Padding="12" Margin="0,0,0,8" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
 
-                            <TextBlock Grid.Column="0" FontSize="12" Foreground="#8A99AD" VerticalAlignment="Center">
+                            <TextBlock Grid.Column="0" FontSize="12" Foreground="{DynamicResource Brush.Text.Secondary}" VerticalAlignment="Center">
                                 <Run Text="Track seleccionado: "/>
-                                <Run Text="{Binding SelectedTrack.Title, Mode=OneWay}" FontWeight="Bold" Foreground="#FFFFFF"/>
+                                <Run Text="{Binding SelectedTrack.Title, Mode=OneWay}" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.High}"/>
                                 <Run Text=" - "/>
-                                <Run Text="{Binding SelectedTrack.Artist, Mode=OneWay}" FontWeight="Bold" Foreground="#00E5FF"/>
+                                <Run Text="{Binding SelectedTrack.Artist, Mode=OneWay}" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent}"/>
                             </TextBlock>
 
                             <StackPanel Grid.Column="1" Orientation="Horizontal">
@@ -354,9 +355,9 @@
                     <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
                         <StackPanel>
                             <!-- Información del Track -->
-                            <Border Background="#161B26" CornerRadius="6" Padding="16" Margin="0,0,0,8" BorderBrush="#262D3D" BorderThickness="1">
+                            <Border Background="{DynamicResource Brush.Surface.Card}" CornerRadius="6" Padding="16" Margin="0,0,0,8" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
                                 <StackPanel>
-                                    <TextBlock Text="📋 INFORMACIÓN DEL TRACK" FontSize="13" FontWeight="Bold" Foreground="#00E5FF" Margin="0,0,0,12"/>
+                                    <TextBlock Text="📋 INFORMACIÓN DEL TRACK" FontSize="13" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent}" Margin="0,0,0,12"/>
                                     
                                     <Grid>
                                     <Grid.ColumnDefinitions>
@@ -365,40 +366,40 @@
                                     </Grid.ColumnDefinitions>
 
                                     <StackPanel Grid.Column="0" Margin="0,0,8,0">
-                                        <TextBlock Text="Título" FontSize="11" Foreground="#8A99AD" Margin="0,0,0,4"/>
+                                        <TextBlock Text="Título" FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,0,0,4"/>
                                         <TextBox Text="{Binding SelectedTrack.Title, UpdateSourceTrigger=PropertyChanged}" 
-                                                 Background="#0B0D14" Foreground="#FFFFFF" BorderBrush="#2D3548" Padding="8" FontSize="11" Height="30"/>
+                                                 Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Strong}" Padding="8" FontSize="11" Height="30"/>
 
-                                        <TextBlock Text="Artista" FontSize="11" Foreground="#8A99AD" Margin="0,8,0,4"/>
+                                        <TextBlock Text="Artista" FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,8,0,4"/>
                                         <TextBox Text="{Binding SelectedTrack.Artist, UpdateSourceTrigger=PropertyChanged}" 
-                                                 Background="#0B0D14" Foreground="#FFFFFF" BorderBrush="#2D3548" Padding="8" FontSize="11" Height="30"/>
+                                                 Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Strong}" Padding="8" FontSize="11" Height="30"/>
 
-                                        <TextBlock Text="Álbum" FontSize="11" Foreground="#8A99AD" Margin="0,8,0,4"/>
+                                        <TextBlock Text="Álbum" FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,8,0,4"/>
                                         <TextBox Text="{Binding SelectedTrack.Album, UpdateSourceTrigger=PropertyChanged}" 
-                                                 Background="#0B0D14" Foreground="#FFFFFF" BorderBrush="#2D3548" Padding="8" FontSize="11" Height="30"/>
+                                                 Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Strong}" Padding="8" FontSize="11" Height="30"/>
                                     </StackPanel>
 
                                     <StackPanel Grid.Column="1">
-                                        <TextBlock Text="Género" FontSize="11" Foreground="#8A99AD" Margin="0,0,0,4"/>
+                                        <TextBlock Text="Género" FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,0,0,4"/>
                                         <TextBox Text="{Binding SelectedTrack.Genre, UpdateSourceTrigger=PropertyChanged}" 
-                                                 Background="#0B0D14" Foreground="#FFFFFF" BorderBrush="#2D3548" Padding="8" FontSize="11" Height="30"/>
+                                                 Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Strong}" Padding="8" FontSize="11" Height="30"/>
 
-                                        <TextBlock Text="Año" FontSize="11" Foreground="#8A99AD" Margin="0,8,0,4"/>
+                                        <TextBlock Text="Año" FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,8,0,4"/>
                                         <TextBox Text="{Binding SelectedTrack.Year, UpdateSourceTrigger=PropertyChanged}" 
-                                                 Background="#0B0D14" Foreground="#FFFFFF" BorderBrush="#2D3548" Padding="8" FontSize="11" Height="30"/>
+                                                 Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Strong}" Padding="8" FontSize="11" Height="30"/>
 
-                                        <TextBlock Text="Prioridad (1-10)" FontSize="11" Foreground="#8A99AD" Margin="0,8,0,4"/>
+                                        <TextBlock Text="Prioridad (1-10)" FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,8,0,4"/>
                                         <TextBox Text="{Binding SelectedTrack.Priority, UpdateSourceTrigger=PropertyChanged}" 
-                                                 Background="#0B0D14" Foreground="#FFFFFF" BorderBrush="#2D3548" Padding="8" FontSize="11" Height="30"/>
+                                                 Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Strong}" Padding="8" FontSize="11" Height="30"/>
                                     </StackPanel>
                                 </Grid>
                                 </StackPanel>
                             </Border>
 
                             <!-- Puntos CUE -->
-                            <Border Background="#161B26" CornerRadius="6" Padding="16" Margin="0,0,0,8" BorderBrush="#262D3D" BorderThickness="1">
+                            <Border Background="{DynamicResource Brush.Surface.Card}" CornerRadius="6" Padding="16" Margin="0,0,0,8" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
                                 <StackPanel>
-                                    <TextBlock Text="🎯 PUNTOS CUE" FontSize="13" FontWeight="Bold" Foreground="#00E5FF" Margin="0,0,0,12"/>
+                                    <TextBlock Text="🎯 PUNTOS CUE" FontSize="13" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent}" Margin="0,0,0,12"/>
                                     
                                     <Grid>
                                     <Grid.ColumnDefinitions>
@@ -407,40 +408,40 @@
                                     </Grid.ColumnDefinitions>
 
                                     <StackPanel Grid.Column="0" Margin="0,0,8,0">
-                                        <TextBlock Text="Cue In (segundos)" FontSize="11" Foreground="#8A99AD" Margin="0,0,0,4"/>
+                                        <TextBlock Text="Cue In (segundos)" FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,0,0,4"/>
                                         <TextBox Text="{Binding SelectedTrack.CueInSeconds, UpdateSourceTrigger=PropertyChanged}" 
-                                                 Background="#0B0D14" Foreground="#FFFFFF" BorderBrush="#2D3548" Padding="8" FontSize="11" Height="30"/>
+                                                 Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Strong}" Padding="8" FontSize="11" Height="30"/>
 
-                                        <TextBlock Text="Cue Out (segundos)" FontSize="11" Foreground="#8A99AD" Margin="0,8,0,4"/>
+                                        <TextBlock Text="Cue Out (segundos)" FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,8,0,4"/>
                                         <TextBox Text="{Binding SelectedTrack.CueOutSeconds, UpdateSourceTrigger=PropertyChanged}" 
-                                                 Background="#0B0D14" Foreground="#FFFFFF" BorderBrush="#2D3548" Padding="8" FontSize="11" Height="30"/>
+                                                 Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Strong}" Padding="8" FontSize="11" Height="30"/>
 
-                                        <TextBlock Text="Intro (segundos)" FontSize="11" Foreground="#8A99AD" Margin="0,8,0,4"/>
+                                        <TextBlock Text="Intro (segundos)" FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,8,0,4"/>
                                         <TextBox Text="{Binding SelectedTrack.IntroSeconds, UpdateSourceTrigger=PropertyChanged}" 
-                                                 Background="#0B0D14" Foreground="#FFFFFF" BorderBrush="#2D3548" Padding="8" FontSize="11" Height="30"/>
+                                                 Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Strong}" Padding="8" FontSize="11" Height="30"/>
                                     </StackPanel>
 
                                     <StackPanel Grid.Column="1">
-                                        <TextBlock Text="Outro (segundos)" FontSize="11" Foreground="#8A99AD" Margin="0,0,0,4"/>
+                                        <TextBlock Text="Outro (segundos)" FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,0,0,4"/>
                                         <TextBox Text="{Binding SelectedTrack.OutroSeconds, UpdateSourceTrigger=PropertyChanged}" 
-                                                 Background="#0B0D14" Foreground="#FFFFFF" BorderBrush="#2D3548" Padding="8" FontSize="11" Height="30"/>
+                                                 Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Strong}" Padding="8" FontSize="11" Height="30"/>
 
-                                        <TextBlock Text="End Cue (segundos)" FontSize="11" Foreground="#8A99AD" Margin="0,8,0,4"/>
+                                        <TextBlock Text="End Cue (segundos)" FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,8,0,4"/>
                                         <TextBox Text="{Binding SelectedTrack.EndCueSeconds, UpdateSourceTrigger=PropertyChanged}" 
-                                                 Background="#0B0D14" Foreground="#FFFFFF" BorderBrush="#2D3548" Padding="8" FontSize="11" Height="30"/>
+                                                 Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Strong}" Padding="8" FontSize="11" Height="30"/>
 
-                                        <TextBlock Text="BPM" FontSize="11" Foreground="#8A99AD" Margin="0,8,0,4"/>
+                                        <TextBlock Text="BPM" FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,8,0,4"/>
                                         <TextBox Text="{Binding SelectedTrack.Bpm, UpdateSourceTrigger=PropertyChanged}" 
-                                                 Background="#0B0D14" Foreground="#FFFFFF" BorderBrush="#2D3548" Padding="8" FontSize="11" Height="30"/>
+                                                 Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Strong}" Padding="8" FontSize="11" Height="30"/>
                                     </StackPanel>
                                 </Grid>
                                 </StackPanel>
                             </Border>
 
                             <!-- Fade Settings -->
-                            <Border Background="#161B26" CornerRadius="6" Padding="16" Margin="0,0,0,8" BorderBrush="#262D3D" BorderThickness="1">
+                            <Border Background="{DynamicResource Brush.Surface.Card}" CornerRadius="6" Padding="16" Margin="0,0,0,8" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
                                 <StackPanel>
-                                    <TextBlock Text="🎚️ CONFIGURACIÓN DE FADE" FontSize="13" FontWeight="Bold" Foreground="#00E5FF" Margin="0,0,0,12"/>
+                                    <TextBlock Text="🎚️ CONFIGURACIÓN DE FADE" FontSize="13" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent}" Margin="0,0,0,12"/>
                                     
                                     <Grid>
                                     <Grid.ColumnDefinitions>
@@ -449,24 +450,24 @@
                                     </Grid.ColumnDefinitions>
 
                                     <StackPanel Grid.Column="0" Margin="0,0,8,0">
-                                        <TextBlock Text="Fade In (segundos)" FontSize="11" Foreground="#8A99AD" Margin="0,0,0,4"/>
+                                        <TextBlock Text="Fade In (segundos)" FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,0,0,4"/>
                                         <TextBox Text="{Binding SelectedTrack.FadeIn, UpdateSourceTrigger=PropertyChanged}" 
-                                                 Background="#0B0D14" Foreground="#FFFFFF" BorderBrush="#2D3548" Padding="8" FontSize="11" Height="30"/>
+                                                 Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Strong}" Padding="8" FontSize="11" Height="30"/>
                                     </StackPanel>
 
                                     <StackPanel Grid.Column="1">
-                                        <TextBlock Text="Fade Out (segundos)" FontSize="11" Foreground="#8A99AD" Margin="0,0,0,4"/>
+                                        <TextBlock Text="Fade Out (segundos)" FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,0,0,4"/>
                                         <TextBox Text="{Binding SelectedTrack.FadeOut, UpdateSourceTrigger=PropertyChanged}" 
-                                                 Background="#0B0D14" Foreground="#FFFFFF" BorderBrush="#2D3548" Padding="8" FontSize="11" Height="30"/>
+                                                 Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Strong}" Padding="8" FontSize="11" Height="30"/>
                                     </StackPanel>
                                 </Grid>
                                 </StackPanel>
                             </Border>
 
                             <!-- Metadatos Adicionales -->
-                            <Border Background="#161B26" CornerRadius="6" Padding="16" Margin="0,0,0,8" BorderBrush="#262D3D" BorderThickness="1">
+                            <Border Background="{DynamicResource Brush.Surface.Card}" CornerRadius="6" Padding="16" Margin="0,0,0,8" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
                                 <StackPanel>
-                                    <TextBlock Text="📝 METADATOS ADICIONALES" FontSize="13" FontWeight="Bold" Foreground="#00E5FF" Margin="0,0,0,12"/>
+                                    <TextBlock Text="📝 METADATOS ADICIONALES" FontSize="13" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent}" Margin="0,0,0,12"/>
                                     
                                     <Grid>
                                     <Grid.ColumnDefinitions>
@@ -475,19 +476,19 @@
                                     </Grid.ColumnDefinitions>
 
                                     <StackPanel Grid.Column="0" Margin="0,0,8,0">
-                                        <TextBlock Text="Compositor" FontSize="11" Foreground="#8A99AD" Margin="0,0,0,4"/>
+                                        <TextBlock Text="Compositor" FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,0,0,4"/>
                                         <TextBox Text="{Binding SelectedTrack.Composer, UpdateSourceTrigger=PropertyChanged}" 
-                                                 Background="#0B0D14" Foreground="#FFFFFF" BorderBrush="#2D3548" Padding="8" FontSize="11" Height="30"/>
+                                                 Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Strong}" Padding="8" FontSize="11" Height="30"/>
 
-                                        <TextBlock Text="Copyright" FontSize="11" Foreground="#8A99AD" Margin="0,8,0,4"/>
+                                        <TextBlock Text="Copyright" FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,8,0,4"/>
                                         <TextBox Text="{Binding SelectedTrack.Copyright, UpdateSourceTrigger=PropertyChanged}" 
-                                                 Background="#0B0D14" Foreground="#FFFFFF" BorderBrush="#2D3548" Padding="8" FontSize="11" Height="30"/>
+                                                 Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Strong}" Padding="8" FontSize="11" Height="30"/>
                                     </StackPanel>
 
                                     <StackPanel Grid.Column="1">
-                                        <TextBlock Text="Comentarios" FontSize="11" Foreground="#8A99AD" Margin="0,0,0,4"/>
+                                        <TextBlock Text="Comentarios" FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,0,0,4"/>
                                         <TextBox Text="{Binding SelectedTrack.Comment, UpdateSourceTrigger=PropertyChanged}" 
-                                                 Background="#0B0D14" Foreground="#FFFFFF" BorderBrush="#2D3548" Padding="8" FontSize="11" Height="30" TextWrapping="Wrap" AcceptsReturn="True"/>
+                                                 Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Strong}" Padding="8" FontSize="11" Height="30" TextWrapping="Wrap" AcceptsReturn="True"/>
                                     </StackPanel>
                                 </Grid>
                                 </StackPanel>
@@ -496,7 +497,7 @@
                     </ScrollViewer>
 
                     <!-- Botones de Acción Rápida -->
-                    <Border Grid.Row="2" Background="#161B26" CornerRadius="6" Padding="12" Margin="0,8,0,0" BorderBrush="#262D3D" BorderThickness="1">
+                    <Border Grid.Row="2" Background="{DynamicResource Brush.Surface.Card}" CornerRadius="6" Padding="12" Margin="0,8,0,0" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
                         <UniformGrid Columns="5">
                             <Button Command="{Binding IntelligentCuePointsCommand}" Style="{StaticResource AccentButtonStyle}" Content="🧠 CUE Inteligente" Margin="0,0,4,0"/>
                             <Button Command="{Binding NormalizeCuePointsCommand}" Style="{StaticResource StudioButtonStyle}" Content="📐 Normalizar" Margin="4,0,4,0"/>
@@ -520,9 +521,9 @@
                     </Grid.RowDefinitions>
 
                     <!-- Importación -->
-                    <Border Grid.Row="0" Background="#161B26" CornerRadius="6" Padding="16" Margin="0,0,0,8" BorderBrush="#262D3D" BorderThickness="1">
+                    <Border Grid.Row="0" Background="{DynamicResource Brush.Surface.Card}" CornerRadius="6" Padding="16" Margin="0,0,0,8" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
                         <StackPanel>
-                            <TextBlock Text="📥 IMPORTACIÓN DE TRACKS" FontSize="13" FontWeight="Bold" Foreground="#00E5FF" Margin="0,0,0,8"/>
+                            <TextBlock Text="📥 IMPORTACIÓN DE TRACKS" FontSize="13" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent}" Margin="0,0,0,8"/>
                             
                             <Grid>
                                 <Grid.ColumnDefinitions>
@@ -531,7 +532,7 @@
                                 </Grid.ColumnDefinitions>
 
                                 <StackPanel Grid.Column="0">
-                                    <TextBlock Text="Género:" FontSize="11" Foreground="#8A99AD" Margin="0,0,0,4"/>
+                                    <TextBlock Text="Género:" FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,0,0,4"/>
                                     <ComboBox ItemsSource="{Binding DatabaseService.Genres}" SelectedItem="{Binding SelectedGenreForEdit}" 
                                               Style="{StaticResource {x:Type ComboBox}}"
                                               FontSize="11" Height="32"/>
@@ -546,9 +547,9 @@
                     </Border>
 
                     <!-- Gestión de géneros -->
-                    <Border Grid.Row="1" Background="#161B26" CornerRadius="6" Padding="16" Margin="0,0,0,8" BorderBrush="#262D3D" BorderThickness="1">
+                    <Border Grid.Row="1" Background="{DynamicResource Brush.Surface.Card}" CornerRadius="6" Padding="16" Margin="0,0,0,8" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
                         <StackPanel>
-                            <TextBlock Text="🎼 GESTIÓN DE GÉNEROS" FontSize="13" FontWeight="Bold" Foreground="#00E5FF" Margin="0,0,0,8"/>
+                            <TextBlock Text="🎼 GESTIÓN DE GÉNEROS" FontSize="13" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent}" Margin="0,0,0,8"/>
                             
                             <Grid>
                                 <Grid.ColumnDefinitions>
@@ -559,7 +560,7 @@
 
                                 <StackPanel Grid.Column="0" Orientation="Horizontal">
                                     <TextBox Text="{Binding NewGenreName, UpdateSourceTrigger=PropertyChanged}" 
-                                             Background="#0B0D14" Foreground="#FFFFFF" BorderBrush="#2D3548" 
+                                             Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Strong}" 
                                              Padding="8" FontSize="11" Width="200" Height="32" Margin="0,0,8,0"/>
                                     <Button Command="{Binding AddGenreCommand}" Style="{StaticResource SuccessButtonStyle}" Content="➕ Agregar" Height="32"/>
                                 </StackPanel>
@@ -577,9 +578,9 @@
                     </Border>
 
                     <!-- Análisis de audio -->
-                    <Border Grid.Row="2" Background="#161B26" CornerRadius="6" Padding="16" BorderBrush="#262D3D" BorderThickness="1">
+                    <Border Grid.Row="2" Background="{DynamicResource Brush.Surface.Card}" CornerRadius="6" Padding="16" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
                         <StackPanel>
-                            <TextBlock Text="🔊 ANÁLISIS INTELIGENTE DE AUDIO" FontSize="13" FontWeight="Bold" Foreground="#00E5FF" Margin="0,0,0,8"/>
+                            <TextBlock Text="🔊 ANÁLISIS INTELIGENTE DE AUDIO" FontSize="13" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent}" Margin="0,0,0,8"/>
                             
                             <Grid>
                                 <Grid.ColumnDefinitions>
@@ -588,8 +589,8 @@
                                 </Grid.ColumnDefinitions>
 
                                 <StackPanel Grid.Column="0">
-                                    <TextBlock Text="Selecciona un track y analiza sus características automáticamente: BPM, silencios, volumen, frecuencia" FontSize="11" Foreground="#8A99AD"/>
-                                    <TextBlock Text="{Binding AnalysisStatus}" FontSize="11" Foreground="#00E5FF" Margin="0,4,0,0"/>
+                                    <TextBlock Text="Selecciona un track y analiza sus características automáticamente: BPM, silencios, volumen, frecuencia" FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}"/>
+                                    <TextBlock Text="{Binding AnalysisStatus}" FontSize="11" Foreground="{DynamicResource Brush.Accent}" Margin="0,4,0,0"/>
                                 </StackPanel>
 
                                 <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="16,0,0,0">
@@ -600,7 +601,7 @@
                             </Grid>
 
                             <!-- Resultados del análisis -->
-                            <Border Background="#0B0D14" CornerRadius="4" Padding="12" Margin="0,8,0,0" BorderBrush="#2D3548" BorderThickness="1">
+                            <Border Background="{DynamicResource Brush.Surface.Deep}" CornerRadius="4" Padding="12" Margin="0,8,0,0" BorderBrush="{DynamicResource Brush.Border.Strong}" BorderThickness="1">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
@@ -610,23 +611,23 @@
                                     </Grid.ColumnDefinitions>
 
                                     <StackPanel Grid.Column="0">
-                                        <TextBlock Text="BPM" FontSize="10" Foreground="#8A99AD"/>
-                                        <TextBlock Text="{Binding CurrentAnalysisResult.Bpm, StringFormat='{}{0:F0}'}" FontSize="18" FontWeight="Bold" Foreground="#00E5FF"/>
+                                        <TextBlock Text="BPM" FontSize="10" Foreground="{DynamicResource Brush.Text.Secondary}"/>
+                                        <TextBlock Text="{Binding CurrentAnalysisResult.Bpm, StringFormat='{}{0:F0}'}" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent}"/>
                                     </StackPanel>
 
                                     <StackPanel Grid.Column="1">
-                                        <TextBlock Text="Pico" FontSize="10" Foreground="#8A99AD"/>
-                                        <TextBlock Text="{Binding CurrentAnalysisResult.PeakAmplitude, StringFormat='{}{0:F2}'}" FontSize="18" FontWeight="Bold" Foreground="#FF9100"/>
+                                        <TextBlock Text="Pico" FontSize="10" Foreground="{DynamicResource Brush.Text.Secondary}"/>
+                                        <TextBlock Text="{Binding CurrentAnalysisResult.PeakAmplitude, StringFormat='{}{0:F2}'}" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent.Orange}"/>
                                     </StackPanel>
 
                                     <StackPanel Grid.Column="2">
-                                        <TextBlock Text="RMS" FontSize="10" Foreground="#8A99AD"/>
-                                        <TextBlock Text="{Binding CurrentAnalysisResult.RmsAmplitude, StringFormat='{}{0:F2}'}" FontSize="18" FontWeight="Bold" Foreground="#00C853"/>
+                                        <TextBlock Text="RMS" FontSize="10" Foreground="{DynamicResource Brush.Text.Secondary}"/>
+                                        <TextBlock Text="{Binding CurrentAnalysisResult.RmsAmplitude, StringFormat='{}{0:F2}'}" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent.Play}"/>
                                     </StackPanel>
 
                                     <StackPanel Grid.Column="3">
-                                        <TextBlock Text="Ganancia" FontSize="10" Foreground="#8A99AD"/>
-                                        <TextBlock Text="{Binding CurrentAnalysisResult.RecommendedGain, StringFormat='{}{0:F2}'}" FontSize="18" FontWeight="Bold" Foreground="#E91E63"/>
+                                        <TextBlock Text="Ganancia" FontSize="10" Foreground="{DynamicResource Brush.Text.Secondary}"/>
+                                        <TextBlock Text="{Binding CurrentAnalysisResult.RecommendedGain, StringFormat='{}{0:F2}'}" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent.Pink}"/>
                                     </StackPanel>
                                 </Grid>
                             </Border>
@@ -644,9 +645,9 @@
                     </Grid.RowDefinitions>
 
                     <!-- Información de Persistencia -->
-                    <Border Grid.Row="0" Background="#161B26" CornerRadius="6" Padding="16" Margin="0,0,0,8" BorderBrush="#262D3D" BorderThickness="1">
+                    <Border Grid.Row="0" Background="{DynamicResource Brush.Surface.Card}" CornerRadius="6" Padding="16" Margin="0,0,0,8" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
                         <StackPanel>
-                            <TextBlock Text="💾 GESTIÓN DE METADATOS" FontSize="13" FontWeight="Bold" Foreground="#00E5FF" Margin="0,0,0,12"/>
+                            <TextBlock Text="💾 GESTIÓN DE METADATOS" FontSize="13" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent}" Margin="0,0,0,12"/>
                             
                             <Grid>
                             <Grid.ColumnDefinitions>
@@ -655,10 +656,10 @@
                             </Grid.ColumnDefinitions>
 
                             <StackPanel Grid.Column="0" Margin="0,0,8,0">
-                                <TextBlock Text="Los metadatos se almacenan en formato JSON para persistencia entre sesiones." FontSize="11" Foreground="#8A99AD" Margin="0,0,0,8" TextWrapping="Wrap"/>
-                                <TextBlock Text="• Guarda configuraciones de puntos CUE, fades y metadatos extendidos" FontSize="10" Foreground="#6A7382"/>
-                                <TextBlock Text="• Permite exportar a CSV para análisis externo" FontSize="10" Foreground="#6A7382" Margin="0,2,0,0"/>
-                                <TextBlock Text="• Incluye backup automático ante errores" FontSize="10" Foreground="#6A7382" Margin="0,2,0,0"/>
+                                <TextBlock Text="Los metadatos se almacenan en formato JSON para persistencia entre sesiones." FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,0,0,8" TextWrapping="Wrap"/>
+                                <TextBlock Text="• Guarda configuraciones de puntos CUE, fades y metadatos extendidos" FontSize="10" Foreground="{DynamicResource Brush.Text.MutedAlt}"/>
+                                <TextBlock Text="• Permite exportar a CSV para análisis externo" FontSize="10" Foreground="{DynamicResource Brush.Text.MutedAlt}" Margin="0,2,0,0"/>
+                                <TextBlock Text="• Incluye backup automático ante errores" FontSize="10" Foreground="{DynamicResource Brush.Text.MutedAlt}" Margin="0,2,0,0"/>
                             </StackPanel>
 
                             <StackPanel Grid.Column="1">
@@ -673,13 +674,13 @@
                     </Border>
 
                     <!-- Estadísticas Detalladas -->
-                    <Border Grid.Row="1" Background="#161B26" CornerRadius="6" Padding="16" BorderBrush="#262D3D" BorderThickness="1">
+                    <Border Grid.Row="1" Background="{DynamicResource Brush.Surface.Card}" CornerRadius="6" Padding="16" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
                         <StackPanel>
-                            <TextBlock Text="📊 ESTADÍSTICAS DE LA BIBLIOTECA" FontSize="13" FontWeight="Bold" Foreground="#00E5FF" Margin="0,0,0,12"/>
+                            <TextBlock Text="📊 ESTADÍSTICAS DE LA BIBLIOTECA" FontSize="13" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent}" Margin="0,0,0,12"/>
                             
                             <ScrollViewer VerticalScrollBarVisibility="Auto">
                             <StackPanel>
-                                <TextBlock Text="{Binding StatisticsText}" FontSize="12" Foreground="#FFFFFF" Margin="0,0,0,12" TextWrapping="Wrap"/>
+                                <TextBlock Text="{Binding StatisticsText}" FontSize="12" Foreground="{DynamicResource Brush.Text.High}" Margin="0,0,0,12" TextWrapping="Wrap"/>
                                 
                                 <Grid>
                                     <Grid.ColumnDefinitions>
@@ -688,24 +689,24 @@
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
 
-                                    <Border Grid.Column="0" Background="#0B0D14" CornerRadius="4" Padding="12" Margin="0,0,4,0">
+                                    <Border Grid.Column="0" Background="{DynamicResource Brush.Surface.Deep}" CornerRadius="4" Padding="12" Margin="0,0,4,0">
                                         <StackPanel>
-                                            <TextBlock Text="TOTAL TRACKS" FontSize="10" Foreground="#8A99AD"/>
-                                            <TextBlock Text="{Binding DatabaseService.GetTotalTracks()}" FontSize="24" FontWeight="Bold" Foreground="#00E5FF"/>
+                                            <TextBlock Text="TOTAL TRACKS" FontSize="10" Foreground="{DynamicResource Brush.Text.Secondary}"/>
+                                            <TextBlock Text="{Binding DatabaseService.GetTotalTracks()}" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent}"/>
                                         </StackPanel>
                                     </Border>
 
-                                    <Border Grid.Column="1" Background="#0B0D14" CornerRadius="4" Padding="12" Margin="4,0,4,0">
+                                    <Border Grid.Column="1" Background="{DynamicResource Brush.Surface.Deep}" CornerRadius="4" Padding="12" Margin="4,0,4,0">
                                         <StackPanel>
-                                            <TextBlock Text="DURACIÓN TOTAL" FontSize="10" Foreground="#8A99AD"/>
-                                            <TextBlock Text="{Binding DatabaseService.GetTotalDuration(), StringFormat='{}{0:hh\\:mm\\:ss}'}" FontSize="24" FontWeight="Bold" Foreground="#00C853"/>
+                                            <TextBlock Text="DURACIÓN TOTAL" FontSize="10" Foreground="{DynamicResource Brush.Text.Secondary}"/>
+                                            <TextBlock Text="{Binding DatabaseService.GetTotalDuration(), StringFormat='{}{0:hh\\:mm\\:ss}'}" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent.Play}"/>
                                         </StackPanel>
                                     </Border>
 
-                                    <Border Grid.Column="2" Background="#0B0D14" CornerRadius="4" Padding="12" Margin="4,0,0,0">
+                                    <Border Grid.Column="2" Background="{DynamicResource Brush.Surface.Deep}" CornerRadius="4" Padding="12" Margin="4,0,0,0">
                                         <StackPanel>
-                                            <TextBlock Text="DURACIÓN PROMEDIO" FontSize="10" Foreground="#8A99AD"/>
-                                            <TextBlock Text="{Binding DatabaseService.GetAverageDuration(), StringFormat='{}{0:mm\\:ss}'}" FontSize="24" FontWeight="Bold" Foreground="#FF9100"/>
+                                            <TextBlock Text="DURACIÓN PROMEDIO" FontSize="10" Foreground="{DynamicResource Brush.Text.Secondary}"/>
+                                            <TextBlock Text="{Binding DatabaseService.GetAverageDuration(), StringFormat='{}{0:mm\\:ss}'}" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent.Orange}"/>
                                         </StackPanel>
                                     </Border>
                                 </Grid>
@@ -718,11 +719,11 @@
         </TabControl>
 
         <!-- FOOTER -->
-        <Border Grid.Row="2" Background="#1A202C" CornerRadius="8" Padding="12,8" Margin="0,12,0,0" BorderBrush="#262D3D" BorderThickness="1">
+        <Border Grid.Row="2" Background="{DynamicResource Brush.Surface.Header}" CornerRadius="8" Padding="12,8" Margin="0,12,0,0" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
             <DockPanel>
                 <TextBlock Text="ℹ️" FontSize="14" DockPanel.Dock="Left" Margin="0,0,8,0"/>
-                <TextBlock Text="Selecciona un track para editar sus propiedades, puntos CUE y metadatos. Los cambios se guardan automáticamente en la sesión actual." FontSize="11" Foreground="#8A99AD" DockPanel.Dock="Left"/>
-                <TextBlock Text="{Binding EditInfo}" FontSize="10" Foreground="#00E5FF" DockPanel.Dock="Right" FontFamily="Consolas"/>
+                <TextBlock Text="Selecciona un track para editar sus propiedades, puntos CUE y metadatos. Los cambios se guardan automáticamente en la sesión actual." FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}" DockPanel.Dock="Left"/>
+                <TextBlock Text="{Binding EditInfo}" FontSize="10" Foreground="{DynamicResource Brush.Accent}" DockPanel.Dock="Right" FontFamily="{StaticResource Sys.Font.Clock}"/>
             </DockPanel>
         </Border>
     </Grid>

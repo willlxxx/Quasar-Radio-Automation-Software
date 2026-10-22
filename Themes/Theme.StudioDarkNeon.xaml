@@ -1,0 +1,76 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- ======================================================================
+         TEMA · Studio Dark Neon  (predeterminado)
+         Negro azulado con acentos neón. Es la paleta histórica de la suite,
+         ahora gobernada por tokens en lugar de 328 literales sueltos.
+         Solo redefinition los brushes marcados [TEMA] en Tokens.xaml.
+         ====================================================================== -->
+
+    <!-- Superficies -->
+    <SolidColorBrush x:Key="Brush.Surface.Base" Color="#0F111A" />
+    <SolidColorBrush x:Key="Brush.Surface.Deep" Color="#0B0D14" />
+    <SolidColorBrush x:Key="Brush.Surface.Inset" Color="#080B12" />
+    <SolidColorBrush x:Key="Brush.Surface.Panel" Color="#11141F" />
+    <SolidColorBrush x:Key="Brush.Surface.Card" Color="#161B26" />
+    <SolidColorBrush x:Key="Brush.Surface.Raised" Color="#1E2330" />
+    <SolidColorBrush x:Key="Brush.Surface.Header" Color="#1A202C" />
+    <SolidColorBrush x:Key="Brush.Surface.Hover" Color="#2A3245" />
+    <SolidColorBrush x:Key="Brush.Surface.Pressed" Color="#151922" />
+    <SolidColorBrush x:Key="Brush.Surface.Track" Color="#1A1E2E" />
+    <SolidColorBrush x:Key="Brush.Surface.GlowBorder" Color="#111722" />
+    <SolidColorBrush x:Key="Brush.Surface.PanelAlt" Color="#172129" />
+    <SolidColorBrush x:Key="Brush.Surface.CardAlt" Color="#1B252D" />
+    <SolidColorBrush x:Key="Brush.Surface.RaisedAlt" Color="#1D2A32" />
+    <SolidColorBrush x:Key="Brush.Surface.BaseAlt" Color="#10151B" />
+    <SolidColorBrush x:Key="Brush.Surface.FooterButton" Color="#26343D" />
+    <SolidColorBrush x:Key="Brush.Surface.DangerSoft" Color="#6E3030" />
+    <SolidColorBrush x:Key="Brush.Surface.WarnBadge" Color="#1A1800" />
+    <SolidColorBrush x:Key="Brush.Surface.Placeholder" Color="#555555" />
+
+    <!-- Bordes -->
+    <SolidColorBrush x:Key="Brush.Border.Default" Color="#262D3D" />
+    <SolidColorBrush x:Key="Brush.Border.Strong" Color="#2D3548" />
+    <SolidColorBrush x:Key="Brush.Border.Subtle" Color="#1F2636" />
+    <SolidColorBrush x:Key="Brush.Border.Highlight" Color="#384B63" />
+    <SolidColorBrush x:Key="Brush.Border.Header" Color="#2D3748" />
+    <SolidColorBrush x:Key="Brush.Border.Alt" Color="#33434E" />
+
+    <!-- Texto -->
+    <SolidColorBrush x:Key="Brush.Text.High" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="Brush.Text.Default" Color="#E0E6ED" />
+    <SolidColorBrush x:Key="Brush.Text.Secondary" Color="#8A99AD" />
+    <SolidColorBrush x:Key="Brush.Text.Muted" Color="#A0AEC0" />
+    <SolidColorBrush x:Key="Brush.Text.Faint" Color="#7A8BA3" />
+    <SolidColorBrush x:Key="Brush.Text.MutedAlt" Color="#8593A6" />
+    <SolidColorBrush x:Key="Brush.Text.Alt" Color="#9AA9B5" />
+    <SolidColorBrush x:Key="Brush.Text.AltHigh" Color="#E8EEF2" />
+    <SolidColorBrush x:Key="Brush.Text.OnAccent" Color="#000000" />
+
+    <!-- Acentos -->
+    <SolidColorBrush x:Key="Brush.Accent" Color="#00E5FF" />
+    <SolidColorBrush x:Key="Brush.Accent.Success" Color="#00E676" />
+    <SolidColorBrush x:Key="Brush.Accent.Play" Color="#00C853" />
+    <SolidColorBrush x:Key="Brush.Accent.Warn" Color="#FFEA00" />
+    <SolidColorBrush x:Key="Brush.Accent.WarnStrong" Color="#FFD600" />
+    <SolidColorBrush x:Key="Brush.Accent.Orange" Color="#FF9100" />
+    <SolidColorBrush x:Key="Brush.Accent.OrangeDeep" Color="#FF6D00" />
+    <SolidColorBrush x:Key="Brush.Accent.Danger" Color="#FF1744" />
+    <SolidColorBrush x:Key="Brush.Accent.DangerSoft" Color="#FF5252" />
+    <SolidColorBrush x:Key="Brush.Accent.Stop" Color="#D50000" />
+    <SolidColorBrush x:Key="Brush.Accent.Pink" Color="#E91E63" />
+    <SolidColorBrush x:Key="Brush.Accent.Info" Color="#00B0FF" />
+    <SolidColorBrush x:Key="Brush.Accent.Cue" Color="#2979FF" />
+    <SolidColorBrush x:Key="Brush.Accent.CueStrong" Color="#448AFF" />
+    <SolidColorBrush x:Key="Brush.Accent.Purple" Color="#A855F7" />
+    <SolidColorBrush x:Key="Brush.Accent.Teal" Color="#007D75" />
+    <SolidColorBrush x:Key="Brush.Accent.Coral" Color="#FF7B72" />
+    <SolidColorBrush x:Key="Brush.Selection.Deep" Color="#005599" />
+
+
+    <!-- Colores de resplandor de deck -->
+    <Color x:Key="Color.Glow.A">#00E5FF</Color>
+    <Color x:Key="Color.Glow.B">#A855F7</Color>
+
+</ResourceDictionary>

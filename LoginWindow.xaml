@@ -4,7 +4,7 @@
         Title="Quasar Radio | Acceso" Height="430" Width="430"
         ResizeMode="NoResize" WindowStartupLocation="CenterScreen"
         Topmost="True" ShowInTaskbar="True"
-        Background="#10151B" Foreground="#E8EEF2">
+        Background="{DynamicResource Brush.Surface.BaseAlt}" Foreground="{DynamicResource Brush.Text.AltHigh}">
     <Grid Margin="28">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -12,20 +12,20 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <StackPanel>
-            <TextBlock Text="QUASAR RADIO" FontSize="22" FontWeight="Bold" Foreground="#FFFFFF"/>
-            <TextBlock x:Name="SubtitleText" Margin="0,6,0,0" FontSize="12" Foreground="#9AA9B5" TextWrapping="Wrap"/>
+            <TextBlock Text="QUASAR RADIO" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.High}"/>
+            <TextBlock x:Name="SubtitleText" Margin="0,6,0,0" FontSize="12" Foreground="{DynamicResource Brush.Text.Alt}" TextWrapping="Wrap"/>
         </StackPanel>
         <StackPanel Grid.Row="1" VerticalAlignment="Center">
-            <TextBlock Text="Usuario" FontSize="11" Foreground="#9AA9B5" Margin="0,0,0,5"/>
-            <TextBox x:Name="UsernameBox" Height="36" Padding="9,6" Background="#1B252D" Foreground="#FFFFFF" BorderBrush="#33434E"/>
-            <TextBlock Text="Contraseña" FontSize="11" Foreground="#9AA9B5" Margin="0,14,0,5"/>
-            <PasswordBox x:Name="PasswordBox" Height="36" Padding="9,6" Background="#1B252D" Foreground="#FFFFFF" BorderBrush="#33434E"/>
+            <TextBlock Text="Usuario" FontSize="11" Foreground="{DynamicResource Brush.Text.Alt}" Margin="0,0,0,5"/>
+            <TextBox x:Name="UsernameBox" Height="36" Padding="9,6" Background="{DynamicResource Brush.Surface.CardAlt}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Alt}"/>
+            <TextBlock Text="Contraseña" FontSize="11" Foreground="{DynamicResource Brush.Text.Alt}" Margin="0,14,0,5"/>
+            <PasswordBox x:Name="PasswordBox" Height="36" Padding="9,6" Background="{DynamicResource Brush.Surface.CardAlt}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Alt}"/>
             <StackPanel x:Name="ConfirmPanel" Visibility="Collapsed">
-                <TextBlock Text="Confirmar contraseña" FontSize="11" Foreground="#9AA9B5" Margin="0,14,0,5"/>
-                <PasswordBox x:Name="ConfirmPasswordBox" Height="36" Padding="9,6" Background="#1B252D" Foreground="#FFFFFF" BorderBrush="#33434E"/>
+                <TextBlock Text="Confirmar contraseña" FontSize="11" Foreground="{DynamicResource Brush.Text.Alt}" Margin="0,14,0,5"/>
+                <PasswordBox x:Name="ConfirmPasswordBox" Height="36" Padding="9,6" Background="{DynamicResource Brush.Surface.CardAlt}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Alt}"/>
             </StackPanel>
-            <TextBlock x:Name="ErrorText" Margin="0,12,0,0" Foreground="#FF7B72" TextWrapping="Wrap"/>
+            <TextBlock x:Name="ErrorText" Margin="0,12,0,0" Foreground="{DynamicResource Brush.Accent.Coral}" TextWrapping="Wrap"/>
         </StackPanel>
-        <Button Grid.Row="2" Content="CONTINUAR" Height="40" Background="#007D75" Foreground="White" BorderThickness="0" FontWeight="Bold" Click="OnSubmitClick"/>
+        <Button Grid.Row="2" Content="CONTINUAR" Height="40" Background="{DynamicResource Brush.Accent.Teal}" Foreground="{DynamicResource Brush.Text.High}" BorderThickness="0" FontWeight="Bold" Click="OnSubmitClick"/>
     </Grid>
 </Window>

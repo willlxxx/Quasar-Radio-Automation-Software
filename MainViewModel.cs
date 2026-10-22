@@ -50,6 +50,14 @@ namespace quasar_radio
         public string RemainingTimeFormatted => AudioPlayerViewModel.RemainingTimeFormatted;
         public double ProgressPercentage => AudioPlayerViewModel.ProgressPercentage;
         public bool IsPlaying => AudioPlayerViewModel.IsPlaying;
+
+        /// <summary>
+        /// Hay algo en marcha (playout, micro, grabacion o stream). Lo usa el cierre
+        /// protegido de la consola: apagar el programa con aire activo pide confirmacion.
+        /// </summary>
+        public bool IsAirActive() =>
+            IsPlaying || IsMicActive || RecordingService.IsRecording || StreamingService.IsStreaming;
+
         public bool IsAutoMode
         {
             get => AudioPlayerViewModel.IsAutoMode;
@@ -107,22 +115,7 @@ namespace quasar_radio
             get => ThemeViewModel.SelectedTheme;
             set => ThemeViewModel.SelectedTheme = value;
         }
-        public List<string> AvailableThemes => ThemeViewModel.AvailableThemes;
-        public string WindowBackground
-        {
-            get => ThemeViewModel.WindowBackground;
-            set => ThemeViewModel.WindowBackground = value;
-        }
-        public string CardBackground
-        {
-            get => ThemeViewModel.CardBackground;
-            set => ThemeViewModel.CardBackground = value;
-        }
-        public string AccentColor
-        {
-            get => ThemeViewModel.AccentColor;
-            set => ThemeViewModel.AccentColor = value;
-        }
+        public IReadOnlyList<string> AvailableThemes => ThemeViewModel.AvailableThemes;
 
         // Propiedades de CartWallViewModel expuestas
         public float CartwallMasterVolume
@@ -348,7 +341,11 @@ namespace quasar_radio
             RecordingService recordingService,
             AuxPlayerEngine auxPlayerEngine,
             AudioDatabaseService databaseService,
-            IcecastStreamingService streamingService)
+            ThemeViewModel themeViewModel,
+            AudioPlayerViewModel audioPlayerViewModel,
+            StreamingViewModel streamingViewModel,
+            CartWallViewModel cartWallViewModel,
+            LibraryViewModel libraryViewModel)
         {
             NowPlayingService.ExportFailed += OnNowPlayingExportFailed;
 
@@ -370,15 +367,13 @@ namespace quasar_radio
             _micEngine.MicStateChanged += (s, active) => IsMicActive = active;
             _silenceDetector.SilenceDetected += OnSilenceDetected;
 
-            // Crear sub-ViewModels con servicios inyectados
-            ThemeViewModel = new ThemeViewModel();
-            AudioPlayerViewModel = new AudioPlayerViewModel(_audioEngine);
-            StreamingViewModel = new StreamingViewModel(streamingService);
-            CartWallViewModel = new CartWallViewModel(_cartwallEngine);
-            LibraryViewModel = new LibraryViewModel(
-                _databaseService,
-                _rotationEngine,
-                AudioPlayerViewModel.Playlist);
+            // Sub-ViewModels: singleton en DI, para que las ventanas de modulo
+            // (UI-2) compartan el mismo estado que la consola.
+            ThemeViewModel = themeViewModel;
+            AudioPlayerViewModel = audioPlayerViewModel;
+            StreamingViewModel = streamingViewModel;
+            CartWallViewModel = cartWallViewModel;
+            LibraryViewModel = libraryViewModel;
 
             // Configurar timer de reloj
             _clockTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(200) };

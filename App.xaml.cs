@@ -43,11 +43,30 @@ public partial class App : Application
 
         // Transient services (creados cada vez que se solicitan)
         services.AddTransient<IcecastStreamingService>();
-        services.AddTransient<ThemeViewModel>();
-        services.AddTransient<AudioPlayerViewModel>();
-        services.AddTransient<StreamingViewModel>();
-        services.AddTransient<CartWallViewModel>();
-        services.AddTransient<MainViewModel>();
+
+        // ViewModels de modulo: singletons. La consola y las ventanas de modulo
+        // (UI-2) tienen que ver el MISMO estado; si son transient, cada ventana
+        // montaria su propia copia del playlist y del stream.
+        services.AddSingleton<ThemeViewModel>();
+        services.AddSingleton<AudioPlayerViewModel>();
+        services.AddSingleton<StreamingViewModel>();
+        services.AddSingleton<CartWallViewModel>();
+        services.AddSingleton(sp => new LibraryViewModel(
+            sp.GetRequiredService<AudioDatabaseService>(),
+            sp.GetRequiredService<SmartRotationEngine>(),
+            sp.GetRequiredService<AudioPlayerViewModel>().Playlist,
+            sp.GetRequiredService<IModuleNavigator>()));
+
+        // Navegacion de modulos (UI-2): una sola ventana por modulo, no modal,
+        // con la geometria recordada en %APPDATA%\QuasarRadio\layout.json.
+        services.AddSingleton<IModuleNavigator>(sp => new ModuleNavigator(sp));
+
+        // Las ventanas de modulo son transient: una vez cerradas WPF no permite
+        // volver a mostrarlas, asi que el navigator pide una nueva en cada Open.
+        services.AddTransient<LibraryManagementWindow>();
+
+        // Unico MainViewModel vivo: MainWindow es singleton, asi que este tambien.
+        services.AddSingleton<MainViewModel>();
 
         // Windows
         services.AddSingleton<MainWindow>();
@@ -59,6 +78,7 @@ public partial class App : Application
     {
         ShutdownMode = ShutdownMode.OnExplicitShutdown;
         base.OnStartup(e);
+        ThemeService.RestoreSaved();
         Log.Information("Quasar Radio se está iniciando sin login obligatorio en la apertura.");
         Log.Information("La autenticación solo se exige para el panel de administración.");
 

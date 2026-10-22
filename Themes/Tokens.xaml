@@ -1,0 +1,137 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <!-- ======================================================================
+         TOKENS · Capa base del sistema visual de Quasar Radio Pro
+         =====================================================================
+         Regla: las vistas NO llevan literales de color. Todo color pasa por
+         un DynamicResource de esta familia. Los 4 temas redefinen los brushes
+         marcados como [TEMA]; el resto son valores invariantes (identidad de
+         deck, decorativos) que solo se tocan al reescribir su ventana.
+
+         Nombre = Brush.<Rol>.<Variante>.  Nunca Brush.AzulOscuro3.
+         ====================================================================== -->
+
+    <!-- ================= ESPACIADO, RADIOS Y TIPOGRAFÍA ================= -->
+    <sys:Double x:Key="Sys.Space.XS">4</sys:Double>
+    <sys:Double x:Key="Sys.Space.S">8</sys:Double>
+    <sys:Double x:Key="Sys.Space.M">12</sys:Double>
+    <sys:Double x:Key="Sys.Space.L">16</sys:Double>
+    <sys:Double x:Key="Sys.Space.XL">24</sys:Double>
+
+    <Thickness x:Key="Sys.Thickness.Card">12</Thickness>
+    <Thickness x:Key="Sys.Thickness.Row">8,5</Thickness>
+    <Thickness x:Key="Sys.Thickness.Section">0,0,0,6</Thickness>
+    <Thickness x:Key="Sys.Thickness.Border">1</Thickness>
+
+    <CornerRadius x:Key="Sys.Radius.Sm">4</CornerRadius>
+    <CornerRadius x:Key="Sys.Radius.Md">6</CornerRadius>
+    <CornerRadius x:Key="Sys.Radius.Lg">8</CornerRadius>
+
+    <FontFamily x:Key="Sys.Font.Ui">Segoe UI</FontFamily>
+    <!-- Reloj de estudio, BPM y tiempos: monoespaciada para que los digitos no bailen -->
+    <FontFamily x:Key="Sys.Font.Clock">Cascadia Mono, Consolas</FontFamily>
+
+    <sys:Double x:Key="Sys.FontSize.Xs">10</sys:Double>
+    <sys:Double x:Key="Sys.FontSize.Sm">11</sys:Double>
+    <sys:Double x:Key="Sys.FontSize.Md">12</sys:Double>
+    <sys:Double x:Key="Sys.FontSize.Lg">14</sys:Double>
+    <sys:Double x:Key="Sys.FontSize.Xl">18</sys:Double>
+    <sys:Double x:Key="Sys.FontSize.Xxl">24</sys:Double>
+    <sys:Double x:Key="Sys.FontSize.Clock">28</sys:Double>
+
+    <!-- ================= SUPERFICIES [TEMA] ================= -->
+    <SolidColorBrush x:Key="Brush.Surface.Base" Color="#0F111A" />          <!-- fondo de ventana -->
+    <SolidColorBrush x:Key="Brush.Surface.Deep" Color="#0B0D14" />          <!-- hueco profundo -->
+    <SolidColorBrush x:Key="Brush.Surface.Inset" Color="#080B12" />         <!-- interior de medidores -->
+    <SolidColorBrush x:Key="Brush.Surface.Panel" Color="#11141F" />         <!-- panel -->
+    <SolidColorBrush x:Key="Brush.Surface.Card" Color="#161B26" />          <!-- tarjeta / fila alterna -->
+    <SolidColorBrush x:Key="Brush.Surface.Raised" Color="#1E2330" />        <!-- boton estandar -->
+    <SolidColorBrush x:Key="Brush.Surface.Header" Color="#1A202C" />        <!-- cabecera de tabla -->
+    <SolidColorBrush x:Key="Brush.Surface.Hover" Color="#2A3245" />         <!-- cursor encima -->
+    <SolidColorBrush x:Key="Brush.Surface.Pressed" Color="#151922" />       <!-- pulsado -->
+    <SolidColorBrush x:Key="Brush.Surface.Track" Color="#1A1E2E" />         <!-- pista de barra -->
+    <SolidColorBrush x:Key="Brush.Surface.GlowBorder" Color="#111722" />    <!-- deck en reposo -->
+    <SolidColorBrush x:Key="Brush.Surface.PanelAlt" Color="#172129" />      <!-- dialogos -->
+    <SolidColorBrush x:Key="Brush.Surface.CardAlt" Color="#1B252D" />       <!-- dialogos -->
+    <SolidColorBrush x:Key="Brush.Surface.RaisedAlt" Color="#1D2A32" />     <!-- dialogos -->
+    <SolidColorBrush x:Key="Brush.Surface.BaseAlt" Color="#10151B" />       <!-- login -->
+    <SolidColorBrush x:Key="Brush.Surface.FooterButton" Color="#26343D" />
+    <SolidColorBrush x:Key="Brush.Surface.DangerSoft" Color="#6E3030" />
+    <SolidColorBrush x:Key="Brush.Surface.WarnBadge" Color="#1A1800" />
+    <SolidColorBrush x:Key="Brush.Surface.Placeholder" Color="#555555" />
+    <SolidColorBrush x:Key="Brush.Button.Mute.Surface" Color="#6A1B9A" />
+    <SolidColorBrush x:Key="Brush.Button.Mute.Border" Color="#9C27B0" />
+
+    <!-- ================= BORDES [TEMA] ================= -->
+    <SolidColorBrush x:Key="Brush.Border.Default" Color="#262D3D" />
+    <SolidColorBrush x:Key="Brush.Border.Strong" Color="#2D3548" />
+    <SolidColorBrush x:Key="Brush.Border.Subtle" Color="#1F2636" />
+    <SolidColorBrush x:Key="Brush.Border.Highlight" Color="#384B63" />
+    <SolidColorBrush x:Key="Brush.Border.Header" Color="#2D3748" />
+    <SolidColorBrush x:Key="Brush.Border.Alt" Color="#33434E" />
+
+    <!-- ================= TEXTO [TEMA] ================= -->
+    <SolidColorBrush x:Key="Brush.Text.High" Color="#FFFFFF" />        <!-- titulos y enfasis -->
+    <SolidColorBrush x:Key="Brush.Text.Default" Color="#E0E6ED" />     <!-- cuerpo -->
+    <SolidColorBrush x:Key="Brush.Text.Secondary" Color="#8A99AD" />   <!-- etiqueta de control -->
+    <SolidColorBrush x:Key="Brush.Text.Muted" Color="#A0AEC0" />
+    <SolidColorBrush x:Key="Brush.Text.Faint" Color="#7A8BA3" />       <!-- pie; 5.4:1 sobre Surface.Base -->
+    <SolidColorBrush x:Key="Brush.Text.MutedAlt" Color="#6A7382" />
+    <SolidColorBrush x:Key="Brush.Text.Alt" Color="#9AA9B5" />         <!-- dialogos -->
+    <SolidColorBrush x:Key="Brush.Text.AltHigh" Color="#E8EEF2" />     <!-- dialogos -->
+    <SolidColorBrush x:Key="Brush.Text.OnAccent" Color="#000000" />    <!-- texto sobre badge encendido -->
+
+    <!-- ================= ACENTOS [TEMA] ================= -->
+    <SolidColorBrush x:Key="Brush.Accent" Color="#00E5FF" />           <!-- cian corporativo -->
+    <SolidColorBrush x:Key="Brush.Accent.Success" Color="#00E676" />
+    <SolidColorBrush x:Key="Brush.Accent.Play" Color="#00C853" />
+    <SolidColorBrush x:Key="Brush.Accent.Warn" Color="#FFEA00" />
+    <SolidColorBrush x:Key="Brush.Accent.WarnStrong" Color="#FFD600" />
+    <SolidColorBrush x:Key="Brush.Accent.Orange" Color="#FF9100" />
+    <SolidColorBrush x:Key="Brush.Accent.OrangeDeep" Color="#FF6D00" />
+    <SolidColorBrush x:Key="Brush.Accent.Danger" Color="#FF1744" />
+    <SolidColorBrush x:Key="Brush.Accent.DangerSoft" Color="#FF5252" />
+    <SolidColorBrush x:Key="Brush.Accent.Stop" Color="#D50000" />
+    <SolidColorBrush x:Key="Brush.Accent.Pink" Color="#E91E63" />
+    <SolidColorBrush x:Key="Brush.Accent.Info" Color="#00B0FF" />
+    <SolidColorBrush x:Key="Brush.Accent.Cue" Color="#2979FF" />
+    <SolidColorBrush x:Key="Brush.Accent.CueStrong" Color="#448AFF" />
+    <SolidColorBrush x:Key="Brush.Accent.Purple" Color="#A855F7" />
+    <SolidColorBrush x:Key="Brush.Accent.Teal" Color="#007D75" />
+    <SolidColorBrush x:Key="Brush.Accent.Coral" Color="#FF7B72" />
+    <SolidColorBrush x:Key="Brush.Selection.Deep" Color="#005599" />
+
+    <!-- Colores sueltos [TEMA]: para propiedades que piden Color, no Brush
+         (efectos de resplandor de los decks). Cada tema redefina estos dos. -->
+    <Color x:Key="Color.Glow.A">#00E5FF</Color>
+    <Color x:Key="Color.Glow.B">#A855F7</Color>
+    <Color x:Key="Color.Glow.Card.A">#2ED5FF</Color>
+    <Color x:Key="Color.Glow.Card.B">#C77BFF</Color>
+
+    <!-- ================= IDENTIDAD DE DECK (invariante al tema) ================= -->
+    <SolidColorBrush x:Key="Brush.DeckA.Surface" Color="#0D1320" />
+    <SolidColorBrush x:Key="Brush.DeckA.Border" Color="#53D5FF" />
+    <SolidColorBrush x:Key="Brush.DeckA.Hover" Color="#0E1E2F" />
+    <SolidColorBrush x:Key="Brush.DeckA.Glow" Color="#2ED5FF" />
+    <SolidColorBrush x:Key="Brush.DeckA.Legend" Color="#10212B" />
+    <SolidColorBrush x:Key="Brush.DeckA.Title" Color="#F4FBFF" />
+    <SolidColorBrush x:Key="Brush.DeckA.Chip.Surface" Color="#1E2A37" />
+    <SolidColorBrush x:Key="Brush.DeckA.Chip.Border" Color="#2A3A4D" />
+    <SolidColorBrush x:Key="Brush.DeckA.Chip.ActiveSurface" Color="#00B0FF" />
+    <SolidColorBrush x:Key="Brush.DeckA.Chip.ActiveBorder" Color="#7DE7FF" />
+
+    <SolidColorBrush x:Key="Brush.DeckB.Surface" Color="#17111D" />
+    <SolidColorBrush x:Key="Brush.DeckB.Border" Color="#C98BFF" />
+    <SolidColorBrush x:Key="Brush.DeckB.Hover" Color="#271B35" />
+    <SolidColorBrush x:Key="Brush.DeckB.Glow" Color="#C77BFF" />
+    <SolidColorBrush x:Key="Brush.DeckB.Legend" Color="#25192F" />
+    <SolidColorBrush x:Key="Brush.DeckB.Title" Color="#F4EBFF" />
+    <SolidColorBrush x:Key="Brush.DeckB.Progress" Color="#651FFF" />
+    <SolidColorBrush x:Key="Brush.DeckB.Chip.Surface" Color="#2B213F" />
+    <SolidColorBrush x:Key="Brush.DeckB.Chip.Border" Color="#5F4A73" />
+    <SolidColorBrush x:Key="Brush.DeckB.Chip.ActiveSurface" Color="#8A3FFC" />
+    <SolidColorBrush x:Key="Brush.DeckB.Chip.ActiveBorder" Color="#D8B4FF" />
+
+</ResourceDictionary>

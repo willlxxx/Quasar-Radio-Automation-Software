@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Editor &amp; Analizador de Pista - Quasar Radio Pro" Height="480" Width="520"
         WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
-        Background="#0F111A" Foreground="#E0E6ED">
+        Background="{DynamicResource Brush.Surface.Base}" Foreground="{DynamicResource Brush.Text.Default}">
 
     <Grid Margin="15">
         <Grid.RowDefinitions>
@@ -13,10 +13,10 @@
         </Grid.RowDefinitions>
 
         <!-- HEADER -->
-        <Border Grid.Row="0" Background="#161B26" CornerRadius="6" Padding="10" Margin="0,0,0,12" BorderBrush="#262D3D" BorderThickness="1">
+        <Border Grid.Row="0" Background="{DynamicResource Brush.Surface.Card}" CornerRadius="6" Padding="10" Margin="0,0,0,12" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
             <StackPanel>
-                <TextBlock Text="EDICIÓN DE MARCAS Y PUNTOS CUE / INTRO" FontSize="14" FontWeight="Bold" Foreground="#00E5FF"/>
-                <TextBlock Text="{Binding FilePath}" FontSize="10" Foreground="#8A99AD" TextTrimming="CharacterEllipsis" Margin="0,2,0,0"/>
+                <TextBlock Text="EDICIÓN DE MARCAS Y PUNTOS CUE / INTRO" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent}"/>
+                <TextBlock Text="{Binding FilePath}" FontSize="10" Foreground="{DynamicResource Brush.Text.Secondary}" TextTrimming="CharacterEllipsis" Margin="0,2,0,0"/>
             </StackPanel>
         </Border>
 
@@ -29,42 +29,42 @@
 
             <!-- COLUMNA 1: TÍTULO, ARTISTA Y BPM -->
             <StackPanel Grid.Column="0" Margin="0,0,10,0">
-                <TextBlock Text="Título de la Canción:" FontSize="11" Foreground="#8A99AD" Margin="0,0,0,2"/>
-                <TextBox Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}" Background="#0B0D14" Foreground="#FFFFFF" BorderBrush="#262D3D" Padding="5" Margin="0,0,0,10"/>
+                <TextBlock Text="Título de la Canción:" FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,0,0,2"/>
+                <TextBox Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}" Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Default}" Padding="5" Margin="0,0,0,10"/>
 
-                <TextBlock Text="Artista:" FontSize="11" Foreground="#8A99AD" Margin="0,0,0,2"/>
-                <TextBox Text="{Binding Artist, UpdateSourceTrigger=PropertyChanged}" Background="#0B0D14" Foreground="#FFFFFF" BorderBrush="#262D3D" Padding="5" Margin="0,0,0,10"/>
+                <TextBlock Text="Artista:" FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,0,0,2"/>
+                <TextBox Text="{Binding Artist, UpdateSourceTrigger=PropertyChanged}" Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Default}" Padding="5" Margin="0,0,0,10"/>
 
-                <TextBlock Text="Género Musical:" FontSize="11" Foreground="#8A99AD" Margin="0,0,0,2"/>
-                <TextBox Text="{Binding Genre, UpdateSourceTrigger=PropertyChanged}" Background="#0B0D14" Foreground="#FFFFFF" BorderBrush="#262D3D" Padding="5" Margin="0,0,0,10"/>
+                <TextBlock Text="Género Musical:" FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,0,0,2"/>
+                <TextBox Text="{Binding Genre, UpdateSourceTrigger=PropertyChanged}" Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Default}" Padding="5" Margin="0,0,0,10"/>
 
                 <DockPanel Margin="0,0,0,4">
-                    <TextBlock Text="Tempo (BPM):" FontSize="11" Foreground="#8A99AD" VerticalAlignment="Center"/>
-                    <Button Click="OnTapBpmClick" Content="TAP BPM" Background="#1E2330" Foreground="#00E676" FontSize="10" FontWeight="Bold" Padding="8,2" DockPanel.Dock="Right" HorizontalAlignment="Right"/>
+                    <TextBlock Text="Tempo (BPM):" FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}" VerticalAlignment="Center"/>
+                    <Button Click="OnTapBpmClick" Content="TAP BPM" Background="{DynamicResource Brush.Surface.Raised}" Foreground="{DynamicResource Brush.Accent.Success}" FontSize="10" FontWeight="Bold" Padding="8,2" DockPanel.Dock="Right" HorizontalAlignment="Right"/>
                 </DockPanel>
-                <TextBox Text="{Binding Bpm, StringFormat='{}{0:0.0}', UpdateSourceTrigger=PropertyChanged}" Background="#0B0D14" Foreground="#FFEA00" FontWeight="Bold" BorderBrush="#262D3D" Padding="5"/>
+                <TextBox Text="{Binding Bpm, StringFormat='{}{0:0.0}', UpdateSourceTrigger=PropertyChanged}" Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Accent.Warn}" FontWeight="Bold" BorderBrush="{DynamicResource Brush.Border.Default}" Padding="5"/>
             </StackPanel>
 
             <!-- COLUMNA 2: PUNTOS CUE E INTRO DE PISADOR -->
             <StackPanel Grid.Column="1" Margin="10,0,0,0">
-                <TextBlock Text="Cue In (Inicio Recorte Seg):" FontSize="11" Foreground="#8A99AD" Margin="0,0,0,2"/>
-                <TextBox Text="{Binding CueInSeconds, StringFormat='{}{0:0.00}', UpdateSourceTrigger=PropertyChanged}" Background="#0B0D14" Foreground="#FFFFFF" BorderBrush="#262D3D" Padding="5" Margin="0,0,0,10"/>
+                <TextBlock Text="Cue In (Inicio Recorte Seg):" FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,0,0,2"/>
+                <TextBox Text="{Binding CueInSeconds, StringFormat='{}{0:0.00}', UpdateSourceTrigger=PropertyChanged}" Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Default}" Padding="5" Margin="0,0,0,10"/>
 
-                <TextBlock Text="Tiempo Intro (Pisador/Voz Seg):" FontSize="11" FontWeight="Bold" Foreground="#00E676" Margin="0,0,0,2"/>
-                <TextBox Text="{Binding IntroSeconds, StringFormat='{}{0:0.00}', UpdateSourceTrigger=PropertyChanged}" Background="#0B0D14" Foreground="#00E676" FontWeight="Bold" BorderBrush="#00E676" Padding="5" Margin="0,0,0,10"/>
+                <TextBlock Text="Tiempo Intro (Pisador/Voz Seg):" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent.Success}" Margin="0,0,0,2"/>
+                <TextBox Text="{Binding IntroSeconds, StringFormat='{}{0:0.00}', UpdateSourceTrigger=PropertyChanged}" Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Accent.Success}" FontWeight="Bold" BorderBrush="{DynamicResource Brush.Accent.Success}" Padding="5" Margin="0,0,0,10"/>
 
-                <TextBlock Text="Cue Out (Inicio Crossfade Seg):" FontSize="11" Foreground="#8A99AD" Margin="0,0,0,2"/>
-                <TextBox Text="{Binding CueOutSeconds, StringFormat='{}{0:0.00}', UpdateSourceTrigger=PropertyChanged}" Background="#0B0D14" Foreground="#FFFFFF" BorderBrush="#262D3D" Padding="5" Margin="0,0,0,10"/>
+                <TextBlock Text="Cue Out (Inicio Crossfade Seg):" FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,0,0,2"/>
+                <TextBox Text="{Binding CueOutSeconds, StringFormat='{}{0:0.00}', UpdateSourceTrigger=PropertyChanged}" Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Default}" Padding="5" Margin="0,0,0,10"/>
 
-                <TextBlock Text="End Cue (Fin Recorte Seg):" FontSize="11" Foreground="#8A99AD" Margin="0,0,0,2"/>
-                <TextBox Text="{Binding EndCueSeconds, StringFormat='{}{0:0.00}', UpdateSourceTrigger=PropertyChanged}" Background="#0B0D14" Foreground="#FFFFFF" BorderBrush="#262D3D" Padding="5"/>
+                <TextBlock Text="End Cue (Fin Recorte Seg):" FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,0,0,2"/>
+                <TextBox Text="{Binding EndCueSeconds, StringFormat='{}{0:0.00}', UpdateSourceTrigger=PropertyChanged}" Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Default}" Padding="5"/>
             </StackPanel>
         </Grid>
 
         <!-- BOTONES GUARDAR Y CANCELAR -->
         <UniformGrid Grid.Row="2" Columns="2" Margin="0,15,0,0" Height="36">
-            <Button Click="OnSaveClick" Content="GUARDAR MARCAS" Background="#00C853" Foreground="#FFFFFF" FontWeight="Bold" Margin="0,0,5,0"/>
-            <Button Click="OnCancelClick" Content="CANCELAR" Background="#1E2330" Foreground="#FFFFFF" FontWeight="Bold" Margin="5,0,0,0"/>
+            <Button Click="OnSaveClick" Content="GUARDAR MARCAS" Background="{DynamicResource Brush.Accent.Play}" Foreground="{DynamicResource Brush.Text.High}" FontWeight="Bold" Margin="0,0,5,0"/>
+            <Button Click="OnCancelClick" Content="CANCELAR" Background="{DynamicResource Brush.Surface.Raised}" Foreground="{DynamicResource Brush.Text.High}" FontWeight="Bold" Margin="5,0,0,0"/>
         </UniformGrid>
     </Grid>
 </Window>

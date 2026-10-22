@@ -1,0 +1,75 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- ======================================================================
+         TEMA · Cyan Broadcast
+         Azul marino profundo con turquesa. Pensado para cabinas con luz
+         indirecta: superficies mas claras que Studio Dark Neon.
+         ====================================================================== -->
+
+    <!-- Superficies -->
+    <SolidColorBrush x:Key="Brush.Surface.Base" Color="#0A192F" />
+    <SolidColorBrush x:Key="Brush.Surface.Deep" Color="#071323" />
+    <SolidColorBrush x:Key="Brush.Surface.Inset" Color="#050E1B" />
+    <SolidColorBrush x:Key="Brush.Surface.Panel" Color="#0E2138" />
+    <SolidColorBrush x:Key="Brush.Surface.Card" Color="#112240" />
+    <SolidColorBrush x:Key="Brush.Surface.Raised" Color="#16304F" />
+    <SolidColorBrush x:Key="Brush.Surface.Header" Color="#132C4A" />
+    <SolidColorBrush x:Key="Brush.Surface.Hover" Color="#1D3B5C" />
+    <SolidColorBrush x:Key="Brush.Surface.Pressed" Color="#0A1A2E" />
+    <SolidColorBrush x:Key="Brush.Surface.Track" Color="#10263F" />
+    <SolidColorBrush x:Key="Brush.Surface.GlowBorder" Color="#0D2035" />
+    <SolidColorBrush x:Key="Brush.Surface.PanelAlt" Color="#102638" />
+    <SolidColorBrush x:Key="Brush.Surface.CardAlt" Color="#143050" />
+    <SolidColorBrush x:Key="Brush.Surface.RaisedAlt" Color="#17395C" />
+    <SolidColorBrush x:Key="Brush.Surface.BaseAlt" Color="#081426" />
+    <SolidColorBrush x:Key="Brush.Surface.FooterButton" Color="#16334F" />
+    <SolidColorBrush x:Key="Brush.Surface.DangerSoft" Color="#4A2233" />
+    <SolidColorBrush x:Key="Brush.Surface.WarnBadge" Color="#12283A" />
+    <SolidColorBrush x:Key="Brush.Surface.Placeholder" Color="#4E6478" />
+
+    <!-- Bordes -->
+    <SolidColorBrush x:Key="Brush.Border.Default" Color="#1E3A5C" />
+    <SolidColorBrush x:Key="Brush.Border.Strong" Color="#274A70" />
+    <SolidColorBrush x:Key="Brush.Border.Subtle" Color="#16304C" />
+    <SolidColorBrush x:Key="Brush.Border.Highlight" Color="#35597F" />
+    <SolidColorBrush x:Key="Brush.Border.Header" Color="#22456A" />
+    <SolidColorBrush x:Key="Brush.Border.Alt" Color="#2C5480" />
+
+    <!-- Texto -->
+    <SolidColorBrush x:Key="Brush.Text.High" Color="#EAFBFF" />
+    <SolidColorBrush x:Key="Brush.Text.Default" Color="#C7E3F2" />
+    <SolidColorBrush x:Key="Brush.Text.Secondary" Color="#96BACE" />
+    <SolidColorBrush x:Key="Brush.Text.Muted" Color="#A5C4D6" />
+    <SolidColorBrush x:Key="Brush.Text.Faint" Color="#7C9DB4" />
+    <SolidColorBrush x:Key="Brush.Text.MutedAlt" Color="#89A9BE" />
+    <SolidColorBrush x:Key="Brush.Text.Alt" Color="#B6D4E3" />
+    <SolidColorBrush x:Key="Brush.Text.AltHigh" Color="#EAF7FF" />
+    <SolidColorBrush x:Key="Brush.Text.OnAccent" Color="#04212B" />
+
+    <!-- Acentos -->
+    <SolidColorBrush x:Key="Brush.Accent" Color="#64FFDA" />
+    <SolidColorBrush x:Key="Brush.Accent.Success" Color="#00E5A0" />
+    <SolidColorBrush x:Key="Brush.Accent.Play" Color="#00C9A7" />
+    <SolidColorBrush x:Key="Brush.Accent.Warn" Color="#FFD166" />
+    <SolidColorBrush x:Key="Brush.Accent.WarnStrong" Color="#FFC14D" />
+    <SolidColorBrush x:Key="Brush.Accent.Orange" Color="#FF9E64" />
+    <SolidColorBrush x:Key="Brush.Accent.OrangeDeep" Color="#FF8A3D" />
+    <SolidColorBrush x:Key="Brush.Accent.Danger" Color="#FF5C7A" />
+    <SolidColorBrush x:Key="Brush.Accent.DangerSoft" Color="#FF8FA3" />
+    <SolidColorBrush x:Key="Brush.Accent.Stop" Color="#C81E4A" />
+    <SolidColorBrush x:Key="Brush.Accent.Pink" Color="#FF6FA5" />
+    <SolidColorBrush x:Key="Brush.Accent.Info" Color="#22D3EE" />
+    <SolidColorBrush x:Key="Brush.Accent.Cue" Color="#3B82F6" />
+    <SolidColorBrush x:Key="Brush.Accent.CueStrong" Color="#60A5FA" />
+    <SolidColorBrush x:Key="Brush.Accent.Purple" Color="#9B8CFF" />
+    <SolidColorBrush x:Key="Brush.Accent.Teal" Color="#0E7490" />
+    <SolidColorBrush x:Key="Brush.Accent.Coral" Color="#FF8FA3" />
+    <SolidColorBrush x:Key="Brush.Selection.Deep" Color="#0B4F6C" />
+
+
+    <!-- Colores de resplandor de deck -->
+    <Color x:Key="Color.Glow.A">#64FFDA</Color>
+    <Color x:Key="Color.Glow.B">#9B8CFF</Color>
+
+</ResourceDictionary>

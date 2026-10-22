@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -12,6 +13,31 @@ namespace quasar_radio
             InitializeComponent();
             this.DataContext = viewModel;
             UpdateUserDisplay();
+        }
+
+        /// <summary>
+        /// Unica ventana que puede apagar la aplicacion (ShutdownMode.OnMainWindowClose).
+        /// Cerrar un modulo no cierra Quasar; cerrar Quasar con aire activo si pregunta.
+        /// </summary>
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            if (DataContext is MainViewModel vm && vm.IsAirActive())
+            {
+                var answer = MessageBox.Show(
+                    "Hay reproducción, micrófono, grabación o streaming en marcha.\n\n¿Cerrar Quasar Radio de todos modos?",
+                    "Aire activo",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Warning,
+                    MessageBoxResult.No);
+
+                if (answer != MessageBoxResult.Yes)
+                {
+                    e.Cancel = true;
+                    return;
+                }
+            }
+
+            base.OnClosing(e);
         }
 
         private void UpdateUserDisplay()
@@ -29,20 +55,13 @@ namespace quasar_radio
 
         private void OnManageUsersClick(object sender, RoutedEventArgs e)
         {
-            if (!App.Auth.IsAuthorized(UserRole.Admin))
-            {
-                var loginWindow = new LoginWindow(App.Auth) { Owner = this };
-                var dialogResult = loginWindow.ShowDialog();
+            var navigator = App.Services.GetRequiredService<IModuleNavigator>();
+            if (!navigator.EnsureAdmin()) return;
 
-                if (dialogResult != true || !App.Auth.IsAuthorized(UserRole.Admin))
-                {
-                    return;
-                }
-            }
-
+            // Refresca IsAdmin en los comandos antes de abrir: la ventana de usuarios
+            // ya no es modal, asi que lo que cambie aqui se ve en la consola al momento.
             UpdateUserDisplay();
-            new UserManagementWindow(App.Auth) { Owner = this }.ShowDialog();
-            UpdateUserDisplay();
+            navigator.Open(ModuleKey.Users);
         }
 
         private void OnLogoutClick(object sender, RoutedEventArgs e)

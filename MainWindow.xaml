@@ -4,176 +4,11 @@
         xmlns:local="clr-namespace:quasar_radio"
         Title="Quasar Radio Pro v3.0 - Suite Radial de Emisión &amp; Automatización" Height="900" Width="1440"
         WindowStartupLocation="CenterScreen"
-        Background="{Binding WindowBackground}" Foreground="#E0E6ED">
+        local:StudioKeys.CartWall="True"
+        Background="{DynamicResource Brush.Surface.Base}" Foreground="{DynamicResource Brush.Text.Default}">
 
-    <Window.InputBindings>
-        <KeyBinding Key="F1" Command="{Binding CartWallViewModel.TriggerCartPadCommand}" CommandParameter="1"/>
-        <KeyBinding Key="F2" Command="{Binding CartWallViewModel.TriggerCartPadCommand}" CommandParameter="2"/>
-        <KeyBinding Key="F3" Command="{Binding CartWallViewModel.TriggerCartPadCommand}" CommandParameter="3"/>
-        <KeyBinding Key="F4" Command="{Binding CartWallViewModel.TriggerCartPadCommand}" CommandParameter="4"/>
-        <KeyBinding Key="F5" Command="{Binding CartWallViewModel.TriggerCartPadCommand}" CommandParameter="5"/>
-        <KeyBinding Key="F6" Command="{Binding CartWallViewModel.TriggerCartPadCommand}" CommandParameter="6"/>
-        <KeyBinding Key="F7" Command="{Binding CartWallViewModel.TriggerCartPadCommand}" CommandParameter="7"/>
-        <KeyBinding Key="F8" Command="{Binding CartWallViewModel.TriggerCartPadCommand}" CommandParameter="8"/>
-        <KeyBinding Key="F9" Command="{Binding CartWallViewModel.TriggerCartPadCommand}" CommandParameter="9"/>
-        <KeyBinding Key="F10" Command="{Binding CartWallViewModel.TriggerCartPadCommand}" CommandParameter="10"/>
-        <KeyBinding Key="F11" Command="{Binding CartWallViewModel.TriggerCartPadCommand}" CommandParameter="11"/>
-        <KeyBinding Key="F12" Command="{Binding CartWallViewModel.TriggerCartPadCommand}" CommandParameter="12"/>
-    </Window.InputBindings>
+    <!-- F1..F12 -> pads 1..12: ver StudioKeys.cs, declarada igual en cada ventana de modulo. -->
 
-    <Window.Resources>
-        <Style TargetType="Button" x:Key="StudioButtonStyle">
-            <Setter Property="Background" Value="#1E2330"/>
-            <Setter Property="Foreground" Value="#FFFFFF"/>
-            <Setter Property="FontSize" Value="12"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="Padding" Value="8,5"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="BorderBrush" Value="#2D3548"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}" 
-                                BorderBrush="{TemplateBinding BorderBrush}" 
-                                BorderThickness="{TemplateBinding BorderThickness}" 
-                                CornerRadius="5" Padding="{TemplateBinding Padding}">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#2A3245"/>
-                                <Setter Property="BorderBrush" Value="#00B0FF"/>
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter Property="Background" Value="#151922"/>
-                            </Trigger>
-                            <Trigger Property="IsEnabled" Value="False">
-                                <Setter Property="Opacity" Value="0.4"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <Style TargetType="Button" x:Key="PlayButtonStyle" BasedOn="{StaticResource StudioButtonStyle}">
-            <Setter Property="Background" Value="#00C853"/>
-            <Setter Property="BorderBrush" Value="#00E676"/>
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#00E676"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-
-        <Style TargetType="Button" x:Key="StopButtonStyle" BasedOn="{StaticResource StudioButtonStyle}">
-            <Setter Property="Background" Value="#D50000"/>
-            <Setter Property="BorderBrush" Value="#FF1744"/>
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#FF1744"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-
-        <Style TargetType="Button" x:Key="NextButtonStyle" BasedOn="{StaticResource StudioButtonStyle}">
-            <Setter Property="Background" Value="#2979FF"/>
-            <Setter Property="BorderBrush" Value="#448AFF"/>
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#448AFF"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-
-        <Style TargetType="Button" x:Key="CommercialButtonStyle" BasedOn="{StaticResource StudioButtonStyle}">
-            <Setter Property="Background" Value="#FF6D00"/>
-            <Setter Property="BorderBrush" Value="#FF9100"/>
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#FF9100"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-
-        <Style TargetType="Button" x:Key="MicButtonStyle" BasedOn="{StaticResource StudioButtonStyle}">
-            <Setter Property="Background" Value="{Binding MicButtonColor}"/>
-            <Setter Property="BorderBrush" Value="#FF1744"/>
-        </Style>
-
-        <Style x:Key="DeckGlowBorderStyle" TargetType="Border">
-            <Setter Property="BorderBrush" Value="#262D3D"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Background" Value="#111722"/>
-            <Setter Property="Effect">
-                <Setter.Value>
-                    <DropShadowEffect BlurRadius="0" ShadowDepth="0" Opacity="0" Color="#00E5FF"/>
-                </Setter.Value>
-            </Setter>
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding DeckA_IsActive}" Value="True">
-                    <Setter Property="BorderBrush" Value="#00E5FF"/>
-                    <Setter Property="Effect">
-                        <Setter.Value>
-                            <DropShadowEffect BlurRadius="18" ShadowDepth="0" Opacity="0.85" Color="#00E5FF"/>
-                        </Setter.Value>
-                    </Setter>
-                </DataTrigger>
-                <DataTrigger Binding="{Binding DeckB_IsActive}" Value="True">
-                    <Setter Property="BorderBrush" Value="#A855F7"/>
-                    <Setter Property="Effect">
-                        <Setter.Value>
-                            <DropShadowEffect BlurRadius="18" ShadowDepth="0" Opacity="0.85" Color="#A855F7"/>
-                        </Setter.Value>
-                    </Setter>
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
-
-        <Style x:Key="DeckAActiveChipStyle" TargetType="Border">
-            <Setter Property="Background" Value="#1E2A37"/>
-            <Setter Property="BorderBrush" Value="#2A3A4D"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Effect">
-                <Setter.Value>
-                    <DropShadowEffect BlurRadius="8" ShadowDepth="0" Opacity="0.25" Color="#00E5FF"/>
-                </Setter.Value>
-            </Setter>
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding DeckA_IsActive}" Value="True">
-                    <Setter Property="Background" Value="#00B0FF"/>
-                    <Setter Property="BorderBrush" Value="#7DE7FF"/>
-                    <Setter Property="Effect">
-                        <Setter.Value>
-                            <DropShadowEffect BlurRadius="18" ShadowDepth="0" Opacity="0.9" Color="#00E5FF"/>
-                        </Setter.Value>
-                    </Setter>
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
-
-        <Style x:Key="DeckBActiveChipStyle" TargetType="Border">
-            <Setter Property="Background" Value="#2B213F"/>
-            <Setter Property="BorderBrush" Value="#5F4A73"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Effect">
-                <Setter.Value>
-                    <DropShadowEffect BlurRadius="8" ShadowDepth="0" Opacity="0.25" Color="#A855F7"/>
-                </Setter.Value>
-            </Setter>
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding DeckB_IsActive}" Value="True">
-                    <Setter Property="Background" Value="#8A3FFC"/>
-                    <Setter Property="BorderBrush" Value="#D8B4FF"/>
-                    <Setter Property="Effect">
-                        <Setter.Value>
-                            <DropShadowEffect BlurRadius="18" ShadowDepth="0" Opacity="0.9" Color="#A855F7"/>
-                        </Setter.Value>
-                    </Setter>
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
-    </Window.Resources>
 
     <Grid Margin="12">
         <Grid.RowDefinitions>
@@ -184,7 +19,7 @@
         </Grid.RowDefinitions>
 
         <!-- ================= PANEL SUPERIOR / HEADER ================= -->
-        <Border Grid.Row="0" Background="{Binding CardBackground}" CornerRadius="8" Padding="12,8" Margin="0,0,0,12" BorderBrush="#262D3D" BorderThickness="1" DataContext="{Binding ThemeViewModel}">
+        <Border Grid.Row="0" Background="{DynamicResource Brush.Surface.Card}" CornerRadius="8" Padding="12,8" Margin="0,0,0,12" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1" DataContext="{Binding ThemeViewModel}">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
@@ -213,7 +48,7 @@
                             </Image.Style>
                         </Image>
 
-                        <Border Width="12" Height="12" CornerRadius="6" Background="{Binding AccentColor}" Margin="0,0,10,0">
+                        <Border Width="12" Height="12" CornerRadius="6" Background="{DynamicResource Brush.Accent.Success}" Margin="0,0,10,0">
                             <Border.Style>
                                 <Style TargetType="Border">
                                     <Style.Triggers>
@@ -221,34 +56,34 @@
                                             <Setter Property="Visibility" Value="Collapsed"/>
                                         </DataTrigger>
                                         <DataTrigger Binding="{Binding DataContext.AudioPlayerViewModel.IsPlaying, RelativeSource={RelativeSource AncestorType=Window}}" Value="False">
-                                            <Setter Property="Background" Value="#555555"/>
+                                            <Setter Property="Background" Value="{DynamicResource Brush.Surface.Placeholder}"/>
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
                             </Border.Style>
                         </Border>
 
-                        <TextBlock Text="QUASAR RADIO" FontSize="18" FontWeight="Bold" Foreground="#FFFFFF" VerticalAlignment="Center"/>
-                        <TextBlock Text="PRO v3.0" FontSize="12" FontWeight="Bold" Foreground="#00B0FF" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                        <TextBlock Text="QUASAR RADIO" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.High}" VerticalAlignment="Center"/>
+                        <TextBlock Text="PRO v3.0" FontSize="12" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent.Info}" VerticalAlignment="Center" Margin="5,0,0,0"/>
                     </StackPanel>
                 </Button>
 
                 <!-- BADGES ESTADO: REPRODUCIENDO / MIC LIVE / STREAM LIVE -->
                 <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                    <Border Background="#00E676" CornerRadius="4" Padding="10,3" Margin="5,0">
+                    <Border Background="{DynamicResource Brush.Accent.Success}" CornerRadius="4" Padding="10,3" Margin="5,0">
                         <Border.Style>
                             <Style TargetType="Border">
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding DataContext.AudioPlayerViewModel.IsPlaying, RelativeSource={RelativeSource AncestorType=Window}}" Value="False">
-                                        <Setter Property="Background" Value="#262D3D"/>
+                                        <Setter Property="Background" Value="{DynamicResource Brush.Border.Default}"/>
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
                         </Border.Style>
-                        <TextBlock Text="REPRODUCIENDO" FontSize="11" FontWeight="Bold" Foreground="#FFFFFF"/>
+                        <TextBlock Text="REPRODUCIENDO" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.High}"/>
                     </Border>
 
-                    <Border Background="#FF1744" CornerRadius="4" Padding="10,3" Margin="5,0">
+                    <Border Background="{DynamicResource Brush.Accent.Danger}" CornerRadius="4" Padding="10,3" Margin="5,0">
                         <Border.Style>
                             <Style TargetType="Border">
                                 <Setter Property="Visibility" Value="Collapsed"/>
@@ -259,10 +94,10 @@
                                 </Style.Triggers>
                             </Style>
                         </Border.Style>
-                        <Button Content="AL AIRE" Background="Transparent" Foreground="#FFFFFF" FontSize="11" FontWeight="Bold" BorderThickness="0" Padding="0"/>
+                        <Button Content="AL AIRE" Background="Transparent" Foreground="{DynamicResource Brush.Text.High}" FontSize="11" FontWeight="Bold" BorderThickness="0" Padding="0"/>
                     </Border>
 
-                    <Border Background="#D50000" CornerRadius="4" Padding="10,3" Margin="5,0">
+                    <Border Background="{DynamicResource Brush.Accent.Stop}" CornerRadius="4" Padding="10,3" Margin="5,0">
                         <Border.Style>
                             <Style TargetType="Border">
                                 <Setter Property="Visibility" Value="Collapsed"/>
@@ -273,10 +108,10 @@
                                 </Style.Triggers>
                             </Style>
                         </Border.Style>
-                        <TextBlock Text="🎤 MIC LIVE" FontSize="11" FontWeight="Bold" Foreground="#FFFFFF"/>
+                        <TextBlock Text="🎤 MIC LIVE" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.High}"/>
                     </Border>
 
-                    <Border Background="#00E5FF" CornerRadius="4" Padding="10,3" Margin="5,0">
+                    <Border Background="{DynamicResource Brush.Accent}" CornerRadius="4" Padding="10,3" Margin="5,0">
                         <Border.Style>
                             <Style TargetType="Border">
                                 <Setter Property="Visibility" Value="Collapsed"/>
@@ -287,29 +122,29 @@
                                 </Style.Triggers>
                             </Style>
                         </Border.Style>
-                        <TextBlock Text="📡 STREAM LIVE" FontSize="11" FontWeight="Bold" Foreground="#000000"/>
+                        <TextBlock Text="📡 STREAM LIVE" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.OnAccent}"/>
                     </Border>
                 </StackPanel>
 
                 <!-- SELECTOR DE TEMAS -->
                 <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,10,0">
-                    <TextBlock Text="Tema:" FontSize="11" Foreground="#8A99AD" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                    <TextBlock Text="Tema:" FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}" VerticalAlignment="Center" Margin="0,0,4,0"/>
                     <ComboBox ItemsSource="{Binding AvailableThemes}" SelectedItem="{Binding SelectedTheme}" Width="130" Height="26" FontSize="11" IsEnabled="{Binding DataContext.IsAdmin, RelativeSource={RelativeSource AncestorType=Window}}"/>
                 </StackPanel>
 
                 <!-- BOTÓN ANUNCIAR HORA -->
                 <Button Grid.Column="3" Command="{Binding DataContext.AnnounceTimeCommand, RelativeSource={RelativeSource AncestorType=Window}}" Style="{StaticResource StudioButtonStyle}" Margin="0,0,10,0" Padding="8,4">
-                    <TextBlock Text="🕒 HORA" FontWeight="Bold" Foreground="#00E5FF"/>
+                    <TextBlock Text="🕒 HORA" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent}"/>
                 </Button>
 
                 <!-- BOTÓN GESTIÓN DE LIBRERÍA -->
-                <Button Grid.Column="4" Command="{Binding DataContext.LibraryViewModel.OpenLibraryManagementCommand, RelativeSource={RelativeSource AncestorType=Window}}" Style="{StaticResource StudioButtonStyle}" Margin="0,0,10,0" Padding="8,4" Background="#00B0FF" BorderBrush="#00E5FF">
-                    <TextBlock Text="🎵 LIBRERÍA" FontWeight="Bold" Foreground="#FFFFFF"/>
+                <Button Grid.Column="4" Command="{Binding DataContext.LibraryViewModel.OpenLibraryManagementCommand, RelativeSource={RelativeSource AncestorType=Window}}" Style="{StaticResource StudioButtonStyle}" Margin="0,0,10,0" Padding="8,4" Background="{DynamicResource Brush.Accent.Info}" BorderBrush="{DynamicResource Brush.Accent}">
+                    <TextBlock Text="🎵 LIBRERÍA" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.High}"/>
                 </Button>
 
                 <!-- CUENTA REGRESIVA PRÓXIMA TANDA -->
-                <Border Grid.Column="5" Background="#1A1800" CornerRadius="6" Padding="10,4" Margin="0,0,10,0" BorderBrush="#FFD600" BorderThickness="1">
-                    <TextBlock Text="{Binding DataContext.NextCommercialCountdown, RelativeSource={RelativeSource AncestorType=Window}}" FontSize="11" FontWeight="Bold" Foreground="#FFEA00" VerticalAlignment="Center"/>
+                <Border Grid.Column="5" Background="{DynamicResource Brush.Surface.WarnBadge}" CornerRadius="6" Padding="10,4" Margin="0,0,10,0" BorderBrush="{DynamicResource Brush.Accent.WarnStrong}" BorderThickness="1">
+                    <TextBlock Text="{Binding DataContext.NextCommercialCountdown, RelativeSource={RelativeSource AncestorType=Window}}" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent.Warn}" VerticalAlignment="Center"/>
                 </Border>
 
                 <!-- BOTÓN AUTO / MANUAL -->
@@ -318,8 +153,8 @@
                 </Button>
 
                 <!-- RELOJ DIGITAL DE ESTUDIO -->
-                <Border Grid.Column="7" Background="#0B0D14" CornerRadius="6" Padding="12,3" BorderBrush="#1F2636" BorderThickness="1">
-                    <TextBlock Text="{Binding DataContext.StudioClock, RelativeSource={RelativeSource AncestorType=Window}}" FontSize="22" FontFamily="Consolas, Courier New" FontWeight="Bold" Foreground="{Binding AccentColor}" VerticalAlignment="Center"/>
+                <Border Grid.Column="7" Background="{DynamicResource Brush.Surface.Deep}" CornerRadius="6" Padding="12,3" BorderBrush="{DynamicResource Brush.Border.Subtle}" BorderThickness="1">
+                    <TextBlock Text="{Binding DataContext.StudioClock, RelativeSource={RelativeSource AncestorType=Window}}" FontSize="22" FontFamily="{StaticResource Sys.Font.Clock}" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent.Success}" VerticalAlignment="Center"/>
                 </Border>
             </Grid>
         </Border>
@@ -345,25 +180,25 @@
 
                     <DockPanel Grid.Row="0">
                         <Border DockPanel.Dock="Left" Style="{StaticResource DeckAActiveChipStyle}" CornerRadius="4" Padding="6,2" Margin="0,0,8,0">
-                            <TextBlock Text="DECK A" FontSize="11" FontWeight="Bold" Foreground="#FFFFFF"/>
+                            <TextBlock Text="DECK A" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.High}"/>
                         </Border>
                     </DockPanel>
 
-                    <Border Grid.Row="1" Background="#0D1320" BorderBrush="#53D5FF" BorderThickness="1.5" CornerRadius="6" Padding="8,7" Margin="0,8,0,4">
+                    <Border Grid.Row="1" Background="{DynamicResource Brush.DeckA.Surface}" BorderBrush="{DynamicResource Brush.DeckA.Border}" BorderThickness="1.5" CornerRadius="6" Padding="8,7" Margin="0,8,0,4">
                         <Border.Style>
                             <Style TargetType="Border">
-                                <Setter Property="Background" Value="#0D1320"/>
-                                <Setter Property="BorderBrush" Value="#53D5FF"/>
+                                <Setter Property="Background" Value="{DynamicResource Brush.DeckA.Surface}"/>
+                                <Setter Property="BorderBrush" Value="{DynamicResource Brush.DeckA.Border}"/>
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding DeckA_IsActive}" Value="True">
-                                        <Setter Property="Background" Value="#0E1E2F"/>
-                                        <Setter Property="BorderBrush" Value="#53D5FF"/>
+                                        <Setter Property="Background" Value="{DynamicResource Brush.DeckA.Hover}"/>
+                                        <Setter Property="BorderBrush" Value="{DynamicResource Brush.DeckA.Border}"/>
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
                         </Border.Style>
                         <Border.Effect>
-                            <DropShadowEffect Color="#2ED5FF" BlurRadius="14" ShadowDepth="0" Opacity="0.7"/>
+                            <DropShadowEffect Color="{DynamicResource Color.Glow.Card.A}" BlurRadius="14" ShadowDepth="0" Opacity="0.7"/>
                         </Border.Effect>
                         <Border ClipToBounds="True" CornerRadius="4">
                             <Grid>
@@ -372,7 +207,7 @@
                                     <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
 
-                                <TextBlock Grid.Row="0" Text="{Binding DeckA_Title}" FontSize="24" FontWeight="Bold" Foreground="#F4FBFF" VerticalAlignment="Center" ToolTip="{Binding DeckA_Title}" TextTrimming="CharacterEllipsis">
+                                <TextBlock Grid.Row="0" Text="{Binding DeckA_Title}" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource Brush.DeckA.Title}" VerticalAlignment="Center" ToolTip="{Binding DeckA_Title}" TextTrimming="CharacterEllipsis">
                                     <TextBlock.RenderTransform>
                                         <TranslateTransform/>
                                     </TextBlock.RenderTransform>
@@ -393,19 +228,19 @@
                                     </TextBlock.Style>
                                 </TextBlock>
 
-                                <TextBlock Grid.Row="1" Text="{Binding DeckA_RemainingFormatted}" Foreground="#FFEA00" FontSize="12" FontWeight="Bold" FontFamily="Consolas" HorizontalAlignment="Right" Margin="0,6,0,0"/>
+                                <TextBlock Grid.Row="1" Text="{Binding DeckA_RemainingFormatted}" Foreground="{DynamicResource Brush.Accent.Warn}" FontSize="12" FontWeight="Bold" FontFamily="{StaticResource Sys.Font.Clock}" HorizontalAlignment="Right" Margin="0,6,0,0"/>
                             </Grid>
                         </Border>
                     </Border>
 
-                    <Border Grid.Row="2" Background="#080B12" CornerRadius="4" Padding="4,4" Margin="0,0,0,4" BorderBrush="#384B63" BorderThickness="1.2">
+                    <Border Grid.Row="2" Background="{DynamicResource Brush.Surface.Inset}" CornerRadius="4" Padding="4,4" Margin="0,0,0,4" BorderBrush="{DynamicResource Brush.Border.Highlight}" BorderThickness="1.2">
                         <local:LedVuMeterControl Value="{Binding DeckA_VuLevel, Mode=OneWay}" SegmentCount="18" Height="20" Width="220"/>
                     </Border>
 
-                    <ProgressBar Grid.Row="3" Value="{Binding DeckA_Progress, Mode=OneWay}" Height="10" Background="#0B0D14" Foreground="#00E676" BorderThickness="0" Margin="0,4"/>
+                    <ProgressBar Grid.Row="3" Value="{Binding DeckA_Progress, Mode=OneWay}" Height="10" Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Accent.Success}" BorderThickness="0" Margin="0,4"/>
 
                     <StackPanel Grid.Row="4" Margin="0,2,0,0">
-                        <Border Background="#0B0D14" CornerRadius="4" Padding="3,2" Margin="0,0,0,2">
+                        <Border Background="{DynamicResource Brush.Surface.Deep}" CornerRadius="4" Padding="3,2" Margin="0,0,0,2">
                             <Grid Height="24">
                                 <ItemsControl ItemsSource="{Binding DeckA_Spectrum}">
                                     <ItemsControl.ItemsPanel>
@@ -416,14 +251,14 @@
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
                                             <Grid Height="24" Margin="1,0">
-                                                <Border Background="#10212B" CornerRadius="2"/>
-                                                <Border Height="{Binding}" Background="#00E5FF" VerticalAlignment="Bottom" CornerRadius="2"/>
+                                                <Border Background="{DynamicResource Brush.DeckA.Legend}" CornerRadius="2"/>
+                                                <Border Height="{Binding}" Background="{DynamicResource Brush.Accent}" VerticalAlignment="Bottom" CornerRadius="2"/>
                                             </Grid>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
                             <UniformGrid Columns="18" Height="26" Visibility="Collapsed">
-                                <Rectangle Fill="#00E5FF" Width="4" RadiusX="2" RadiusY="2" Opacity="0.25" Margin="0,0,1,0">
+                                <Rectangle Fill="{DynamicResource Brush.Accent}" Width="4" RadiusX="2" RadiusY="2" Opacity="0.25" Margin="0,0,1,0">
                                     <Rectangle.Style>
                                         <Style TargetType="Rectangle">
                                             <Setter Property="Height" Value="8"/>
@@ -441,7 +276,7 @@
                                         </Style>
                                     </Rectangle.Style>
                                 </Rectangle>
-                                <Rectangle Fill="#00E5FF" Width="4" RadiusX="2" RadiusY="2" Opacity="0.35" Margin="0,0,1,0">
+                                <Rectangle Fill="{DynamicResource Brush.Accent}" Width="4" RadiusX="2" RadiusY="2" Opacity="0.35" Margin="0,0,1,0">
                                     <Rectangle.Style>
                                         <Style TargetType="Rectangle">
                                             <Setter Property="Height" Value="10"/>
@@ -459,7 +294,7 @@
                                         </Style>
                                     </Rectangle.Style>
                                 </Rectangle>
-                                <Rectangle Fill="#00E5FF" Width="4" RadiusX="2" RadiusY="2" Opacity="0.45" Margin="0,0,1,0">
+                                <Rectangle Fill="{DynamicResource Brush.Accent}" Width="4" RadiusX="2" RadiusY="2" Opacity="0.45" Margin="0,0,1,0">
                                     <Rectangle.Style>
                                         <Style TargetType="Rectangle">
                                             <Setter Property="Height" Value="12"/>
@@ -477,7 +312,7 @@
                                         </Style>
                                     </Rectangle.Style>
                                 </Rectangle>
-                                <Rectangle Fill="#00E5FF" Width="4" RadiusX="2" RadiusY="2" Opacity="0.6" Margin="0,0,1,0">
+                                <Rectangle Fill="{DynamicResource Brush.Accent}" Width="4" RadiusX="2" RadiusY="2" Opacity="0.6" Margin="0,0,1,0">
                                     <Rectangle.Style>
                                         <Style TargetType="Rectangle">
                                             <Setter Property="Height" Value="14"/>
@@ -495,7 +330,7 @@
                                         </Style>
                                     </Rectangle.Style>
                                 </Rectangle>
-                                <Rectangle Fill="#00E5FF" Width="4" RadiusX="2" RadiusY="2" Opacity="0.8" Margin="0,0,1,0">
+                                <Rectangle Fill="{DynamicResource Brush.Accent}" Width="4" RadiusX="2" RadiusY="2" Opacity="0.8" Margin="0,0,1,0">
                                     <Rectangle.Style>
                                         <Style TargetType="Rectangle">
                                             <Setter Property="Height" Value="16"/>
@@ -513,7 +348,7 @@
                                         </Style>
                                     </Rectangle.Style>
                                 </Rectangle>
-                                <Rectangle Fill="#00E5FF" Width="4" RadiusX="2" RadiusY="2" Opacity="1" Margin="0,0,1,0">
+                                <Rectangle Fill="{DynamicResource Brush.Accent}" Width="4" RadiusX="2" RadiusY="2" Opacity="1" Margin="0,0,1,0">
                                     <Rectangle.Style>
                                         <Style TargetType="Rectangle">
                                             <Setter Property="Height" Value="18"/>
@@ -531,7 +366,7 @@
                                         </Style>
                                     </Rectangle.Style>
                                 </Rectangle>
-                                <Rectangle Fill="#00E5FF" Width="4" RadiusX="2" RadiusY="2" Opacity="0.8" Margin="0,0,1,0">
+                                <Rectangle Fill="{DynamicResource Brush.Accent}" Width="4" RadiusX="2" RadiusY="2" Opacity="0.8" Margin="0,0,1,0">
                                     <Rectangle.Style>
                                         <Style TargetType="Rectangle">
                                             <Setter Property="Height" Value="16"/>
@@ -549,7 +384,7 @@
                                         </Style>
                                     </Rectangle.Style>
                                 </Rectangle>
-                                <Rectangle Fill="#00E5FF" Width="4" RadiusX="2" RadiusY="2" Opacity="0.6" Margin="0,0,1,0">
+                                <Rectangle Fill="{DynamicResource Brush.Accent}" Width="4" RadiusX="2" RadiusY="2" Opacity="0.6" Margin="0,0,1,0">
                                     <Rectangle.Style>
                                         <Style TargetType="Rectangle">
                                             <Setter Property="Height" Value="14"/>
@@ -567,7 +402,7 @@
                                         </Style>
                                     </Rectangle.Style>
                                 </Rectangle>
-                                <Rectangle Fill="#00E5FF" Width="4" RadiusX="2" RadiusY="2" Opacity="0.45" Margin="0,0,1,0">
+                                <Rectangle Fill="{DynamicResource Brush.Accent}" Width="4" RadiusX="2" RadiusY="2" Opacity="0.45" Margin="0,0,1,0">
                                     <Rectangle.Style>
                                         <Style TargetType="Rectangle">
                                             <Setter Property="Height" Value="12"/>
@@ -585,7 +420,7 @@
                                         </Style>
                                     </Rectangle.Style>
                                 </Rectangle>
-                                <Rectangle Fill="#00E5FF" Width="4" RadiusX="2" RadiusY="2" Opacity="0.35" Margin="0,0,1,0">
+                                <Rectangle Fill="{DynamicResource Brush.Accent}" Width="4" RadiusX="2" RadiusY="2" Opacity="0.35" Margin="0,0,1,0">
                                     <Rectangle.Style>
                                         <Style TargetType="Rectangle">
                                             <Setter Property="Height" Value="10"/>
@@ -603,7 +438,7 @@
                                         </Style>
                                     </Rectangle.Style>
                                 </Rectangle>
-                                <Rectangle Fill="#00E5FF" Width="4" RadiusX="2" RadiusY="2" Opacity="0.25" Margin="0,0,1,0">
+                                <Rectangle Fill="{DynamicResource Brush.Accent}" Width="4" RadiusX="2" RadiusY="2" Opacity="0.25" Margin="0,0,1,0">
                                     <Rectangle.Style>
                                         <Style TargetType="Rectangle">
                                             <Setter Property="Height" Value="8"/>
@@ -625,7 +460,7 @@
                             </Grid>
                         </Border>
 
-                        <ProgressBar Value="{Binding DeckA_VuLevel, Mode=OneWay}" Maximum="100" Height="7" Background="#0B0D14" Foreground="#00E5FF" BorderThickness="0" Margin="0,0,0,6" Visibility="Collapsed"/>
+                        <ProgressBar Value="{Binding DeckA_VuLevel, Mode=OneWay}" Maximum="100" Height="7" Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Accent}" BorderThickness="0" Margin="0,0,0,6" Visibility="Collapsed"/>
 
                         <UniformGrid Columns="3" Height="28">
                             <Button Command="{Binding DeckAPlayCommand}" Style="{StaticResource PlayButtonStyle}" Margin="0,0,2,0">
@@ -655,25 +490,25 @@
 
                     <DockPanel Grid.Row="0">
                         <Border DockPanel.Dock="Left" Style="{StaticResource DeckBActiveChipStyle}" CornerRadius="4" Padding="6,2" Margin="0,0,8,0">
-                            <TextBlock Text="DECK B" FontSize="11" FontWeight="Bold" Foreground="#FFFFFF"/>
+                            <TextBlock Text="DECK B" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.High}"/>
                         </Border>
                     </DockPanel>
 
-                    <Border Grid.Row="1" Background="#17111D" BorderBrush="#C98BFF" BorderThickness="1.5" CornerRadius="6" Padding="8,7" Margin="0,8,0,4">
+                    <Border Grid.Row="1" Background="{DynamicResource Brush.DeckB.Surface}" BorderBrush="{DynamicResource Brush.DeckB.Border}" BorderThickness="1.5" CornerRadius="6" Padding="8,7" Margin="0,8,0,4">
                         <Border.Style>
                             <Style TargetType="Border">
-                                <Setter Property="Background" Value="#17111D"/>
-                                <Setter Property="BorderBrush" Value="#C98BFF"/>
+                                <Setter Property="Background" Value="{DynamicResource Brush.DeckB.Surface}"/>
+                                <Setter Property="BorderBrush" Value="{DynamicResource Brush.DeckB.Border}"/>
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding DeckB_IsActive}" Value="True">
-                                        <Setter Property="Background" Value="#271B35"/>
-                                        <Setter Property="BorderBrush" Value="#C98BFF"/>
+                                        <Setter Property="Background" Value="{DynamicResource Brush.DeckB.Hover}"/>
+                                        <Setter Property="BorderBrush" Value="{DynamicResource Brush.DeckB.Border}"/>
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
                         </Border.Style>
                         <Border.Effect>
-                            <DropShadowEffect Color="#C77BFF" BlurRadius="14" ShadowDepth="0" Opacity="0.8"/>
+                            <DropShadowEffect Color="{DynamicResource Color.Glow.Card.B}" BlurRadius="14" ShadowDepth="0" Opacity="0.8"/>
                         </Border.Effect>
                         <Border ClipToBounds="True" CornerRadius="4">
                             <Grid>
@@ -682,7 +517,7 @@
                                     <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
 
-                                <TextBlock Grid.Row="0" Text="{Binding DeckB_Title}" FontSize="24" FontWeight="Bold" Foreground="#F4EBFF" VerticalAlignment="Center" ToolTip="{Binding DeckB_Title}" TextTrimming="CharacterEllipsis">
+                                <TextBlock Grid.Row="0" Text="{Binding DeckB_Title}" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource Brush.DeckB.Title}" VerticalAlignment="Center" ToolTip="{Binding DeckB_Title}" TextTrimming="CharacterEllipsis">
                                     <TextBlock.RenderTransform>
                                         <TranslateTransform/>
                                     </TextBlock.RenderTransform>
@@ -703,19 +538,19 @@
                                     </TextBlock.Style>
                                 </TextBlock>
 
-                                <TextBlock Grid.Row="1" Text="{Binding DeckB_RemainingFormatted}" Foreground="#FFEA00" FontSize="12" FontWeight="Bold" FontFamily="Consolas" HorizontalAlignment="Right" Margin="0,6,0,0"/>
+                                <TextBlock Grid.Row="1" Text="{Binding DeckB_RemainingFormatted}" Foreground="{DynamicResource Brush.Accent.Warn}" FontSize="12" FontWeight="Bold" FontFamily="{StaticResource Sys.Font.Clock}" HorizontalAlignment="Right" Margin="0,6,0,0"/>
                             </Grid>
                         </Border>
                     </Border>
 
-                    <Border Grid.Row="2" Background="#080B12" CornerRadius="4" Padding="4,4" Margin="0,0,0,4" BorderBrush="#384B63" BorderThickness="1.2">
+                    <Border Grid.Row="2" Background="{DynamicResource Brush.Surface.Inset}" CornerRadius="4" Padding="4,4" Margin="0,0,0,4" BorderBrush="{DynamicResource Brush.Border.Highlight}" BorderThickness="1.2">
                         <local:LedVuMeterControl Value="{Binding DeckB_VuLevel, Mode=OneWay}" SegmentCount="18" Height="20" Width="220"/>
                     </Border>
 
-                    <ProgressBar Grid.Row="3" Value="{Binding DeckB_Progress, Mode=OneWay}" Height="10" Background="#0B0D14" Foreground="#651FFF" BorderThickness="0" Margin="0,4"/>
+                    <ProgressBar Grid.Row="3" Value="{Binding DeckB_Progress, Mode=OneWay}" Height="10" Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.DeckB.Progress}" BorderThickness="0" Margin="0,4"/>
 
                     <StackPanel Grid.Row="4" Margin="0,2,0,0">
-                        <Border Background="#0B0D14" CornerRadius="4" Padding="3,2" Margin="0,0,0,2">
+                        <Border Background="{DynamicResource Brush.Surface.Deep}" CornerRadius="4" Padding="3,2" Margin="0,0,0,2">
                             <Grid Height="24">
                                 <ItemsControl ItemsSource="{Binding DeckB_Spectrum}">
                                     <ItemsControl.ItemsPanel>
@@ -726,14 +561,14 @@
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
                                             <Grid Height="24" Margin="1,0">
-                                                <Border Background="#25192F" CornerRadius="2"/>
-                                                <Border Height="{Binding}" Background="#A855F7" VerticalAlignment="Bottom" CornerRadius="2"/>
+                                                <Border Background="{DynamicResource Brush.DeckB.Legend}" CornerRadius="2"/>
+                                                <Border Height="{Binding}" Background="{DynamicResource Brush.Accent.Purple}" VerticalAlignment="Bottom" CornerRadius="2"/>
                                             </Grid>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
                             <UniformGrid Columns="18" Height="26" Visibility="Collapsed">
-                                <Rectangle Fill="#A855F7" Width="4" RadiusX="2" RadiusY="2" Opacity="0.25" Margin="0,0,1,0">
+                                <Rectangle Fill="{DynamicResource Brush.Accent.Purple}" Width="4" RadiusX="2" RadiusY="2" Opacity="0.25" Margin="0,0,1,0">
                                     <Rectangle.Style>
                                         <Style TargetType="Rectangle">
                                             <Setter Property="Height" Value="8"/>
@@ -751,7 +586,7 @@
                                         </Style>
                                     </Rectangle.Style>
                                 </Rectangle>
-                                <Rectangle Fill="#A855F7" Width="4" RadiusX="2" RadiusY="2" Opacity="0.35" Margin="0,0,1,0">
+                                <Rectangle Fill="{DynamicResource Brush.Accent.Purple}" Width="4" RadiusX="2" RadiusY="2" Opacity="0.35" Margin="0,0,1,0">
                                     <Rectangle.Style>
                                         <Style TargetType="Rectangle">
                                             <Setter Property="Height" Value="10"/>
@@ -769,7 +604,7 @@
                                         </Style>
                                     </Rectangle.Style>
                                 </Rectangle>
-                                <Rectangle Fill="#A855F7" Width="4" RadiusX="2" RadiusY="2" Opacity="0.45" Margin="0,0,1,0">
+                                <Rectangle Fill="{DynamicResource Brush.Accent.Purple}" Width="4" RadiusX="2" RadiusY="2" Opacity="0.45" Margin="0,0,1,0">
                                     <Rectangle.Style>
                                         <Style TargetType="Rectangle">
                                             <Setter Property="Height" Value="12"/>
@@ -787,7 +622,7 @@
                                         </Style>
                                     </Rectangle.Style>
                                 </Rectangle>
-                                <Rectangle Fill="#A855F7" Width="4" RadiusX="2" RadiusY="2" Opacity="0.6" Margin="0,0,1,0">
+                                <Rectangle Fill="{DynamicResource Brush.Accent.Purple}" Width="4" RadiusX="2" RadiusY="2" Opacity="0.6" Margin="0,0,1,0">
                                     <Rectangle.Style>
                                         <Style TargetType="Rectangle">
                                             <Setter Property="Height" Value="14"/>
@@ -805,7 +640,7 @@
                                         </Style>
                                     </Rectangle.Style>
                                 </Rectangle>
-                                <Rectangle Fill="#A855F7" Width="4" RadiusX="2" RadiusY="2" Opacity="0.8" Margin="0,0,1,0">
+                                <Rectangle Fill="{DynamicResource Brush.Accent.Purple}" Width="4" RadiusX="2" RadiusY="2" Opacity="0.8" Margin="0,0,1,0">
                                     <Rectangle.Style>
                                         <Style TargetType="Rectangle">
                                             <Setter Property="Height" Value="16"/>
@@ -823,7 +658,7 @@
                                         </Style>
                                     </Rectangle.Style>
                                 </Rectangle>
-                                <Rectangle Fill="#A855F7" Width="4" RadiusX="2" RadiusY="2" Opacity="1" Margin="0,0,1,0">
+                                <Rectangle Fill="{DynamicResource Brush.Accent.Purple}" Width="4" RadiusX="2" RadiusY="2" Opacity="1" Margin="0,0,1,0">
                                     <Rectangle.Style>
                                         <Style TargetType="Rectangle">
                                             <Setter Property="Height" Value="18"/>
@@ -841,7 +676,7 @@
                                         </Style>
                                     </Rectangle.Style>
                                 </Rectangle>
-                                <Rectangle Fill="#A855F7" Width="4" RadiusX="2" RadiusY="2" Opacity="0.8" Margin="0,0,1,0">
+                                <Rectangle Fill="{DynamicResource Brush.Accent.Purple}" Width="4" RadiusX="2" RadiusY="2" Opacity="0.8" Margin="0,0,1,0">
                                     <Rectangle.Style>
                                         <Style TargetType="Rectangle">
                                             <Setter Property="Height" Value="16"/>
@@ -859,7 +694,7 @@
                                         </Style>
                                     </Rectangle.Style>
                                 </Rectangle>
-                                <Rectangle Fill="#A855F7" Width="4" RadiusX="2" RadiusY="2" Opacity="0.6" Margin="0,0,1,0">
+                                <Rectangle Fill="{DynamicResource Brush.Accent.Purple}" Width="4" RadiusX="2" RadiusY="2" Opacity="0.6" Margin="0,0,1,0">
                                     <Rectangle.Style>
                                         <Style TargetType="Rectangle">
                                             <Setter Property="Height" Value="14"/>
@@ -877,7 +712,7 @@
                                         </Style>
                                     </Rectangle.Style>
                                 </Rectangle>
-                                <Rectangle Fill="#A855F7" Width="4" RadiusX="2" RadiusY="2" Opacity="0.45" Margin="0,0,1,0">
+                                <Rectangle Fill="{DynamicResource Brush.Accent.Purple}" Width="4" RadiusX="2" RadiusY="2" Opacity="0.45" Margin="0,0,1,0">
                                     <Rectangle.Style>
                                         <Style TargetType="Rectangle">
                                             <Setter Property="Height" Value="12"/>
@@ -895,7 +730,7 @@
                                         </Style>
                                     </Rectangle.Style>
                                 </Rectangle>
-                                <Rectangle Fill="#A855F7" Width="4" RadiusX="2" RadiusY="2" Opacity="0.35" Margin="0,0,1,0">
+                                <Rectangle Fill="{DynamicResource Brush.Accent.Purple}" Width="4" RadiusX="2" RadiusY="2" Opacity="0.35" Margin="0,0,1,0">
                                     <Rectangle.Style>
                                         <Style TargetType="Rectangle">
                                             <Setter Property="Height" Value="10"/>
@@ -913,7 +748,7 @@
                                         </Style>
                                     </Rectangle.Style>
                                 </Rectangle>
-                                <Rectangle Fill="#A855F7" Width="4" RadiusX="2" RadiusY="2" Opacity="0.25" Margin="0,0,1,0">
+                                <Rectangle Fill="{DynamicResource Brush.Accent.Purple}" Width="4" RadiusX="2" RadiusY="2" Opacity="0.25" Margin="0,0,1,0">
                                     <Rectangle.Style>
                                         <Style TargetType="Rectangle">
                                             <Setter Property="Height" Value="8"/>
@@ -935,7 +770,7 @@
                             </Grid>
                         </Border>
 
-                        <ProgressBar Value="{Binding DeckB_VuLevel, Mode=OneWay}" Maximum="100" Height="7" Background="#0B0D14" Foreground="#A855F7" BorderThickness="0" Margin="0,0,0,6" Visibility="Collapsed"/>
+                        <ProgressBar Value="{Binding DeckB_VuLevel, Mode=OneWay}" Maximum="100" Height="7" Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Accent.Purple}" BorderThickness="0" Margin="0,0,0,6" Visibility="Collapsed"/>
 
                         <UniformGrid Columns="3" Height="28">
                             <Button Command="{Binding DeckBPlayCommand}" Style="{StaticResource PlayButtonStyle}" Margin="0,0,2,0">
@@ -953,7 +788,7 @@
             </Border>
 
             <!-- PANEL DE CONTROL MASTER & VUMÉTROS -->
-            <Border Grid.Column="2" Background="{Binding CardBackground}" CornerRadius="8" Padding="12" BorderBrush="#262D3D" BorderThickness="1">
+            <Border Grid.Column="2" Background="{DynamicResource Brush.Surface.Card}" CornerRadius="8" Padding="12" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -975,19 +810,19 @@
 
                     <UniformGrid Grid.Row="1" Columns="3" Height="36" Margin="0,6,0,0">
                         <Button Command="{Binding ToggleMicCommand}" Style="{StaticResource MicButtonStyle}" Margin="0,0,2,0">
-                            <TextBlock Text="🎤 MIC AL AIRE" FontWeight="Bold" FontSize="11" Foreground="#FFFFFF"/>
+                            <TextBlock Text="🎤 MIC AL AIRE" FontWeight="Bold" FontSize="11" Foreground="{DynamicResource Brush.Text.High}"/>
                         </Button>
                         <Button Command="{Binding NextCommand}" Style="{StaticResource NextButtonStyle}" Margin="2,0,2,0">
                             <TextBlock Text="⏭ CROSSFADE" FontWeight="Bold" FontSize="11"/>
                         </Button>
-                        <Button Command="{Binding ToggleSilenceDetectionCommand}" Style="{StaticResource StudioButtonStyle}" Margin="2,0,0,0" Background="#6A1B9A" BorderBrush="#9C27B0">
+                        <Button Command="{Binding ToggleSilenceDetectionCommand}" Style="{StaticResource StudioButtonStyle}" Margin="2,0,0,0" Background="{DynamicResource Brush.Button.Mute.Surface}" BorderBrush="{DynamicResource Brush.Button.Mute.Border}">
                             <TextBlock Text="🔇 SILENCIO" FontWeight="Bold" FontSize="11"/>
                         </Button>
                     </UniformGrid>
 
                     <StackPanel Grid.Row="2" VerticalAlignment="Bottom" Margin="0,8,0,0">
                         <!-- VUMÉTROS ESTÉREO BROADCAST -->
-                        <TextBlock Text="NIVEL DE SALIDA MASTER (VU METER)" FontSize="10" FontWeight="Bold" Foreground="#8A99AD" Margin="0,0,0,2"/>
+                        <TextBlock Text="NIVEL DE SALIDA MASTER (VU METER)" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,0,0,2"/>
                         <Grid Margin="0,2">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
@@ -996,29 +831,29 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
 
-                            <TextBlock Grid.Column="0" Text="L " FontSize="10" FontWeight="Bold" Foreground="#8A99AD" VerticalAlignment="Center"/>
-                            <Border Grid.Column="1" Background="#080B12" CornerRadius="4" Padding="4,4" Margin="0,0,8,0" BorderBrush="#384B63" BorderThickness="1.2">
+                            <TextBlock Grid.Column="0" Text="L " FontSize="10" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.Secondary}" VerticalAlignment="Center"/>
+                            <Border Grid.Column="1" Background="{DynamicResource Brush.Surface.Inset}" CornerRadius="4" Padding="4,4" Margin="0,0,8,0" BorderBrush="{DynamicResource Brush.Border.Highlight}" BorderThickness="1.2">
                                 <local:LedVuMeterControl Value="{Binding VuLeftLevel, Mode=OneWay}" SegmentCount="18" Height="20" Width="180"/>
                             </Border>
 
-                            <TextBlock Grid.Column="2" Text="R " FontSize="10" FontWeight="Bold" Foreground="#8A99AD" VerticalAlignment="Center"/>
-                            <Border Grid.Column="3" Background="#080B12" CornerRadius="4" Padding="4,4" BorderBrush="#384B63" BorderThickness="1.2">
+                            <TextBlock Grid.Column="2" Text="R " FontSize="10" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.Secondary}" VerticalAlignment="Center"/>
+                            <Border Grid.Column="3" Background="{DynamicResource Brush.Surface.Inset}" CornerRadius="4" Padding="4,4" BorderBrush="{DynamicResource Brush.Border.Highlight}" BorderThickness="1.2">
                                 <local:LedVuMeterControl Value="{Binding VuRightLevel, Mode=OneWay}" SegmentCount="18" Height="20" Width="180"/>
                             </Border>
                         </Grid>
 
                         <!-- INDICADOR DE DETECCIÓN DE SILENCIO -->
-                        <Border Background="#0B0D14" CornerRadius="4" Padding="8,4" Margin="0,6,0,0" BorderBrush="#262D3D" BorderThickness="1">
+                        <Border Background="{DynamicResource Brush.Surface.Deep}" CornerRadius="4" Padding="8,4" Margin="0,6,0,0" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
                             <DockPanel>
-                                <TextBlock Text="🔇 DETECTOR SILENCIO" FontSize="10" FontWeight="Bold" Foreground="#8A99AD" DockPanel.Dock="Left" Margin="0,0,8,0"/>
+                                <TextBlock Text="🔇 DETECTOR SILENCIO" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.Secondary}" DockPanel.Dock="Left" Margin="0,0,8,0"/>
                                 <TextBlock Text="{Binding SilenceDetectionStatusText}" FontSize="10" FontWeight="Bold" Foreground="{Binding SilenceStatusColor}" DockPanel.Dock="Right"/>
-                                <ProgressBar Value="{Binding SilenceDetectorLevel, Mode=OneWay}" Maximum="1" Height="4" Background="#1A1E2E" Foreground="{Binding SilenceLevelColor}" DockPanel.Dock="Right" Width="60" Margin="0,0,8,0"/>
+                                <ProgressBar Value="{Binding SilenceDetectorLevel, Mode=OneWay}" Maximum="1" Height="4" Background="{DynamicResource Brush.Surface.Track}" Foreground="{Binding SilenceLevelColor}" DockPanel.Dock="Right" Width="60" Margin="0,0,8,0"/>
                             </DockPanel>
                         </Border>
 
                         <DockPanel Margin="0,4,0,0">
-                            <TextBlock Text="VOLUMEN MASTER" FontSize="10" FontWeight="Bold" Foreground="#8A99AD" DockPanel.Dock="Left"/>
-                            <TextBlock Text="{Binding VolumePercentageText}" FontSize="10" FontWeight="Bold" Foreground="#00B0FF" DockPanel.Dock="Right" HorizontalAlignment="Right"/>
+                            <TextBlock Text="VOLUMEN MASTER" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.Secondary}" DockPanel.Dock="Left"/>
+                            <TextBlock Text="{Binding VolumePercentageText}" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent.Info}" DockPanel.Dock="Right" HorizontalAlignment="Right"/>
                         </DockPanel>
                         <Slider Value="{Binding MasterVolume}" Minimum="0" Maximum="1" TickFrequency="0.05" IsSnapToTickEnabled="True" Margin="0,2,0,0" IsEnabled="{Binding CanOperate}"/>
                     </StackPanel>
@@ -1034,7 +869,7 @@
             </Grid.ColumnDefinitions>
 
             <!-- REJILLA DE EMISIÓN -->
-            <Border Grid.Column="0" Background="{Binding CardBackground}" CornerRadius="8" Padding="12" Margin="0,0,8,0" BorderBrush="#262D3D" BorderThickness="1">
+            <Border Grid.Column="0" Background="{DynamicResource Brush.Surface.Card}" CornerRadius="8" Padding="12" Margin="0,0,8,0" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -1043,7 +878,7 @@
 
                     <!-- TOOLBAR COMPLETA PLAYLIST V3.0 -->
                     <DockPanel Grid.Row="0" Margin="0,0,0,8">
-                        <TextBlock Text="REJILLA DE EMISIÓN" FontSize="13" FontWeight="Bold" Foreground="#FFFFFF" VerticalAlignment="Center" DockPanel.Dock="Left"/>
+                        <TextBlock Text="REJILLA DE EMISIÓN" FontSize="13" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.High}" VerticalAlignment="Center" DockPanel.Dock="Left"/>
                         
                         <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" HorizontalAlignment="Right">
                             <Button Command="{Binding LoadFilesCommand}" Style="{StaticResource StudioButtonStyle}" Content="+ Agregar" Margin="0,0,3,0"/>
@@ -1062,19 +897,19 @@
                     <DataGrid Grid.Row="1" ItemsSource="{Binding Playlist}" SelectedItem="{Binding SelectedTrack}"
                               AllowDrop="True" Drop="OnPlaylistDrop"
                               AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True"
-                              Background="#0B0D14" Foreground="#E0E6ED" RowBackground="#11141F" 
-                              AlternatingRowBackground="#161B26" GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="#1F2636"
-                              BorderThickness="1" BorderBrush="#262D3D" RowHeight="30" SelectionMode="Single">
+                              Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.Default}" RowBackground="{DynamicResource Brush.Surface.Panel}" 
+                              AlternatingRowBackground="{DynamicResource Brush.Surface.Card}" GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="{DynamicResource Brush.Border.Subtle}"
+                              BorderThickness="1" BorderBrush="{DynamicResource Brush.Border.Default}" RowHeight="30" SelectionMode="Single">
                         
                         <DataGrid.Resources>
                             <Style TargetType="DataGridColumnHeader">
-                                <Setter Property="Background" Value="#1A202C"/>
-                                <Setter Property="Foreground" Value="#A0AEC0"/>
+                                <Setter Property="Background" Value="{DynamicResource Brush.Surface.Header}"/>
+                                <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}"/>
                                 <Setter Property="FontWeight" Value="Bold"/>
                                 <Setter Property="Height" Value="28"/>
                                 <Setter Property="Padding" Value="6,0"/>
                                 <Setter Property="BorderThickness" Value="0,0,1,1"/>
-                                <Setter Property="BorderBrush" Value="#2D3748"/>
+                                <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Header}"/>
                             </Style>
                             <Style TargetType="DataGridCell">
                                 <Setter Property="Padding" Value="6,0"/>
@@ -1089,8 +924,8 @@
                                 </Setter>
                                 <Style.Triggers>
                                     <Trigger Property="IsSelected" Value="True">
-                                        <Setter Property="Background" Value="#005599"/>
-                                        <Setter Property="Foreground" Value="#FFFFFF"/>
+                                        <Setter Property="Background" Value="{DynamicResource Brush.Selection.Deep}"/>
+                                        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.High}"/>
                                     </Trigger>
                                 </Style.Triggers>
                             </Style>
@@ -1101,7 +936,7 @@
                             <DataGridTemplateColumn Header="Play" Width="45">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <Button Content="▶" Command="{Binding DataContext.PlayTrackOnIdleDeckCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}" Background="#00E676" Foreground="#FFFFFF" FontSize="12" Padding="4" BorderThickness="0" ToolTip="Cargar y reproducir en deck libre"/>
+                                        <Button Content="▶" Command="{Binding DataContext.PlayTrackOnIdleDeckCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}" Background="{DynamicResource Brush.Accent.Success}" Foreground="{DynamicResource Brush.Text.High}" FontSize="12" Padding="4" BorderThickness="0" ToolTip="Cargar y reproducir en deck libre"/>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
@@ -1113,17 +948,17 @@
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <Border Background="{Binding StatusColor}" CornerRadius="4" Padding="4,2" HorizontalAlignment="Left">
-                                            <TextBlock Text="{Binding StatusText}" Foreground="#FFFFFF" FontWeight="Bold" FontSize="9" HorizontalAlignment="Center"/>
+                                            <TextBlock Text="{Binding StatusText}" Foreground="{DynamicResource Brush.Text.High}" FontWeight="Bold" FontSize="9" HorizontalAlignment="Center"/>
                                         </Border>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
 
-                            <DataGridTextColumn Header="Hora Salida" Binding="{Binding EstimatedPlayTimeFormatted}" Width="80" FontFamily="Consolas"/>
+                            <DataGridTextColumn Header="Hora Salida" Binding="{Binding EstimatedPlayTimeFormatted}" Width="80" FontFamily="{StaticResource Sys.Font.Clock}"/>
                             <DataGridTextColumn Header="Título" Binding="{Binding Title}" Width="2*"/>
                             <DataGridTextColumn Header="Artista" Binding="{Binding Artist}" Width="1.5*"/>
-                            <DataGridTextColumn Header="Duración" Binding="{Binding DurationFormatted}" Width="60" FontFamily="Consolas"/>
-                            <DataGridTextColumn Header="Intro" Binding="{Binding IntroSeconds, StringFormat='{}{0:0.0}s'}" Width="50" FontFamily="Consolas"/>
+                            <DataGridTextColumn Header="Duración" Binding="{Binding DurationFormatted}" Width="60" FontFamily="{StaticResource Sys.Font.Clock}"/>
+                            <DataGridTextColumn Header="Intro" Binding="{Binding IntroSeconds, StringFormat='{}{0:0.0}s'}" Width="50" FontFamily="{StaticResource Sys.Font.Clock}"/>
                             <DataGridTextColumn Header="BPM" Binding="{Binding BpmFormatted}" Width="60"/>
                             <DataGridTextColumn Header="Género" Binding="{Binding Genre}" Width="70"/>
                         </DataGrid.Columns>
@@ -1132,11 +967,11 @@
             </Border>
 
             <!-- SECCIÓN DERECHA CON PESTAÑAS SUITE V3.0 -->
-            <TabControl Grid.Column="1" Background="{Binding CardBackground}" BorderBrush="#262D3D" BorderThickness="1">
+            <TabControl Grid.Column="1" Background="{DynamicResource Brush.Surface.Card}" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
                 <TabControl.Resources>
                     <Style TargetType="TabItem">
-                        <Setter Property="Background" Value="#11141F"/>
-                        <Setter Property="Foreground" Value="#A0AEC0"/>
+                        <Setter Property="Background" Value="{DynamicResource Brush.Surface.Panel}"/>
+                        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}"/>
                         <Setter Property="FontWeight" Value="Bold"/>
                         <Setter Property="FontSize" Value="11"/>
                         <Setter Property="Padding" Value="8,5"/>
@@ -1148,8 +983,8 @@
                                     </Border>
                                     <ControlTemplate.Triggers>
                                         <Trigger Property="IsSelected" Value="True">
-                                            <Setter TargetName="Border" Property="Background" Value="#161B26"/>
-                                            <Setter Property="Foreground" Value="#00E5FF"/>
+                                            <Setter TargetName="Border" Property="Background" Value="{DynamicResource Brush.Surface.Card}"/>
+                                            <Setter Property="Foreground" Value="{DynamicResource Brush.Accent}"/>
                                         </Trigger>
                                     </ControlTemplate.Triggers>
                                 </ControlTemplate>
@@ -1169,25 +1004,25 @@
                         </Grid.RowDefinitions>
 
                         <DockPanel Grid.Row="0" Margin="0,0,0,6">
-                            <TextBlock Text="Categoría:" FontSize="11" Foreground="#8A99AD" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                            <TextBlock Text="Categoría:" FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}" VerticalAlignment="Center" Margin="0,0,4,0"/>
                             <ComboBox ItemsSource="{Binding DatabaseService.Categories}" SelectedItem="{Binding DatabaseService.SelectedCategory}" Width="100" FontSize="11" Margin="0,0,8,0"/>
 
-                            <TextBlock Text="Género:" FontSize="11" Foreground="#8A99AD" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                            <TextBlock Text="Género:" FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}" VerticalAlignment="Center" Margin="0,0,4,0"/>
                             <ComboBox ItemsSource="{Binding DatabaseService.Genres}" SelectedItem="{Binding DatabaseService.SelectedGenre}" Width="100" FontSize="11"/>
                         </DockPanel>
 
-                        <TextBox Grid.Row="1" Text="{Binding DatabaseService.SearchText, UpdateSourceTrigger=PropertyChanged}" Background="#0B0D14" Foreground="#FFFFFF" BorderBrush="#262D3D" Padding="4" Margin="0,0,0,6"/>
+                        <TextBox Grid.Row="1" Text="{Binding DatabaseService.SearchText, UpdateSourceTrigger=PropertyChanged}" Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Default}" Padding="4" Margin="0,0,0,6"/>
 
                         <DataGrid Grid.Row="2" ItemsSource="{Binding DatabaseService.FilteredTracks}" SelectedItem="{Binding SelectedDbTrack}"
                                   AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True"
-                                  Background="#0B0D14" Foreground="#E0E6ED" RowBackground="#11141F" 
-                                  AlternatingRowBackground="#161B26" GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="#1F2636"
-                                  BorderThickness="1" BorderBrush="#262D3D" RowHeight="26">
+                                  Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.Default}" RowBackground="{DynamicResource Brush.Surface.Panel}" 
+                                  AlternatingRowBackground="{DynamicResource Brush.Surface.Card}" GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="{DynamicResource Brush.Border.Subtle}"
+                                  BorderThickness="1" BorderBrush="{DynamicResource Brush.Border.Default}" RowHeight="26">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Icon" Binding="{Binding IconSymbol}" Width="35"/>
                                 <DataGridTextColumn Header="Título" Binding="{Binding Title}" Width="2*"/>
                                 <DataGridTextColumn Header="Artista" Binding="{Binding Artist}" Width="1.5*"/>
-                                <DataGridTextColumn Header="Duración" Binding="{Binding DurationFormatted}" Width="65" FontFamily="Consolas"/>
+                                <DataGridTextColumn Header="Duración" Binding="{Binding DurationFormatted}" Width="65" FontFamily="{StaticResource Sys.Font.Clock}"/>
                             </DataGrid.Columns>
                         </DataGrid>
 
@@ -1195,8 +1030,8 @@
                             <Button Command="{Binding AddTrackFromDbToPlaylistCommand}" Style="{StaticResource StudioButtonStyle}" Content="+ Encolar" Margin="0,0,2,0"/>
                             <Button Command="{Binding PlayAux1Command}" Style="{StaticResource StudioButtonStyle}" Content="▶ PFL AUX 1" Margin="2,0,2,0"/>
                             <Button Command="{Binding GenerateAutoPlaylistCommand}" Style="{StaticResource StudioButtonStyle}" Content="⚡ AUTO PLAYLIST" Margin="2,0,2,0"/>
-                            <Button Command="{Binding GenerateSmartPlaylistCommand}" Style="{StaticResource StudioButtonStyle}" Content="🧠 SMART PLAYLIST" Margin="2,0,2,0" Background="#00B0FF" BorderBrush="#00E5FF"/>
-                            <Button Command="{Binding ClearRotationHistoryCommand}" Style="{StaticResource StudioButtonStyle}" Content="🗑️ LIMPIAR HISTORIAL" Margin="2,0,0,0" Background="#FF6D00" BorderBrush="#FF9100"/>
+                            <Button Command="{Binding GenerateSmartPlaylistCommand}" Style="{StaticResource StudioButtonStyle}" Content="🧠 SMART PLAYLIST" Margin="2,0,2,0" Background="{DynamicResource Brush.Accent.Info}" BorderBrush="{DynamicResource Brush.Accent}"/>
+                            <Button Command="{Binding ClearRotationHistoryCommand}" Style="{StaticResource StudioButtonStyle}" Content="🗑️ LIMPIAR HISTORIAL" Margin="2,0,0,0" Background="{DynamicResource Brush.Accent.OrangeDeep}" BorderBrush="{DynamicResource Brush.Accent.Orange}"/>
                         </UniformGrid>
                     </Grid>
                 </TabItem>
@@ -1205,21 +1040,21 @@
                 <TabItem Header="PROCESADOR DSP" IsEnabled="{Binding IsAdmin}">
                     <ScrollViewer VerticalScrollBarVisibility="Auto">
                         <StackPanel Margin="8">
-                            <Border Background="#11141F" BorderBrush="#262D3D" BorderThickness="1" CornerRadius="4" Padding="8" Margin="0,0,0,8">
+                            <Border Background="{DynamicResource Brush.Surface.Panel}" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1" CornerRadius="4" Padding="8" Margin="0,0,0,8">
                                 <StackPanel>
                                     <CheckBox Content="CONTROL AUTOMÁTICO DE GANANCIA (AGC)"
                                               IsChecked="{Binding DspProcessor.IsAgcEnabled}"
-                                              Foreground="#00E5FF" FontWeight="Bold" FontSize="10"/>
+                                              Foreground="{DynamicResource Brush.Accent}" FontWeight="Bold" FontSize="10"/>
                                     <DockPanel Margin="0,5,0,0">
-                                        <TextBlock Text="Nivel objetivo" FontSize="10" Foreground="#8A99AD"/>
-                                        <TextBlock Text="{Binding DspProcessor.AgcTargetDb, StringFormat='{}{0:0} dB'}" FontSize="10" Foreground="#00E5FF" DockPanel.Dock="Right"/>
+                                        <TextBlock Text="Nivel objetivo" FontSize="10" Foreground="{DynamicResource Brush.Text.Secondary}"/>
+                                        <TextBlock Text="{Binding DspProcessor.AgcTargetDb, StringFormat='{}{0:0} dB'}" FontSize="10" Foreground="{DynamicResource Brush.Accent}" DockPanel.Dock="Right"/>
                                     </DockPanel>
                                     <Slider Value="{Binding DspProcessor.AgcTargetDb}" Minimum="-30" Maximum="-6" IsEnabled="{Binding DspProcessor.IsAgcEnabled}"/>
                                 </StackPanel>
                             </Border>
-                            <TextBlock Text="ECUALIZADOR GRÁFICO 10 BANDAS" FontSize="11" FontWeight="Bold" Foreground="#00E676" Margin="0,0,0,6"/>
+                            <TextBlock Text="ECUALIZADOR GRÁFICO 10 BANDAS" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent.Success}" Margin="0,0,0,6"/>
                             <DockPanel Margin="0,0,0,8">
-                                <TextBlock Text="Preset EQ:" FontSize="11" Foreground="#8A99AD" VerticalAlignment="Center" DockPanel.Dock="Left"/>
+                                <TextBlock Text="Preset EQ:" FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}" VerticalAlignment="Center" DockPanel.Dock="Left"/>
                                 <ComboBox ItemsSource="{Binding DspProcessor.EqPresets}" SelectedItem="{Binding DspProcessor.SelectedEqPreset}" Width="160" FontSize="11" DockPanel.Dock="Right" HorizontalAlignment="Right"/>
                             </DockPanel>
 
@@ -1236,21 +1071,21 @@
                                 <StackPanel Margin="1,2,1,0"><TextBlock Text="16kHz" FontSize="9" HorizontalAlignment="Center"/><Slider Value="{Binding DspProcessor.Band16kHz}" Minimum="-12" Maximum="12" Orientation="Vertical" Width="22" Height="120" HorizontalAlignment="Center"/><TextBlock Text="{Binding DspProcessor.Band16kHz, StringFormat='{}{0:0}dB'}" FontSize="9" HorizontalAlignment="Center"/></StackPanel>
                             </UniformGrid>
 
-                            <Separator Background="#262D3D" Margin="0,4,0,8"/>
+                            <Separator Background="{DynamicResource Brush.Border.Default}" Margin="0,4,0,8"/>
 
-                            <TextBlock Text="COMPRESOR / LIMITADOR BROADCAST" FontSize="11" FontWeight="Bold" Foreground="#00E5FF" Margin="0,0,0,6"/>
+                            <TextBlock Text="COMPRESOR / LIMITADOR BROADCAST" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent}" Margin="0,0,0,6"/>
                             <DockPanel Margin="0,0,0,6">
-                                <TextBlock Text="Preset Comp:" FontSize="11" Foreground="#8A99AD" VerticalAlignment="Center" DockPanel.Dock="Left"/>
+                                <TextBlock Text="Preset Comp:" FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}" VerticalAlignment="Center" DockPanel.Dock="Left"/>
                                 <ComboBox ItemsSource="{Binding DspProcessor.CompressorPresets}" SelectedItem="{Binding DspProcessor.SelectedCompPreset}" Width="160" FontSize="11" DockPanel.Dock="Right" HorizontalAlignment="Right"/>
                             </DockPanel>
 
-                            <DockPanel Margin="0,4"><TextBlock Text="Threshold (Umbral):" FontSize="10" Foreground="#8A99AD"/><TextBlock Text="{Binding DspProcessor.CompThreshold, StringFormat='{}{0:0}dB'}" FontSize="10" Foreground="#00E5FF" DockPanel.Dock="Right"/></DockPanel>
+                            <DockPanel Margin="0,4"><TextBlock Text="Threshold (Umbral):" FontSize="10" Foreground="{DynamicResource Brush.Text.Secondary}"/><TextBlock Text="{Binding DspProcessor.CompThreshold, StringFormat='{}{0:0}dB'}" FontSize="10" Foreground="{DynamicResource Brush.Accent}" DockPanel.Dock="Right"/></DockPanel>
                             <Slider Value="{Binding DspProcessor.CompThreshold}" Minimum="-36" Maximum="0"/>
 
-                            <DockPanel Margin="0,4"><TextBlock Text="Ratio (Proporción):" FontSize="10" Foreground="#8A99AD"/><TextBlock Text="{Binding DspProcessor.CompRatio, StringFormat='{}{0:0.0}:1'}" FontSize="10" Foreground="#00E5FF" DockPanel.Dock="Right"/></DockPanel>
+                            <DockPanel Margin="0,4"><TextBlock Text="Ratio (Proporción):" FontSize="10" Foreground="{DynamicResource Brush.Text.Secondary}"/><TextBlock Text="{Binding DspProcessor.CompRatio, StringFormat='{}{0:0.0}:1'}" FontSize="10" Foreground="{DynamicResource Brush.Accent}" DockPanel.Dock="Right"/></DockPanel>
                             <Slider Value="{Binding DspProcessor.CompRatio}" Minimum="1" Maximum="10"/>
 
-                            <DockPanel Margin="0,4"><TextBlock Text="Makeup Gain (Ganancia):" FontSize="10" Foreground="#8A99AD"/><TextBlock Text="{Binding DspProcessor.CompMakeup, StringFormat='{}{0:0}dB'}" FontSize="10" Foreground="#00E5FF" DockPanel.Dock="Right"/></DockPanel>
+                            <DockPanel Margin="0,4"><TextBlock Text="Makeup Gain (Ganancia):" FontSize="10" Foreground="{DynamicResource Brush.Text.Secondary}"/><TextBlock Text="{Binding DspProcessor.CompMakeup, StringFormat='{}{0:0}dB'}" FontSize="10" Foreground="{DynamicResource Brush.Accent}" DockPanel.Dock="Right"/></DockPanel>
                             <Slider Value="{Binding DspProcessor.CompMakeup}" Minimum="0" Maximum="12"/>
                         </StackPanel>
                     </ScrollViewer>
@@ -1266,7 +1101,7 @@
                         </Grid.RowDefinitions>
 
                         <DockPanel Grid.Row="0" Margin="0,0,0,8">
-                            <TextBlock Text="BOTONERA DE EFECTOS [F1-F12]" FontSize="11" FontWeight="Bold" Foreground="#00E5FF" VerticalAlignment="Center" DockPanel.Dock="Left"/>
+                            <TextBlock Text="BOTONERA DE EFECTOS [F1-F12]" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent}" VerticalAlignment="Center" DockPanel.Dock="Left"/>
                             <Button Command="{Binding StopAllCartPadsCommand}" Style="{StaticResource StudioButtonStyle}" Padding="6,3" FontSize="10" Content="⏹ PARAR SFX" DockPanel.Dock="Right" HorizontalAlignment="Right"/>
                         </DockPanel>
 
@@ -1278,7 +1113,7 @@
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Border Margin="2" CornerRadius="5" Background="#11141F" BorderBrush="{Binding StatusBorderColor}" BorderThickness="2">
+                                    <Border Margin="2" CornerRadius="5" Background="{DynamicResource Brush.Surface.Panel}" BorderBrush="{Binding StatusBorderColor}" BorderThickness="2">
                                         <Button Command="{Binding DataContext.TriggerCartPadCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                                 CommandParameter="{Binding}"
                                                 Background="Transparent" BorderThickness="0" Padding="3">
@@ -1296,9 +1131,9 @@
 
                                                 <DockPanel Grid.Row="0">
                                                     <Border Background="{Binding ColorHex}" CornerRadius="3" Padding="3,1" HorizontalAlignment="Left" DockPanel.Dock="Left">
-                                                        <TextBlock Text="{Binding ShortcutText}" FontSize="9" FontWeight="Bold" Foreground="#000000"/>
+                                                        <TextBlock Text="{Binding ShortcutText}" FontSize="9" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.OnAccent}"/>
                                                     </Border>
-                                                    <Ellipse Width="7" Height="7" Fill="#00E676" HorizontalAlignment="Right" DockPanel.Dock="Right">
+                                                    <Ellipse Width="7" Height="7" Fill="{DynamicResource Brush.Accent.Success}" HorizontalAlignment="Right" DockPanel.Dock="Right">
                                                         <Ellipse.Style>
                                                             <Style TargetType="Ellipse">
                                                                 <Setter Property="Visibility" Value="Collapsed"/>
@@ -1313,7 +1148,7 @@
                                                 </DockPanel>
 
                                                 <TextBlock Grid.Row="1" Text="{Binding Title}" FontSize="10" FontWeight="SemiBold" 
-                                                           Foreground="#FFFFFF" TextTrimming="CharacterEllipsis" TextWrapping="Wrap"
+                                                           Foreground="{DynamicResource Brush.Text.High}" TextTrimming="CharacterEllipsis" TextWrapping="Wrap"
                                                            HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" Margin="0,2,0,0"/>
                                             </Grid>
                                         </Button>
@@ -1324,8 +1159,8 @@
 
                         <StackPanel Grid.Row="2" Margin="0,6,0,0">
                             <DockPanel>
-                                <TextBlock Text="VOLUMEN CARTWALL" FontSize="10" FontWeight="Bold" Foreground="#8A99AD" DockPanel.Dock="Left"/>
-                                <TextBlock Text="{Binding CartwallVolumePercentageText}" FontSize="10" FontWeight="Bold" Foreground="#00E5FF" DockPanel.Dock="Right" HorizontalAlignment="Right"/>
+                                <TextBlock Text="VOLUMEN CARTWALL" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.Secondary}" DockPanel.Dock="Left"/>
+                                <TextBlock Text="{Binding CartwallVolumePercentageText}" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent}" DockPanel.Dock="Right" HorizontalAlignment="Right"/>
                             </DockPanel>
                             <Slider Value="{Binding CartwallMasterVolume}" Minimum="0" Maximum="1" TickFrequency="0.05" IsSnapToTickEnabled="True" Margin="0,2,0,0" IsEnabled="{Binding CanOperate}"/>
                         </StackPanel>
@@ -1341,36 +1176,36 @@
                         </Grid.RowDefinitions>
 
                         <!-- AUX 1 -->
-                        <Border Grid.Row="0" Background="#11141F" CornerRadius="6" Padding="10" Margin="0,0,0,6" BorderBrush="#262D3D" BorderThickness="1">
+                        <Border Grid.Row="0" Background="{DynamicResource Brush.Surface.Panel}" CornerRadius="6" Padding="10" Margin="0,0,0,6" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
                             <StackPanel>
                                 <DockPanel Margin="0,0,0,4">
-                                    <TextBlock Text="REPRODUCTOR AUXILIAR 1 (PFL CUE)" FontWeight="Bold" Foreground="#00E5FF" FontSize="11" DockPanel.Dock="Left"/>
+                                    <TextBlock Text="REPRODUCTOR AUXILIAR 1 (PFL CUE)" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent}" FontSize="11" DockPanel.Dock="Left"/>
                                     <Button Command="{Binding AuxPlayers.Aux1.Stop}" Style="{StaticResource StudioButtonStyle}" Padding="6,2" FontSize="9" Content="⏹ PARAR AUX 1" DockPanel.Dock="Right" HorizontalAlignment="Right"/>
                                 </DockPanel>
 
-                                <TextBlock Text="{Binding AuxPlayers.Aux1.CurrentTrack.Title, FallbackValue='NINGUN AUDIO EN AUX 1'}" FontWeight="Bold" Foreground="#FFFFFF" FontSize="12"/>
-                                <TextBlock Text="{Binding AuxPlayers.Aux1.CurrentTrack.Artist, FallbackValue='Monitoreo privado sin salida al aire'}" FontSize="10" Foreground="#8A99AD" Margin="0,2,0,6"/>
+                                <TextBlock Text="{Binding AuxPlayers.Aux1.CurrentTrack.Title, FallbackValue='NINGUN AUDIO EN AUX 1'}" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.High}" FontSize="12"/>
+                                <TextBlock Text="{Binding AuxPlayers.Aux1.CurrentTrack.Artist, FallbackValue='Monitoreo privado sin salida al aire'}" FontSize="10" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,2,0,6"/>
 
                                 <DockPanel>
-                                    <TextBlock Text="VOLUMEN AUX 1" FontSize="9" Foreground="#8A99AD" DockPanel.Dock="Left"/>
+                                    <TextBlock Text="VOLUMEN AUX 1" FontSize="9" Foreground="{DynamicResource Brush.Text.Secondary}" DockPanel.Dock="Left"/>
                                     <Slider Value="{Binding AuxPlayers.Aux1.Volume}" Minimum="0" Maximum="1" Margin="8,0,0,0"/>
                                 </DockPanel>
                             </StackPanel>
                         </Border>
 
                         <!-- AUX 2 -->
-                        <Border Grid.Row="1" Background="#11141F" CornerRadius="6" Padding="10" BorderBrush="#262D3D" BorderThickness="1">
+                        <Border Grid.Row="1" Background="{DynamicResource Brush.Surface.Panel}" CornerRadius="6" Padding="10" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
                             <StackPanel>
                                 <DockPanel Margin="0,0,0,4">
-                                    <TextBlock Text="REPRODUCTOR AUXILIAR 2 (PFL CUE)" FontWeight="Bold" Foreground="#FFEA00" FontSize="11" DockPanel.Dock="Left"/>
+                                    <TextBlock Text="REPRODUCTOR AUXILIAR 2 (PFL CUE)" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent.Warn}" FontSize="11" DockPanel.Dock="Left"/>
                                     <Button Command="{Binding AuxPlayers.Aux2.Stop}" Style="{StaticResource StudioButtonStyle}" Padding="6,2" FontSize="9" Content="⏹ PARAR AUX 2" DockPanel.Dock="Right" HorizontalAlignment="Right"/>
                                 </DockPanel>
 
-                                <TextBlock Text="{Binding AuxPlayers.Aux2.CurrentTrack.Title, FallbackValue='NINGUN AUDIO EN AUX 2'}" FontWeight="Bold" Foreground="#FFFFFF" FontSize="12"/>
-                                <TextBlock Text="{Binding AuxPlayers.Aux2.CurrentTrack.Artist, FallbackValue='Monitoreo privado sin salida al aire'}" FontSize="10" Foreground="#8A99AD" Margin="0,2,0,6"/>
+                                <TextBlock Text="{Binding AuxPlayers.Aux2.CurrentTrack.Title, FallbackValue='NINGUN AUDIO EN AUX 2'}" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.High}" FontSize="12"/>
+                                <TextBlock Text="{Binding AuxPlayers.Aux2.CurrentTrack.Artist, FallbackValue='Monitoreo privado sin salida al aire'}" FontSize="10" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,2,0,6"/>
 
                                 <DockPanel>
-                                    <TextBlock Text="VOLUMEN AUX 2" FontSize="9" Foreground="#8A99AD" DockPanel.Dock="Left"/>
+                                    <TextBlock Text="VOLUMEN AUX 2" FontSize="9" Foreground="{DynamicResource Brush.Text.Secondary}" DockPanel.Dock="Left"/>
                                     <Slider Value="{Binding AuxPlayers.Aux2.Volume}" Minimum="0" Maximum="1" Margin="8,0,0,0"/>
                                 </DockPanel>
                             </StackPanel>
@@ -1386,12 +1221,12 @@
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
 
-                        <TextBlock Grid.Row="0" Text="PAUTAS Y TANDAS PROGRAMADAS" FontSize="11" FontWeight="Bold" Foreground="#FF9100" Margin="0,0,0,6"/>
+                        <TextBlock Grid.Row="0" Text="PAUTAS Y TANDAS PROGRAMADAS" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent.Orange}" Margin="0,0,0,6"/>
 
-                        <ListBox Grid.Row="1" ItemsSource="{Binding CommercialBlocks}" Background="#0B0D14" BorderBrush="#1F2636">
+                        <ListBox Grid.Row="1" ItemsSource="{Binding CommercialBlocks}" Background="{DynamicResource Brush.Surface.Deep}" BorderBrush="{DynamicResource Brush.Border.Subtle}">
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
-                                    <Border Background="#161B26" CornerRadius="5" Padding="8" Margin="0,3" BorderBrush="#262D3D" BorderThickness="1">
+                                    <Border Background="{DynamicResource Brush.Surface.Card}" CornerRadius="5" Padding="8" Margin="0,3" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
                                         <Grid>
                                             <Grid.RowDefinitions>
                                                 <RowDefinition Height="Auto"/>
@@ -1400,7 +1235,7 @@
                                             </Grid.RowDefinitions>
 
                                             <DockPanel Grid.Row="0">
-                                                <TextBlock Text="{Binding Name}" FontWeight="Bold" Foreground="#FFFFFF" FontSize="13" DockPanel.Dock="Left"/>
+                                                <TextBlock Text="{Binding Name}" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.High}" FontSize="13" DockPanel.Dock="Left"/>
                                                 <Button Content="📢 LANZAR AHORA" 
                                                         Command="{Binding DataContext.TriggerCommercialBlockNowCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                                         CommandParameter="{Binding}"
@@ -1409,12 +1244,12 @@
                                             </DockPanel>
 
                                             <DockPanel Grid.Row="1" Margin="0,3">
-                                                <TextBlock Text="{Binding ScheduleText}" Foreground="#FFEA00" FontSize="10" FontFamily="Consolas" DockPanel.Dock="Left"/>
-                                                <TextBlock Text="{Binding TotalDurationFormatted, StringFormat='Duración: {0}'}" Foreground="#8A99AD" FontSize="10" DockPanel.Dock="Right"/>
+                                                <TextBlock Text="{Binding ScheduleText}" Foreground="{DynamicResource Brush.Accent.Warn}" FontSize="10" FontFamily="{StaticResource Sys.Font.Clock}" DockPanel.Dock="Left"/>
+                                                <TextBlock Text="{Binding TotalDurationFormatted, StringFormat='Duración: {0}'}" Foreground="{DynamicResource Brush.Text.Secondary}" FontSize="10" DockPanel.Dock="Right"/>
                                             </DockPanel>
 
                                             <DockPanel Grid.Row="2" Margin="0,3,0,0">
-                                                <TextBlock Text="{Binding Spots.Count, StringFormat='Cuñas: {0}'}" Foreground="#00E676" FontSize="10" DockPanel.Dock="Left"/>
+                                                <TextBlock Text="{Binding Spots.Count, StringFormat='Cuñas: {0}'}" Foreground="{DynamicResource Brush.Accent.Success}" FontSize="10" DockPanel.Dock="Left"/>
                                                 <Button Content="+ Agregar Spot" 
                                                         Command="{Binding DataContext.AddSpotToBlockCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                                         CommandParameter="{Binding}"
@@ -1438,7 +1273,7 @@
                         </Grid.RowDefinitions>
 
                         <!-- STREAMING CONTROL -->
-                        <Border Grid.Row="0" Background="#11141F" CornerRadius="5" Padding="10" Margin="0,0,0,8" BorderBrush="{Binding StreamingService.StatusColor}" BorderThickness="1">
+                        <Border Grid.Row="0" Background="{DynamicResource Brush.Surface.Panel}" CornerRadius="5" Padding="10" Margin="0,0,0,8" BorderBrush="{Binding StreamingService.StatusColor}" BorderThickness="1">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="2*"/>
@@ -1447,78 +1282,78 @@
 
                                 <StackPanel Grid.Column="0">
                                     <DockPanel Margin="0,0,0,6">
-                                        <TextBlock Text="{Binding StreamingService.StreamingStatusText}" FontWeight="Bold" Foreground="#00E5FF" FontSize="11" VerticalAlignment="Center" DockPanel.Dock="Left"/>
+                                        <TextBlock Text="{Binding StreamingService.StreamingStatusText}" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent}" FontSize="11" VerticalAlignment="Center" DockPanel.Dock="Left"/>
                                         <Button Command="{Binding TestIcecastConnectionCommand}" Style="{StaticResource StudioButtonStyle}" Content="🔍 PROBAR" Padding="6,3" FontSize="10" DockPanel.Dock="Right" HorizontalAlignment="Right" Margin="0,0,4,0"/>
                                         <Button Command="{Binding ToggleStreamingCommand}" Style="{StaticResource StudioButtonStyle}" Content="{Binding StreamingService.StreamingButtonText}" Padding="6,3" FontSize="10" DockPanel.Dock="Right" HorizontalAlignment="Right"/>
                                     </DockPanel>
 
-                                    <TextBlock Text="{Binding StreamingService.StatusMessage}" FontSize="9" Foreground="#8A99AD" Margin="0,0,0,4" TextWrapping="Wrap"/>
+                                    <TextBlock Text="{Binding StreamingService.StatusMessage}" FontSize="9" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,0,0,4" TextWrapping="Wrap"/>
 
                                     <DockPanel Margin="0,0,0,4">
-                                        <TextBlock Text="Servidor:" FontSize="9" Foreground="#8A99AD" DockPanel.Dock="Left"/>
-                                        <TextBox Text="{Binding StreamingService.ServerUrl, UpdateSourceTrigger=PropertyChanged}" Background="#0B0D14" Foreground="#FFFFFF" BorderBrush="#262D3D" Padding="3" Width="150" DockPanel.Dock="Right" IsEnabled="{Binding IsAdmin}"/>
+                                        <TextBlock Text="Servidor:" FontSize="9" Foreground="{DynamicResource Brush.Text.Secondary}" DockPanel.Dock="Left"/>
+                                        <TextBox Text="{Binding StreamingService.ServerUrl, UpdateSourceTrigger=PropertyChanged}" Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Default}" Padding="3" Width="150" DockPanel.Dock="Right" IsEnabled="{Binding IsAdmin}"/>
                                     </DockPanel>
 
                                     <DockPanel Margin="0,0,0,4">
-                                        <TextBlock Text="Puerto:" FontSize="9" Foreground="#8A99AD" DockPanel.Dock="Left"/>
-                                        <TextBox Text="{Binding StreamingService.ServerPort, UpdateSourceTrigger=PropertyChanged}" Background="#0B0D14" Foreground="#FFFFFF" BorderBrush="#262D3D" Padding="3" Width="60" DockPanel.Dock="Right" IsEnabled="{Binding IsAdmin}"/>
+                                        <TextBlock Text="Puerto:" FontSize="9" Foreground="{DynamicResource Brush.Text.Secondary}" DockPanel.Dock="Left"/>
+                                        <TextBox Text="{Binding StreamingService.ServerPort, UpdateSourceTrigger=PropertyChanged}" Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Default}" Padding="3" Width="60" DockPanel.Dock="Right" IsEnabled="{Binding IsAdmin}"/>
                                     </DockPanel>
 
                                     <DockPanel Margin="0,0,0,4">
-                                        <TextBlock Text="Mountpoint:" FontSize="9" Foreground="#8A99AD" DockPanel.Dock="Left"/>
-                                        <TextBox Text="{Binding StreamingService.MountPoint, UpdateSourceTrigger=PropertyChanged}" Background="#0B0D14" Foreground="#FFFFFF" BorderBrush="#262D3D" Padding="3" Width="120" DockPanel.Dock="Right" IsEnabled="{Binding IsAdmin}"/>
+                                        <TextBlock Text="Mountpoint:" FontSize="9" Foreground="{DynamicResource Brush.Text.Secondary}" DockPanel.Dock="Left"/>
+                                        <TextBox Text="{Binding StreamingService.MountPoint, UpdateSourceTrigger=PropertyChanged}" Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Default}" Padding="3" Width="120" DockPanel.Dock="Right" IsEnabled="{Binding IsAdmin}"/>
                                     </DockPanel>
 
                                     <DockPanel Margin="0,0,0,4">
-                                        <TextBlock Text="Password:" FontSize="9" Foreground="#8A99AD" DockPanel.Dock="Left"/>
-                                        <TextBox Text="{Binding StreamingService.Password, UpdateSourceTrigger=PropertyChanged}" Background="#0B0D14" Foreground="#FFEA00" BorderBrush="#262D3D" Padding="3" Width="100" DockPanel.Dock="Right" IsEnabled="{Binding IsAdmin}"/>
+                                        <TextBlock Text="Password:" FontSize="9" Foreground="{DynamicResource Brush.Text.Secondary}" DockPanel.Dock="Left"/>
+                                        <TextBox Text="{Binding StreamingService.Password, UpdateSourceTrigger=PropertyChanged}" Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Accent.Warn}" BorderBrush="{DynamicResource Brush.Border.Default}" Padding="3" Width="100" DockPanel.Dock="Right" IsEnabled="{Binding IsAdmin}"/>
                                     </DockPanel>
 
                                     <DockPanel Margin="0,0,0,4">
-                                        <TextBlock Text="FFmpeg:" FontSize="9" Foreground="#8A99AD" DockPanel.Dock="Left"/>
-                                        <TextBox Text="{Binding StreamingService.FFmpegPath, UpdateSourceTrigger=PropertyChanged}" Background="#0B0D14" Foreground="#FFFFFF" BorderBrush="#262D3D" Padding="3" Width="120" DockPanel.Dock="Right" IsEnabled="{Binding IsAdmin}"/>
+                                        <TextBlock Text="FFmpeg:" FontSize="9" Foreground="{DynamicResource Brush.Text.Secondary}" DockPanel.Dock="Left"/>
+                                        <TextBox Text="{Binding StreamingService.FFmpegPath, UpdateSourceTrigger=PropertyChanged}" Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Default}" Padding="3" Width="120" DockPanel.Dock="Right" IsEnabled="{Binding IsAdmin}"/>
                                     </DockPanel>
                                 </StackPanel>
 
                                 <StackPanel Grid.Column="1" Margin="8,0,0,0">
-                                    <TextBlock Text="ESTADÍSTICAS DE STREAMING" FontSize="10" FontWeight="Bold" Foreground="#00E676" Margin="0,0,0,4"/>
+                                    <TextBlock Text="ESTADÍSTICAS DE STREAMING" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent.Success}" Margin="0,0,0,4"/>
 
-                                    <TextBlock Text="Conexión:" FontSize="9" Foreground="#8A99AD"/>
-                                    <TextBlock Text="{Binding StreamingService.ConnectionTimeFormatted}" FontSize="10" FontWeight="Bold" Foreground="#FFFFFF" Margin="0,0,0,4"/>
+                                    <TextBlock Text="Conexión:" FontSize="9" Foreground="{DynamicResource Brush.Text.Secondary}"/>
+                                    <TextBlock Text="{Binding StreamingService.ConnectionTimeFormatted}" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.High}" Margin="0,0,0,4"/>
 
-                                    <TextBlock Text="Duración:" FontSize="9" Foreground="#8A99AD"/>
-                                    <TextBlock Text="{Binding StreamingService.StreamDurationFormatted}" FontSize="10" FontWeight="Bold" Foreground="#FFFFFF" Margin="0,0,0,4"/>
+                                    <TextBlock Text="Duración:" FontSize="9" Foreground="{DynamicResource Brush.Text.Secondary}"/>
+                                    <TextBlock Text="{Binding StreamingService.StreamDurationFormatted}" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.High}" Margin="0,0,0,4"/>
 
-                                    <TextBlock Text="Datos enviados:" FontSize="9" Foreground="#8A99AD"/>
-                                    <TextBlock Text="{Binding StreamingService.BytesSentFormatted}" FontSize="10" FontWeight="Bold" Foreground="#00E5FF" Margin="0,0,0,4"/>
+                                    <TextBlock Text="Datos enviados:" FontSize="9" Foreground="{DynamicResource Brush.Text.Secondary}"/>
+                                    <TextBlock Text="{Binding StreamingService.BytesSentFormatted}" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent}" Margin="0,0,0,4"/>
 
-                                    <TextBlock Text="Bitrate:" FontSize="9" Foreground="#8A99AD"/>
-                                    <TextBlock Text="{Binding StreamingService.Bitrate, StringFormat='{}{0} kbps'}" FontSize="10" FontWeight="Bold" Foreground="#FFFFFF" Margin="0,0,0,4"/>
+                                    <TextBlock Text="Bitrate:" FontSize="9" Foreground="{DynamicResource Brush.Text.Secondary}"/>
+                                    <TextBlock Text="{Binding StreamingService.Bitrate, StringFormat='{}{0} kbps'}" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.High}" Margin="0,0,0,4"/>
 
-                                    <TextBlock Text="Circuit breaker:" FontSize="9" Foreground="#8A99AD"/>
-                                    <TextBlock Text="{Binding StreamingService.CircuitBreakerState}" FontSize="10" FontWeight="Bold" Foreground="#00E5FF" Margin="0,0,0,4"/>
+                                    <TextBlock Text="Circuit breaker:" FontSize="9" Foreground="{DynamicResource Brush.Text.Secondary}"/>
+                                    <TextBlock Text="{Binding StreamingService.CircuitBreakerState}" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent}" Margin="0,0,0,4"/>
 
-                                    <TextBlock Text="Paquetes descartados:" FontSize="9" Foreground="#8A99AD"/>
-                                    <TextBlock Text="{Binding StreamingService.BufferOverrunCount}" FontSize="10" FontWeight="Bold" Foreground="#FF9100"/>
-                                    <TextBlock Text="Silencios por underrun:" FontSize="9" Foreground="#8A99AD"/>
-                                    <TextBlock Text="{Binding StreamingService.BufferUnderrunCount}" FontSize="10" FontWeight="Bold" Foreground="#FFEA00"/>
+                                    <TextBlock Text="Paquetes descartados:" FontSize="9" Foreground="{DynamicResource Brush.Text.Secondary}"/>
+                                    <TextBlock Text="{Binding StreamingService.BufferOverrunCount}" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent.Orange}"/>
+                                    <TextBlock Text="Silencios por underrun:" FontSize="9" Foreground="{DynamicResource Brush.Text.Secondary}"/>
+                                    <TextBlock Text="{Binding StreamingService.BufferUnderrunCount}" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent.Warn}"/>
                                 </StackPanel>
                             </Grid>
                         </Border>
 
                         <!-- NOW PLAYING METADATA -->
-                        <Border Grid.Row="1" Background="#11141F" CornerRadius="5" Padding="10" BorderBrush="#262D3D" BorderThickness="1">
+                        <Border Grid.Row="1" Background="{DynamicResource Brush.Surface.Panel}" CornerRadius="5" Padding="10" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
                             <StackPanel>
-                                <TextBlock Text="EXPORTACIÓN NOWPLAYING (RDS / TXT / JSON)" FontSize="11" FontWeight="Bold" Foreground="#00E676" Margin="0,0,0,6"/>
+                                <TextBlock Text="EXPORTACIÓN NOWPLAYING (RDS / TXT / JSON)" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent.Success}" Margin="0,0,0,6"/>
 
-                                <TextBlock Text="Tema al Aire Actual:" FontSize="9" Foreground="#8A99AD"/>
-                                <Border Background="#0B0D14" CornerRadius="4" Padding="6" Margin="0,2,0,6" BorderBrush="#1F2636" BorderThickness="1">
-                                    <TextBlock Text="{Binding CurrentNowPlayingText}" FontWeight="Bold" Foreground="#FFEA00" FontSize="11" TextTrimming="CharacterEllipsis"/>
+                                <TextBlock Text="Tema al Aire Actual:" FontSize="9" Foreground="{DynamicResource Brush.Text.Secondary}"/>
+                                <Border Background="{DynamicResource Brush.Surface.Deep}" CornerRadius="4" Padding="6" Margin="0,2,0,6" BorderBrush="{DynamicResource Brush.Border.Subtle}" BorderThickness="1">
+                                    <TextBlock Text="{Binding CurrentNowPlayingText}" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent.Warn}" FontSize="11" TextTrimming="CharacterEllipsis"/>
                                 </Border>
 
-                                <TextBlock Text="Archivos exportados:" FontSize="10" Foreground="#A0AEC0"/>
-                                <TextBlock Text="• nowplaying.txt (RDS / Transmisor / OBS)" FontSize="9" Foreground="#00E676"/>
-                                <TextBlock Text="• nowplaying.json (Web App HTML5)" FontSize="9" Foreground="#00E676"/>
+                                <TextBlock Text="Archivos exportados:" FontSize="10" Foreground="{DynamicResource Brush.Text.Muted}"/>
+                                <TextBlock Text="• nowplaying.txt (RDS / Transmisor / OBS)" FontSize="9" Foreground="{DynamicResource Brush.Accent.Success}"/>
+                                <TextBlock Text="• nowplaying.json (Web App HTML5)" FontSize="9" Foreground="{DynamicResource Brush.Accent.Success}"/>
                             </StackPanel>
                         </Border>
                     </Grid>
@@ -1534,7 +1369,7 @@
                         </Grid.RowDefinitions>
 
                         <!-- CONTROL DE GRABACIÓN -->
-                        <Border Grid.Row="0" Background="#11141F" CornerRadius="5" Padding="10" Margin="0,0,0,8" BorderBrush="{Binding RecordingService.StatusColor}" BorderThickness="1">
+                        <Border Grid.Row="0" Background="{DynamicResource Brush.Surface.Panel}" CornerRadius="5" Padding="10" Margin="0,0,0,8" BorderBrush="{Binding RecordingService.StatusColor}" BorderThickness="1">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="2*"/>
@@ -1543,52 +1378,52 @@
 
                                 <StackPanel Grid.Column="0">
                                     <DockPanel Margin="0,0,0,6">
-                                        <TextBlock Text="{Binding RecordingService.RecordingStatusText}" FontWeight="Bold" Foreground="#FF1744" FontSize="11" VerticalAlignment="Center" DockPanel.Dock="Left"/>
-                                        <Button Command="{Binding ToggleRecordingCommand}" Style="{StaticResource StudioButtonStyle}" Content="{Binding RecordingService.RecordingButtonText}" Padding="6,3" FontSize="10" DockPanel.Dock="Right" HorizontalAlignment="Right" Background="#FF1744" BorderBrush="#FF5252"/>
+                                        <TextBlock Text="{Binding RecordingService.RecordingStatusText}" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent.Danger}" FontSize="11" VerticalAlignment="Center" DockPanel.Dock="Left"/>
+                                        <Button Command="{Binding ToggleRecordingCommand}" Style="{StaticResource StudioButtonStyle}" Content="{Binding RecordingService.RecordingButtonText}" Padding="6,3" FontSize="10" DockPanel.Dock="Right" HorizontalAlignment="Right" Background="{DynamicResource Brush.Accent.Danger}" BorderBrush="{DynamicResource Brush.Accent.DangerSoft}"/>
                                     </DockPanel>
 
-                                    <TextBlock Text="Grabando audio del sistema (loopback)" FontSize="9" Foreground="#8A99AD" Margin="0,0,0,4"/>
+                                    <TextBlock Text="Grabando audio del sistema (loopback)" FontSize="9" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,0,0,4"/>
 
                                     <DockPanel Margin="0,0,0,4">
-                                        <TextBlock Text="Archivo:" FontSize="9" Foreground="#8A99AD" DockPanel.Dock="Left"/>
-                                        <TextBlock Text="{Binding RecordingService.CurrentFileName}" FontWeight="Bold" Foreground="#00E5FF" FontSize="10" DockPanel.Dock="Right"/>
+                                        <TextBlock Text="Archivo:" FontSize="9" Foreground="{DynamicResource Brush.Text.Secondary}" DockPanel.Dock="Left"/>
+                                        <TextBlock Text="{Binding RecordingService.CurrentFileName}" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent}" FontSize="10" DockPanel.Dock="Right"/>
                                     </DockPanel>
 
                                     <DockPanel Margin="0,0,0,4">
-                                        <TextBlock Text="Carpeta:" FontSize="9" Foreground="#8A99AD" DockPanel.Dock="Left"/>
-                                        <TextBlock Text="{Binding RecordingService.RecordingFolder}" FontSize="10" Foreground="#FFFFFF" DockPanel.Dock="Right"/>
+                                        <TextBlock Text="Carpeta:" FontSize="9" Foreground="{DynamicResource Brush.Text.Secondary}" DockPanel.Dock="Left"/>
+                                        <TextBlock Text="{Binding RecordingService.RecordingFolder}" FontSize="10" Foreground="{DynamicResource Brush.Text.High}" DockPanel.Dock="Right"/>
                                     </DockPanel>
                                 </StackPanel>
 
                                 <StackPanel Grid.Column="1" Margin="8,0,0,0">
-                                    <TextBlock Text="ESTADÍSTICAS DE GRABACIÓN" FontSize="10" FontWeight="Bold" Foreground="#00E676" Margin="0,0,0,4"/>
+                                    <TextBlock Text="ESTADÍSTICAS DE GRABACIÓN" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent.Success}" Margin="0,0,0,4"/>
 
-                                    <TextBlock Text="Inicio:" FontSize="9" Foreground="#8A99AD"/>
-                                    <TextBlock Text="{Binding RecordingService.RecordingStartTimeFormatted}" FontSize="10" FontWeight="Bold" Foreground="#FFFFFF" Margin="0,0,0,4"/>
+                                    <TextBlock Text="Inicio:" FontSize="9" Foreground="{DynamicResource Brush.Text.Secondary}"/>
+                                    <TextBlock Text="{Binding RecordingService.RecordingStartTimeFormatted}" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.High}" Margin="0,0,0,4"/>
 
-                                    <TextBlock Text="Duración:" FontSize="9" Foreground="#8A99AD"/>
-                                    <TextBlock Text="{Binding RecordingService.RecordingDurationFormatted}" FontSize="10" FontWeight="Bold" Foreground="#FFFFFF" Margin="0,0,0,4"/>
+                                    <TextBlock Text="Duración:" FontSize="9" Foreground="{DynamicResource Brush.Text.Secondary}"/>
+                                    <TextBlock Text="{Binding RecordingService.RecordingDurationFormatted}" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.High}" Margin="0,0,0,4"/>
 
-                                    <TextBlock Text="Tamaño:" FontSize="9" Foreground="#8A99AD"/>
-                                    <TextBlock Text="{Binding RecordingService.BytesRecordedFormatted}" FontSize="10" FontWeight="Bold" Foreground="#00E5FF" Margin="0,0,0,4"/>
+                                    <TextBlock Text="Tamaño:" FontSize="9" Foreground="{DynamicResource Brush.Text.Secondary}"/>
+                                    <TextBlock Text="{Binding RecordingService.BytesRecordedFormatted}" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent}" Margin="0,0,0,4"/>
                                 </StackPanel>
                             </Grid>
                         </Border>
 
                         <!-- CONTROLES DE ARCHIVOS -->
-                        <Border Grid.Row="1" Background="#11141F" CornerRadius="5" Padding="10" Margin="0,0,0,8" BorderBrush="#262D3D" BorderThickness="1">
+                        <Border Grid.Row="1" Background="{DynamicResource Brush.Surface.Panel}" CornerRadius="5" Padding="10" Margin="0,0,0,8" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
                             <UniformGrid Columns="2">
                                 <Button Command="{Binding OpenRecordingFolderCommand}" Style="{StaticResource StudioButtonStyle}" Content="📁 ABRIR CARPETA" Margin="0,0,4,0"/>
-                                <Button Command="{Binding DeleteRecordingCommand}" Style="{StaticResource StudioButtonStyle}" Content="🗑️ ELIMINAR SELECCIONADO" Margin="4,0,0,0" Background="#FF6D00" BorderBrush="#FF9100"/>
+                                <Button Command="{Binding DeleteRecordingCommand}" Style="{StaticResource StudioButtonStyle}" Content="🗑️ ELIMINAR SELECCIONADO" Margin="4,0,0,0" Background="{DynamicResource Brush.Accent.OrangeDeep}" BorderBrush="{DynamicResource Brush.Accent.Orange}"/>
                             </UniformGrid>
                         </Border>
 
                         <!-- LISTA DE GRABACIONES -->
-                        <Border Grid.Row="2" Background="#11141F" CornerRadius="5" Padding="10" BorderBrush="#262D3D" BorderThickness="1">
+                        <Border Grid.Row="2" Background="{DynamicResource Brush.Surface.Panel}" CornerRadius="5" Padding="10" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
                             <StackPanel>
-                                <TextBlock Text="ARCHIVOS DE GRABACIÓN" FontSize="11" FontWeight="Bold" Foreground="#00E676" Margin="0,0,0,6"/>
-                                <TextBlock Text="Las grabaciones se guardan en formato WAV de alta calidad (44.1kHz, 16-bit, estéreo)" FontSize="9" Foreground="#8A99AD" Margin="0,0,0,4"/>
-                                <TextBlock Text="Ubicación: grabaciones/ (en el directorio del proyecto)" FontSize="9" Foreground="#FFEA00" Margin="0,0,0,6"/>
+                                <TextBlock Text="ARCHIVOS DE GRABACIÓN" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent.Success}" Margin="0,0,0,6"/>
+                                <TextBlock Text="Las grabaciones se guardan en formato WAV de alta calidad (44.1kHz, 16-bit, estéreo)" FontSize="9" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,0,0,4"/>
+                                <TextBlock Text="Ubicación: grabaciones/ (en el directorio del proyecto)" FontSize="9" Foreground="{DynamicResource Brush.Accent.Warn}" Margin="0,0,0,6"/>
                             </StackPanel>
                         </Border>
                     </Grid>
@@ -1604,7 +1439,7 @@
                         </Grid.RowDefinitions>
 
                         <!-- RESUMEN GENERAL -->
-                        <Border Grid.Row="0" Background="#11141F" CornerRadius="5" Padding="10" Margin="0,0,0,8" BorderBrush="#262D3D" BorderThickness="1">
+                        <Border Grid.Row="0" Background="{DynamicResource Brush.Surface.Panel}" CornerRadius="5" Padding="10" Margin="0,0,0,8" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="1*"/>
@@ -1614,49 +1449,49 @@
                                 </Grid.ColumnDefinitions>
 
                                 <StackPanel Grid.Column="0" Margin="0,0,8,0">
-                                    <TextBlock Text="TRACKS EN SESIÓN" FontSize="10" FontWeight="Bold" Foreground="#00E676" Margin="0,0,0,4"/>
-                                    <TextBlock Text="{Binding StatisticsService.SessionTrackCount}" FontSize="18" FontWeight="Bold" Foreground="#FFFFFF" FontFamily="Consolas"/>
+                                    <TextBlock Text="TRACKS EN SESIÓN" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent.Success}" Margin="0,0,0,4"/>
+                                    <TextBlock Text="{Binding StatisticsService.SessionTrackCount}" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.High}" FontFamily="{StaticResource Sys.Font.Clock}"/>
                                 </StackPanel>
 
                                 <StackPanel Grid.Column="1" Margin="0,0,8,0">
-                                    <TextBlock Text="TIEMPO TOTAL" FontSize="10" FontWeight="Bold" Foreground="#00E676" Margin="0,0,0,4"/>
-                                    <TextBlock Text="{Binding StatisticsService.TotalSessionPlayTime, StringFormat='{}{0:hh\\:mm\\:ss}'}" FontSize="18" FontWeight="Bold" Foreground="#FFFFFF" FontFamily="Consolas"/>
+                                    <TextBlock Text="TIEMPO TOTAL" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent.Success}" Margin="0,0,0,4"/>
+                                    <TextBlock Text="{Binding StatisticsService.TotalSessionPlayTime, StringFormat='{}{0:hh\\:mm\\:ss}'}" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.High}" FontFamily="{StaticResource Sys.Font.Clock}"/>
                                 </StackPanel>
 
                                 <StackPanel Grid.Column="2" Margin="0,0,8,0">
-                                    <TextBlock Text="TRACKS ÚNICOS" FontSize="10" FontWeight="Bold" Foreground="#00E676" Margin="0,0,0,4"/>
-                                    <TextBlock Text="{Binding StatisticsService.TotalUniqueTracks}" FontSize="18" FontWeight="Bold" Foreground="#FFFFFF" FontFamily="Consolas"/>
+                                    <TextBlock Text="TRACKS ÚNICOS" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent.Success}" Margin="0,0,0,4"/>
+                                    <TextBlock Text="{Binding StatisticsService.TotalUniqueTracks}" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.High}" FontFamily="{StaticResource Sys.Font.Clock}"/>
                                 </StackPanel>
 
                                 <StackPanel Grid.Column="3">
-                                    <TextBlock Text="REGISTROS TOTALES" FontSize="10" FontWeight="Bold" Foreground="#00E676" Margin="0,0,0,4"/>
-                                    <TextBlock Text="{Binding StatisticsService.TotalPlaybackRecords}" FontSize="18" FontWeight="Bold" Foreground="#FFFFFF" FontFamily="Consolas"/>
+                                    <TextBlock Text="REGISTROS TOTALES" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent.Success}" Margin="0,0,0,4"/>
+                                    <TextBlock Text="{Binding StatisticsService.TotalPlaybackRecords}" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.High}" FontFamily="{StaticResource Sys.Font.Clock}"/>
                                 </StackPanel>
                             </Grid>
                         </Border>
 
                         <!-- CONTROLES DE ESTADÍSTICAS -->
-                        <Border Grid.Row="1" Background="#11141F" CornerRadius="5" Padding="10" Margin="0,0,0,8" BorderBrush="#262D3D" BorderThickness="1">
+                        <Border Grid.Row="1" Background="{DynamicResource Brush.Surface.Panel}" CornerRadius="5" Padding="10" Margin="0,0,0,8" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
                             <UniformGrid Columns="4">
-                                <Button Command="{Binding GenerateStatisticsReportCommand}" Style="{StaticResource StudioButtonStyle}" Content="📊 GENERAR REPORTE" Margin="0,0,4,0" Background="#00B0FF" BorderBrush="#00E5FF"/>
+                                <Button Command="{Binding GenerateStatisticsReportCommand}" Style="{StaticResource StudioButtonStyle}" Content="📊 GENERAR REPORTE" Margin="0,0,4,0" Background="{DynamicResource Brush.Accent.Info}" BorderBrush="{DynamicResource Brush.Accent}"/>
                                 <Button Command="{Binding SaveStatisticsCommand}" Style="{StaticResource StudioButtonStyle}" Content="💾 GUARDAR" Margin="4,0,4,0"/>
                                 <Button Command="{Binding LoadStatisticsCommand}" Style="{StaticResource StudioButtonStyle}" Content="📂 CARGAR" Margin="4,0,4,0"/>
-                                <Button Command="{Binding ClearStatisticsCommand}" Style="{StaticResource StudioButtonStyle}" Content="🗑️ LIMPIAR" Margin="4,0,0,0" Background="#FF6D00" BorderBrush="#FF9100"/>
+                                <Button Command="{Binding ClearStatisticsCommand}" Style="{StaticResource StudioButtonStyle}" Content="🗑️ LIMPIAR" Margin="4,0,0,0" Background="{DynamicResource Brush.Accent.OrangeDeep}" BorderBrush="{DynamicResource Brush.Accent.Orange}"/>
                             </UniformGrid>
                         </Border>
 
                         <!-- INFORMACIÓN -->
-                        <Border Grid.Row="2" Background="#11141F" CornerRadius="5" Padding="10" BorderBrush="#262D3D" BorderThickness="1">
+                        <Border Grid.Row="2" Background="{DynamicResource Brush.Surface.Panel}" CornerRadius="5" Padding="10" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
                             <StackPanel>
-                                <TextBlock Text="SISTEMA DE ESTADÍSTICAS" FontSize="11" FontWeight="Bold" Foreground="#00E676" Margin="0,0,0,6"/>
-                                <TextBlock Text="El sistema registra automáticamente cada reproducción con información detallada:" FontSize="9" Foreground="#8A99AD" Margin="0,0,0,4"/>
-                                <TextBlock Text="• Tracks más populares por número de reproducciones" FontSize="9" Foreground="#00E676" Margin="0,0,0,2"/>
-                                <TextBlock Text="• Tiempo total de reproducción por track" FontSize="9" Foreground="#00E676" Margin="0,0,0,2"/>
-                                <TextBlock Text="• Estadísticas por hora del día" FontSize="9" Foreground="#00E676" Margin="0,0,0,2"/>
-                                <TextBlock Text="• Estadísticas por género musical" FontSize="9" Foreground="#00E676" Margin="0,0,0,2"/>
-                                <TextBlock Text="• Historial de reproducciones diario" FontSize="9" Foreground="#00E676" Margin="0,0,0,2"/>
-                                <TextBlock Text="• Reportes exportables en formato texto" FontSize="9" Foreground="#00E676" Margin="0,0,0,6"/>
-                                <TextBlock Text="Los datos se guardan en formato JSON para persistencia entre sesiones." FontSize="9" Foreground="#FFEA00"/>
+                                <TextBlock Text="SISTEMA DE ESTADÍSTICAS" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent.Success}" Margin="0,0,0,6"/>
+                                <TextBlock Text="El sistema registra automáticamente cada reproducción con información detallada:" FontSize="9" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,0,0,4"/>
+                                <TextBlock Text="• Tracks más populares por número de reproducciones" FontSize="9" Foreground="{DynamicResource Brush.Accent.Success}" Margin="0,0,0,2"/>
+                                <TextBlock Text="• Tiempo total de reproducción por track" FontSize="9" Foreground="{DynamicResource Brush.Accent.Success}" Margin="0,0,0,2"/>
+                                <TextBlock Text="• Estadísticas por hora del día" FontSize="9" Foreground="{DynamicResource Brush.Accent.Success}" Margin="0,0,0,2"/>
+                                <TextBlock Text="• Estadísticas por género musical" FontSize="9" Foreground="{DynamicResource Brush.Accent.Success}" Margin="0,0,0,2"/>
+                                <TextBlock Text="• Historial de reproducciones diario" FontSize="9" Foreground="{DynamicResource Brush.Accent.Success}" Margin="0,0,0,2"/>
+                                <TextBlock Text="• Reportes exportables en formato texto" FontSize="9" Foreground="{DynamicResource Brush.Accent.Success}" Margin="0,0,0,6"/>
+                                <TextBlock Text="Los datos se guardan en formato JSON para persistencia entre sesiones." FontSize="9" Foreground="{DynamicResource Brush.Accent.Warn}"/>
                             </StackPanel>
                         </Border>
                     </Grid>
@@ -1665,14 +1500,14 @@
         </Grid>
 
         <!-- ================= STATUS FOOTER BAR ================= -->
-        <Border Grid.Row="3" Background="#11141F" CornerRadius="4" Padding="10,5" Margin="0,8,0,0" BorderBrush="#1F2636" BorderThickness="1">
+        <Border Grid.Row="3" Background="{DynamicResource Brush.Surface.Panel}" CornerRadius="4" Padding="10,5" Margin="0,8,0,0" BorderBrush="{DynamicResource Brush.Border.Subtle}" BorderThickness="1">
             <DockPanel>
-                <TextBlock Text="{Binding StatusText}" Foreground="#00E676" FontSize="11" FontWeight="SemiBold" DockPanel.Dock="Left"/>
+                <TextBlock Text="{Binding StatusText}" Foreground="{DynamicResource Brush.Accent.Success}" FontSize="11" FontWeight="SemiBold" DockPanel.Dock="Left"/>
                 <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
-                    <TextBlock x:Name="CurrentUserText" Foreground="#A0AEC0" FontSize="10" VerticalAlignment="Center" Margin="0,0,12,0"/>
-                    <Button x:Name="ManageUsersButton" Content="USUARIOS" Click="OnManageUsersClick" Background="#26343D" Foreground="#FFFFFF" BorderThickness="0" Padding="8,3" Margin="0,0,6,0"/>
-                    <Button Content="CERRAR SESIÓN" Click="OnLogoutClick" Background="#6E3030" Foreground="#FFFFFF" BorderThickness="0" Padding="8,3" Margin="0,0,12,0"/>
-                    <TextBlock Text="Quasar Radio Pro v3.0" Foreground="#55657B" FontSize="10" VerticalAlignment="Center"/>
+                    <TextBlock x:Name="CurrentUserText" Foreground="{DynamicResource Brush.Text.Muted}" FontSize="10" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                    <Button x:Name="ManageUsersButton" Content="USUARIOS" Click="OnManageUsersClick" Background="{DynamicResource Brush.Surface.FooterButton}" Foreground="{DynamicResource Brush.Text.High}" BorderThickness="0" Padding="8,3" Margin="0,0,6,0"/>
+                    <Button Content="CERRAR SESIÓN" Click="OnLogoutClick" Background="{DynamicResource Brush.Surface.DangerSoft}" Foreground="{DynamicResource Brush.Text.High}" BorderThickness="0" Padding="8,3" Margin="0,0,12,0"/>
+                    <TextBlock Text="Quasar Radio Pro v3.0" Foreground="{DynamicResource Brush.Text.Faint}" FontSize="10" VerticalAlignment="Center"/>
                 </StackPanel>
             </DockPanel>
         </Border>
