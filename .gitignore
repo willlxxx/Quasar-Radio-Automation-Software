@@ -1,0 +1,49 @@
+# Build results
+bin/
+obj/
+
+# Visual Studio / Rider / VS Code files
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+*.useros
+*.sln.docstates
+*.userprefs
+*.cache
+
+# Logs & temp files
+*.log
+logs/
+TestResults/
+[Dd]ebug/
+[Rr]elease/
+
+# Binarios y documentación de ffmpeg (634 MB de .exe; superan el límite de 100 MB por archivo de GitHub)
+# Se instalan aparte en ffmpeg/bin/ -- ver docs/RUTINA_HUMO.md
+ffmpeg/
+
+# Dependencias de nodo ajenas al proyecto .NET
+node_modules/
+
+# Cachés de análisis de código
+graphify-out/
+
+# Salida generada por la aplicación en tiempo de ejecución
+nowplaying.txt
+nowplaying.json
+playback_history.json
+statistics.json
+users.json
+track_metadata.json
+grabaciones/
+reporte_emision_*.txt
+track_metadata_backup.json
+*.tmp
+
+# Config del plugin de notas de VS Code
+.crossnote/
+
+# Evidencia del incidente 2026-10-22 (tonos de 18-19 KB; no es material de emisión)
+docs/incidente-2026-10-22/tonos_generados/
