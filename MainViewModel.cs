@@ -134,13 +134,10 @@ namespace quasar_radio
             set => StreamingViewModel.CurrentNowPlayingText = value;
         }
 
-        // Propiedades de LibraryViewModel expuestas
-        public TrackItem? SelectedDbTrack
-        {
-            get => LibraryViewModel.SelectedDbTrack;
-            set => LibraryViewModel.SelectedDbTrack = value;
-        }
-        public AudioDatabaseService DatabaseService => _databaseService;
+        // UI-4: aqui antes se reenviaban SelectedDbTrack y DatabaseService para el panel
+        // BASE DE DATOS de la consola. El panel se fue a la ventana de Biblioteca, que es
+        // el mismo singleton LibraryViewModel, asi que el reenvio sobraba: la consola ya
+        // no toca la base de datos, abre el modulo.
 
         // Comandos de AudioPlayerViewModel expuestos
         public ICommand PlayCommand => AudioPlayerViewModel.PlayCommand;
@@ -166,13 +163,6 @@ namespace quasar_radio
         public ICommand AssignCartPadCommand => CartWallViewModel.AssignCartPadCommand;
         public ICommand ClearCartPadCommand => CartWallViewModel.ClearCartPadCommand;
         public ICommand StopAllCartPadsCommand => CartWallViewModel.StopAllCartPadsCommand;
-
-        // Comandos de LibraryViewModel expuestos
-        public ICommand AddTrackFromDbToPlaylistCommand => LibraryViewModel.AddTrackFromDbToPlaylistCommand;
-        public ICommand GenerateAutoPlaylistCommand => LibraryViewModel.GenerateAutoPlaylistCommand;
-        public ICommand ClearRotationHistoryCommand => LibraryViewModel.ClearRotationHistoryCommand;
-        public ICommand GenerateSmartPlaylistCommand => LibraryViewModel.GenerateSmartPlaylistCommand;
-        public ICommand OpenLibraryManagementCommand => LibraryViewModel.OpenLibraryManagementCommand;
 
         // Comandos de StreamingViewModel expuestos
         public ICommand ToggleStreamingCommand => StreamingViewModel.ToggleStreamingCommand;
@@ -378,8 +368,6 @@ namespace quasar_radio
         public ICommand LoadStatisticsCommand { get; private set; } = null!;
         public ICommand TriggerCommercialBlockNowCommand { get; private set; } = null!;
         public ICommand AddSpotToBlockCommand { get; private set; } = null!;
-        public ICommand PlayAux1Command { get; private set; } = null!;
-        public ICommand PlayAux2Command { get; private set; } = null!;
         public ICommand OpenTrackEditorCommand { get; private set; } = null!;
 
         public MainViewModel(
@@ -449,13 +437,25 @@ namespace quasar_radio
             // Exportar metadata inicial
             NowPlayingService.UpdateNowPlaying(null);
 
+            // AUTH-1: la identificacion puede llegar en mitad de una sesion (la pide AuthGate
+            // al pulsar una operacion, o el usuario en la ventana de usuarios). Al cambiar la
+            // sesion hay que re-evaluar los CanExecute y repintar el pie de la consola, si no
+            // el operador se queda con botones del estado viejo aunque ya este identificado.
+            App.Auth.SessionChanged += (_, _) =>
+                Application.Current?.Dispatcher.BeginInvoke(RefreshAuthorizationState);
+
             _logger.Information("MainViewModel inicializado con DI");
         }
 
         private void ConfigureCommands()
         {
             bool CanOperate() => App.Auth.IsAuthorized(UserRole.Operator);
-            bool IsAdmin() => App.Auth.IsAuthorized(UserRole.Admin);
+
+            // AUTH-1: el nivel se sigue exigiendo, pero se pide AL PULSAR (AuthGate) y no
+            // dejando el boton apagado desde el arranque. Ninguna ventana de la emisora se
+            // abre ya detras de una clave; lo que si queda atribuido por nivel es esto:
+            // umbral de silencio, borrar grabaciones, y el estadistico.
+            bool Admin() => AuthGate.Admin();
 
             ToggleMicCommand = new RelayCommand(o =>
             {
@@ -471,7 +471,7 @@ namespace quasar_radio
             AnnounceTimeCommand = new RelayCommand(o => ExecuteAnnounceTime(), o => CanOperate());
 
             ToggleSilenceDetectionCommand = new RelayCommand(o => IsSilenceDetectionEnabled = !IsSilenceDetectionEnabled, o => CanOperate());
-            AdjustSilenceThresholdCommand = new RelayCommand(o => AdjustSilenceThreshold(o), o => IsAdmin());
+            AdjustSilenceThresholdCommand = new RelayCommand(o => { if (Admin()) AdjustSilenceThreshold(o); });
 
             ToggleRecordingCommand = new RelayCommand(o => ToggleRecording(), o => CanOperate());
             OpenRecordingFolderCommand = new RelayCommand(o =>
@@ -480,20 +480,22 @@ namespace quasar_radio
                     ? "Carpeta de grabaciones abierta."
                     : _recordingService.LastError ?? "No se pudo abrir la carpeta de grabaciones.";
             }, o => CanOperate());
-            DeleteRecordingCommand = new RelayCommand(o => DeleteRecording(o), o => IsAdmin());
+            DeleteRecordingCommand = new RelayCommand(o => { if (Admin()) DeleteRecording(o); });
 
             GenerateStatisticsReportCommand = new RelayCommand(o => GenerateStatisticsReport(), o => CanOperate());
-            ClearStatisticsCommand = new RelayCommand(o => ClearStatistics(), o => IsAdmin());
-            SaveStatisticsCommand = new RelayCommand(o => SaveStatistics(), o => IsAdmin());
-            LoadStatisticsCommand = new RelayCommand(o => LoadStatistics(), o => IsAdmin());
+            ClearStatisticsCommand = new RelayCommand(o => { if (Admin()) ClearStatistics(); });
+            SaveStatisticsCommand = new RelayCommand(o => { if (Admin()) SaveStatistics(); });
+            LoadStatisticsCommand = new RelayCommand(o => { if (Admin()) LoadStatistics(); });
 
             TriggerCommercialBlockNowCommand = new RelayCommand(o => InjectCommercialBlock(o as CommercialBlock, true), o => CanOperate());
-            AddSpotToBlockCommand = new RelayCommand(o => AddSpotToBlock(o as CommercialBlock), o => IsAdmin());
+            AddSpotToBlockCommand = new RelayCommand(o => { if (Admin()) AddSpotToBlock(o as CommercialBlock); });
 
-            PlayAux1Command = new RelayCommand(o => _auxPlayerEngine.Aux1.PlayTrack(o as TrackItem ?? AudioPlayerViewModel.SelectedTrack ?? LibraryViewModel.SelectedDbTrack), o => CanOperate());
-            PlayAux2Command = new RelayCommand(o => _auxPlayerEngine.Aux2.PlayTrack(o as TrackItem ?? AudioPlayerViewModel.SelectedTrack ?? LibraryViewModel.SelectedDbTrack), o => CanOperate());
+            // UI-4: PlayAux1/PlayAux2Command vivian aqui para el boton "PFL AUX 1" del panel
+            // BASE DE DATOS. El PFL se elige sobre un track concreto, y ese track se elige en
+            // Biblioteca, asi que los mandos se fueron con el boton (LibraryViewModel).
+            // DspWindow conserva parada y volumen de AUX 1/2, que es monitorizacion.
 
-            OpenTrackEditorCommand = new RelayCommand(o => OpenTrackEditor(o as TrackItem ?? AudioPlayerViewModel.SelectedTrack), o => IsAdmin());
+            OpenTrackEditorCommand = new RelayCommand(o => { if (Admin()) OpenTrackEditor(o as TrackItem ?? AudioPlayerViewModel.SelectedTrack); });
 
             RefreshRecordingFilesCommand = new RelayCommand(o => RefreshRecordingFiles(), o => CanOperate());
             OpenModuleCommand = new RelayCommand(o => OpenModule(o as string));

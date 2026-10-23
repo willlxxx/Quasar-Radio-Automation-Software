@@ -52,7 +52,10 @@ namespace quasar_radio
 
         public ThemeViewModel()
         {
-            ChangeStationLogoCommand = new RelayCommand(o => ChangeStationLogo(), o => App.Auth.IsAuthorized(UserRole.Admin));
+            // AUTH-1: el logo es identidad de emisora, asi que sigue siendo de administrador,
+            // pero la clave se pide al pulsar (AuthGate) y no dejando el boton muerto desde el
+            // arranque. Cambiar de TEMA, en cambio, es pintura: esa puerta se quito del todo.
+            ChangeStationLogoCommand = new RelayCommand(o => { if (AuthGate.Admin()) ChangeStationLogo(); });
         }
 
         private void ChangeStationLogo()

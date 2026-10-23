@@ -15,9 +15,14 @@ public partial class LoginWindow : Window
         Log.Information("LoginWindow: InitializeComponent completado.");
 
         var isFirstRun = !_authService.HasUsers;
+        // AUTH-1: este dialogo ya no se abre al arrancar la emisora. Se abre en el momento
+        // en que el operador pulsa una accion de administrador (AuthGate), o desde la
+        // ventana de usuarios para identificarse. Por eso el texto habla de la accion, no
+        // de "entrar al programa".
+        Title = isFirstRun ? "Quasar Radio | Primera cuenta" : "Quasar Radio | Identifícate para esta acción";
         SubtitleText.Text = isFirstRun
-            ? "Configuración inicial. Crea la cuenta administradora para proteger esta instalación."
-            : "Inicia sesión para abrir el estudio.";
+            ? "Esta instalación todavía no tiene cuentas. Crea la primera para poder atribuir las operaciones."
+            : "Esta operación cambia el estado compartido. Identifica a quién se le apunta.";
         ConfirmPanel.Visibility = isFirstRun ? Visibility.Visible : Visibility.Collapsed;
 
         Loaded += (_, _) =>
@@ -57,5 +62,12 @@ public partial class LoginWindow : Window
         }
 
         DialogResult = true;
+    }
+
+    /// <summary>AUTH-1: cancelar aqui no cierra nada del programa; solo devuelve la accion.</summary>
+    private void OnCancelClick(object sender, RoutedEventArgs e)
+    {
+        Log.Information("LoginWindow: el usuario volvio sin identificarse; la accion no se hace.");
+        DialogResult = false;
     }
 }

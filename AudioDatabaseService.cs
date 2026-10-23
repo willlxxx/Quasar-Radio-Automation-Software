@@ -83,6 +83,47 @@ namespace quasar_radio
             }
         }
 
+        // UI-4: Biblioteca filtra por rango de BPM. El filtro vivia en
+        // AdvancedSearchService y ninguna vista lo llamaba; aqui queda junto al resto
+        // de filtros, que son los de verdad que se aplican a la tabla.
+        private double? _filterMinBpm;
+        public double? FilterMinBpm
+        {
+            get => _filterMinBpm;
+            set
+            {
+                _filterMinBpm = value;
+                OnPropertyChanged();
+                ApplyFilters();
+            }
+        }
+
+        private double? _filterMaxBpm;
+        public double? FilterMaxBpm
+        {
+            get => _filterMaxBpm;
+            set
+            {
+                _filterMaxBpm = value;
+                OnPropertyChanged();
+                ApplyFilters();
+            }
+        }
+
+        // UI-4: "Archivos no encontrados" como nodo del arbol de categorias. No es un
+        // filtro de metadatos, es el estado del disco, asi que se filtra aparte.
+        private bool _showOnlyMissing;
+        public bool ShowOnlyMissing
+        {
+            get => _showOnlyMissing;
+            set
+            {
+                _showOnlyMissing = value;
+                OnPropertyChanged();
+                ApplyFilters();
+            }
+        }
+
         private string _sortBy = "Title";
         public string SortBy
         {
@@ -149,11 +190,28 @@ namespace quasar_radio
         public void UpdateGenre(string oldGenre, string newGenre)
         {
             if (string.IsNullOrWhiteSpace(newGenre)) return;
-            
+
             var index = Genres.FindIndex(g => g.Equals(oldGenre, StringComparison.OrdinalIgnoreCase));
             if (index >= 0)
             {
                 Genres[index] = newGenre;
+            }
+
+            // UI-4: renombrar el genero tambien tiene que renombrar los tracks que lo
+            // llevan. Antes solo se cambiaba la etiqueta de la lista y la libreria
+            // segua diciendo lo mismo: el cambio no se veia en ningun lado.
+            foreach (var track in AllTracks.Where(t => t.Genre.Equals(oldGenre, StringComparison.OrdinalIgnoreCase)).ToList())
+            {
+                track.Genre = newGenre;
+            }
+
+            if (SelectedGenre.Equals(oldGenre, StringComparison.OrdinalIgnoreCase))
+            {
+                SelectedGenre = newGenre;
+            }
+            else
+            {
+                ApplyFilters();
             }
         }
 
@@ -185,6 +243,12 @@ namespace quasar_radio
             LoadFolderIntoCategory("comerciales", TrackType.Commercial, "Publicidad");
             // 6. Horarias
             LoadFolderIntoCategory("horarias", TrackType.TimeAnnouncement, "Hora");
+
+            // UI-4: el arbol de ESTADO y el glifo ⚠ se leen de FileAvailable, asi que el
+            // escaneo tiene que preguntar por el disco y por NAudio antes de pintar. Sin
+            // esto la ventana abria con "0 problematicos" y solo mentia hasta que alguien
+            // pulsaba COMPROBAR ARCHIVOS.
+            RecheckFiles();
 
             ApplyFilters();
         }
@@ -262,6 +326,21 @@ namespace quasar_radio
             if (FilterPriority.HasValue)
             {
                 query = query.Where(t => t.Priority >= FilterPriority.Value);
+            }
+
+            if (FilterMinBpm.HasValue)
+            {
+                query = query.Where(t => t.Bpm >= FilterMinBpm.Value);
+            }
+
+            if (FilterMaxBpm.HasValue)
+            {
+                query = query.Where(t => t.Bpm <= FilterMaxBpm.Value);
+            }
+
+            if (ShowOnlyMissing)
+            {
+                query = query.Where(t => !t.FileAvailable);
             }
 
             // Ordenamiento
@@ -378,14 +457,46 @@ namespace quasar_radio
 
         public void ClearFilters()
         {
+            ShowOnlyMissing = false;
             SelectedCategory = "Todas";
             SelectedGenre = "Todos";
             SearchText = string.Empty;
             FilterYear = null;
             FilterArtist = string.Empty;
             FilterPriority = null;
+            FilterMinBpm = null;
+            FilterMaxBpm = null;
             SortBy = "Title";
             SortAscending = true;
         }
+
+        // ---------------------------------------------------------------- archivo
+
+        /// <summary>
+        /// Vuelve a preguntar qué tracks se pueden usar de verdad (UI-4): que el archivo
+        /// siga en disco y que NAudio haya conseguido leer su duración. Devuelve los
+        /// problemáticos y deja <see cref="TrackItem.FileAvailable"/> listo para el árbol
+        /// de ESTADO y el glifo ⚠ de la tabla. Se llama al escanear la librería, al conectar
+        /// un disco externo y desde el boton COMPROBAR ARCHIVOS de Biblioteca.
+        /// </summary>
+        public List<TrackItem> RecheckFiles()
+        {
+            var problematic = new List<TrackItem>();
+
+            foreach (var track in AllTracks)
+            {
+                var onDisk = !string.IsNullOrWhiteSpace(track.FilePath) && File.Exists(track.FilePath);
+
+                // Una duracion de cero significa "el archivo esta, pero NAudio no lo abrio":
+                // truncado, formato que no es audio o extension enganosa. En cabina se oye
+                // igual de mal que uno que falta, asi que comparte el aviso.
+                track.FileAvailable = onDisk && track.Duration > TimeSpan.Zero;
+                if (!track.FileAvailable) problematic.Add(track);
+            }
+
+            return problematic;
+        }
+
+        public int CountMissing() => AllTracks.Count(t => !t.FileAvailable);
     }
 }

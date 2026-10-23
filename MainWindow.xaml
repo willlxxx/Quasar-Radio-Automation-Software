@@ -1,4 +1,4 @@
-﻿<Window x:Class="quasar_radio.MainWindow"
+<Window x:Class="quasar_radio.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:quasar_radio"
@@ -7,29 +7,11 @@
         local:StudioKeys.CartWall="True"
         Background="{DynamicResource Brush.Surface.Base}" Foreground="{DynamicResource Brush.Text.Default}">
 
-    <!-- F1..F12 -> pads 1..12: ver StudioKeys.cs, declarada igual en cada ventana de modulo. -->
+    <!-- F1..F12 -> pads 1..12: ver StudioKeys.cs, declarada igual en cada ventana de modulo.
 
-    <Window.Resources>
-        <!-- Celda de texto que se recorta con puntos suspensivos y deja leer el titulo
-             entero por tooltip (D3: "Sweet child of mine (umba" sin puntos ni tooltip). -->
-        <Style x:Key="TrimmingCell" TargetType="TextBlock">
-            <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
-            <Setter Property="ToolTip" Value="{Binding Text, RelativeSource={RelativeSource Self}}"/>
-        </Style>
-
-        <!-- Boton de la franja de modulos (UI-3b). Cada boton pone en Tag su propiedad
-             IsXxxOpen: el acento marca la ventana que ya esta abierta, para no abrir dos. -->
-        <Style x:Key="ModuleStripButtonStyle" TargetType="Button" BasedOn="{StaticResource StudioButtonStyle}">
-            <Setter Property="Margin" Value="0,0,8,0"/>
-            <Setter Property="Padding" Value="10,4"/>
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Self}}" Value="True">
-                    <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent}"/>
-                    <Setter Property="BorderThickness" Value="2"/>
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
-    </Window.Resources>
+         UI-4: Window.Resources se queda vacio. La celda recortable y el boton de franja
+         de modulos viven ahora en Themes/Controls.xaml (Quasar.Cell.Trim y
+         ModuleStripButtonStyle), que es donde Biblioteca los necesita tambien. -->
 
     <Grid Margin="12">
         <Grid.RowDefinitions>
@@ -156,7 +138,10 @@
                 <!-- SELECTOR DE TEMAS -->
                 <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,10,0">
                     <TextBlock Text="Tema:" FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}" VerticalAlignment="Center" Margin="0,0,4,0"/>
-                    <ComboBox ItemsSource="{Binding AvailableThemes}" SelectedItem="{Binding SelectedTheme}" Width="130" Height="26" FontSize="11" IsEnabled="{Binding DataContext.IsAdmin, RelativeSource={RelativeSource AncestorType=Window}}"/>
+                    <!-- AUTH-1: cambiar de tema es pintura, no una atribucion por nivel, asi que
+                         ya no esta gated por IsAdmin. Esto ademas cierra la comprobacion que
+                         quedo abierta en UI-1 (H1): el selector se podia usar sin credenciales. -->
+                    <ComboBox ItemsSource="{Binding AvailableThemes}" SelectedItem="{Binding SelectedTheme}" Width="130" Height="26" FontSize="11"/>
                 </StackPanel>
 
                 <!-- BOTÓN ANUNCIAR HORA -->
@@ -821,14 +806,19 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
+                    <!-- x:Name (AutomationId) en los tres mandos maestros: en la consola hay
+                         otros botones que tambien dicen "PLAY" (los dos decks), y el script de
+                         verificacion tiene que poder pulsar el de salida al aire sin adivinar
+                         por posicion. Se usa AutomationId y no AutomationProperties.Name para
+                         no tapar el texto que ve el operador. -->
                     <UniformGrid Grid.Row="0" Columns="3" Height="40">
-                        <Button Command="{Binding PlayCommand}" Style="{StaticResource PlayButtonStyle}" Margin="0,0,3,0">
+                        <Button x:Name="MasterPlayButton" Command="{Binding PlayCommand}" Style="{StaticResource PlayButtonStyle}" Margin="0,0,3,0">
                             <TextBlock Text="PLAY" FontWeight="Bold"/>
                         </Button>
-                        <Button Command="{Binding PauseCommand}" Style="{StaticResource StudioButtonStyle}" Margin="2,0,2,0">
+                        <Button x:Name="MasterPauseButton" Command="{Binding PauseCommand}" Style="{StaticResource StudioButtonStyle}" Margin="2,0,2,0">
                             <TextBlock Text="PAUSA" FontWeight="Bold"/>
                         </Button>
-                        <Button Command="{Binding StopCommand}" Style="{StaticResource StopButtonStyle}" Margin="3,0,0,0">
+                        <Button x:Name="MasterStopButton" Command="{Binding StopCommand}" Style="{StaticResource StopButtonStyle}" Margin="3,0,0,0">
                             <TextBlock Text="PARAR" FontWeight="Bold"/>
                         </Button>
                     </UniformGrid>
@@ -880,21 +870,24 @@
                             <TextBlock Text="VOLUMEN MASTER" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.Secondary}" DockPanel.Dock="Left"/>
                             <TextBlock Text="{Binding VolumePercentageText}" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent.Info}" DockPanel.Dock="Right" HorizontalAlignment="Right"/>
                         </DockPanel>
-                        <Slider Value="{Binding MasterVolume}" Minimum="0" Maximum="1" TickFrequency="0.05" IsSnapToTickEnabled="True" Margin="0,2,0,0" IsEnabled="{Binding CanOperate}"/>
+                        <Slider Value="{Binding MasterVolume}" Minimum="0" Maximum="1" TickFrequency="0.05" IsSnapToTickEnabled="True" Margin="0,2,0,0" IsEnabled="{Binding CanOperate}"
+                                AutomationProperties.Name="Volumen master de salida"/>
                     </StackPanel>
                 </Grid>
             </Border>
         </Grid>
 
-        <!-- ================= SECCIÓN CENTRAL: REJILLA + PESTAÑAS V3.0 ================= -->
+        <!-- ================= SECCIÓN CENTRAL: REJILLA DE EMISIÓN =================
+             UI-4: el panel BASE DE DATOS que ocupaba la segunda columna se fue a la
+             ventana de Biblioteca (árbol, filtros, lote, CUE y la barra de emisión con
+             ENCOLAR / AUTO / SMART / PFL). La rejilla pasa a ocupar toda la fila. -->
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1.8*"/> <!-- Rejilla de Emisión (Playlist) -->
-                <ColumnDefinition Width="1.2*"/> <!-- Pestañas de Suite v3.0 -->
+                <ColumnDefinition Width="*"/> <!-- Rejilla de Emisión (Playlist) -->
             </Grid.ColumnDefinitions>
 
             <!-- REJILLA DE EMISIÓN -->
-            <Border Grid.Column="0" Background="{DynamicResource Brush.Surface.Card}" CornerRadius="8" Padding="12" Margin="0,0,8,0" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
+            <Border Grid.Column="0" Background="{DynamicResource Brush.Surface.Card}" CornerRadius="8" Padding="12" Margin="0" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -914,12 +907,21 @@
                             <Button Command="{Binding OpenTrackEditorCommand}" Style="{StaticResource StudioButtonStyle}" Content="✎ CUE/BPM" Margin="0,0,3,0"/>
                             <Button Command="{Binding RemoveTrackCommand}" Style="{StaticResource StudioButtonStyle}" Content="✖" Margin="0,0,3,0"/>
                             <Button Command="{Binding ClearPlayedTracksCommand}" Style="{StaticResource StudioButtonStyle}" Content="🗑 Emitidos" Margin="0,0,3,0"/>
-                            <Button Command="{Binding ClearPlaylistCommand}" Style="{StaticResource StudioButtonStyle}" Content="💥 Vaciar"/>
+                            <!-- x:Name (AutomationId) en Vaciar: el script de rotación tiene que desmontar
+                                 la cola de EMISIÓN, y por texto también aparecen el "Vaciar Pad" de los
+                                 decks y cualquier botón parecido que la Biblioteca publique dentro de
+                                 esta ventana (es hija de la consola a efectos de UIA). -->
+                            <Button x:Name="ClearQueueButton" Command="{Binding ClearPlaylistCommand}" Style="{StaticResource StudioButtonStyle}" Content="💥 Vaciar"/>
                         </StackPanel>
                     </DockPanel>
 
-                    <!-- TABLA DATAGRID PROFESIONAL CON DRAG & DROP -->
-                    <DataGrid Grid.Row="1" ItemsSource="{Binding Playlist}" SelectedItem="{Binding SelectedTrack}"
+                    <!-- TABLA DATAGRID PROFESIONAL CON DRAG & DROP
+                         x:Name (AutomationId) en la rejilla de emisión: la Biblioteca se abre como
+                         ventana propia PERO es hija de la consola, así que un FindAll(Descendants)
+                         desde la consola también encuentra su "Tabla de tracks". Identificar la cola
+                         por el nombre de Control o por el primer DataGrid devuelve la biblioteca
+                         (5 filas siempre) en vez de la rejilla de emisión. -->
+                    <DataGrid x:Name="ConsoleQueueGrid" Grid.Row="1" ItemsSource="{Binding Playlist}" SelectedItem="{Binding SelectedTrack}"
                               AllowDrop="True" Drop="OnPlaylistDrop"
                               AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True"
                               Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.Default}" RowBackground="{DynamicResource Brush.Surface.Panel}" 
@@ -980,72 +982,17 @@
                             </DataGridTemplateColumn>
 
                             <DataGridTextColumn Header="Hora Salida" Binding="{Binding EstimatedPlayTimeFormatted}" Width="80" FontFamily="{StaticResource Sys.Font.Clock}"/>
-                            <DataGridTextColumn Header="Título" Binding="{Binding Title}" Width="2*" ElementStyle="{StaticResource TrimmingCell}"/>
-                            <DataGridTextColumn Header="Artista" Binding="{Binding Artist}" Width="1.5*" ElementStyle="{StaticResource TrimmingCell}"/>
+                            <DataGridTextColumn Header="Título" Binding="{Binding Title}" Width="2*" ElementStyle="{StaticResource Quasar.Cell.Trim}"/>
+                            <DataGridTextColumn Header="Artista" Binding="{Binding Artist}" Width="1.5*" ElementStyle="{StaticResource Quasar.Cell.Trim}"/>
                             <DataGridTextColumn Header="Duración" Binding="{Binding DurationFormatted}" Width="74" FontFamily="{StaticResource Sys.Font.Clock}"/>
                             <DataGridTextColumn Header="Intro" Binding="{Binding IntroSeconds, StringFormat='{}{0:0.0}s'}" Width="50" FontFamily="{StaticResource Sys.Font.Clock}"/>
                             <DataGridTextColumn Header="BPM" Binding="{Binding BpmFormatted}" Width="60"/>
-                            <DataGridTextColumn Header="Género" Binding="{Binding Genre}" Width="80" ElementStyle="{StaticResource TrimmingCell}"/>
+                            <DataGridTextColumn Header="Género" Binding="{Binding Genre}" Width="80" ElementStyle="{StaticResource Quasar.Cell.Trim}"/>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>
             </Border>
 
-            <!-- BASE DE DATOS. En la suite vieja eran 8 pestañas; UI-3b paso 2 se llevó seis a
-                 su ventana de módulo (DSP y AUX PFL -> DspWindow, TANDAS -> ScheduleWindow,
-                 STREAMING y GRABACIÓN -> StreamingWindow, ESTADÍSTICAS -> ReportsWindow) y ahora
-                 CARTWALL es franja fija abajo. Esta deja de ser pestaña y queda como panel de la
-                 consola hasta que Biblioteca (UI-4) la absorba: el TabControl ya no sirve. -->
-            <Border Grid.Column="1" Background="{DynamicResource Brush.Surface.Card}" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1" CornerRadius="8" Padding="10">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/> <!-- titulo BASE DE DATOS -->
-                        <RowDefinition Height="Auto"/> <!-- filtros -->
-                        <RowDefinition Height="Auto"/> <!-- busqueda -->
-                        <RowDefinition Height="*"/>    <!-- tabla -->
-                        <RowDefinition Height="Auto"/> <!-- acciones -->
-                    </Grid.RowDefinitions>
-
-                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,6">
-                        <TextBlock Text="BASE DE DATOS" FontSize="13" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.High}" VerticalAlignment="Center"/>
-                        <TextBlock Text="· se va a Biblioteca en UI-4" FontSize="9" Foreground="{DynamicResource Brush.Text.Faint}" VerticalAlignment="Center" Margin="6,2,0,0"/>
-                    </StackPanel>
-
-                    <DockPanel Grid.Row="1" LastChildFill="False" Margin="0,0,0,6">
-                        <TextBlock Text="Categoría:" FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}" VerticalAlignment="Center" Margin="0,0,4,0" DockPanel.Dock="Left"/>
-                        <ComboBox ItemsSource="{Binding DatabaseService.Categories}" SelectedItem="{Binding DatabaseService.SelectedCategory}" Width="100" FontSize="11" Margin="0,0,8,0" DockPanel.Dock="Left"/>
-
-                        <TextBlock Text="Género:" FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}" VerticalAlignment="Center" Margin="0,0,4,0" DockPanel.Dock="Left"/>
-                        <ComboBox ItemsSource="{Binding DatabaseService.Genres}" SelectedItem="{Binding DatabaseService.SelectedGenre}" Width="100" FontSize="11" DockPanel.Dock="Left"/>
-                    </DockPanel>
-
-                    <TextBox Grid.Row="2" Text="{Binding DatabaseService.SearchText, UpdateSourceTrigger=PropertyChanged}" Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Default}" Padding="4" Margin="0,0,0,6"/>
-
-                    <DataGrid Grid.Row="3" ItemsSource="{Binding DatabaseService.FilteredTracks}" SelectedItem="{Binding SelectedDbTrack}"
-                              AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True"
-                              Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.Default}" RowBackground="{DynamicResource Brush.Surface.Panel}"
-                              AlternatingRowBackground="{DynamicResource Brush.Surface.Card}" GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="{DynamicResource Brush.Border.Subtle}"
-                              BorderThickness="1" BorderBrush="{DynamicResource Brush.Border.Default}" RowHeight="26">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="Icon" Binding="{Binding IconSymbol}" Width="35"/>
-                            <DataGridTextColumn Header="Título" Binding="{Binding Title}" Width="2*" ElementStyle="{StaticResource TrimmingCell}"/>
-                            <DataGridTextColumn Header="Artista" Binding="{Binding Artist}" Width="1.5*" ElementStyle="{StaticResource TrimmingCell}"/>
-                            <DataGridTextColumn Header="Duración" Binding="{Binding DurationFormatted}" Width="74" FontFamily="{StaticResource Sys.Font.Clock}"/>
-                        </DataGrid.Columns>
-                    </DataGrid>
-
-                    <!-- D3: UniformGrid recortaba "AUTO PLAYLI"/"LIMPIAR HIS" porque el
-                         ancho de celda dependia de la ventana. Con WrapPanel el boton
-                         conserva su ancho y la fila que sobre baja sola. -->
-                    <WrapPanel Grid.Row="4" Margin="0,2,0,0">
-                        <Button Command="{Binding AddTrackFromDbToPlaylistCommand}" Style="{StaticResource StudioButtonStyle}" Content="+ Encolar" Width="152" Height="30" FontSize="11" Padding="4,0" Margin="0,0,4,4"/>
-                        <Button Command="{Binding PlayAux1Command}" Style="{StaticResource StudioButtonStyle}" Content="▶ PFL AUX 1" Width="152" Height="30" FontSize="11" Padding="4,0" Margin="0,0,4,4"/>
-                        <Button Command="{Binding GenerateAutoPlaylistCommand}" Style="{StaticResource StudioButtonStyle}" Content="⚡ AUTO PLAYLIST" Width="152" Height="30" FontSize="11" Padding="4,0" Margin="0,0,4,4"/>
-                        <Button Command="{Binding GenerateSmartPlaylistCommand}" Style="{StaticResource StudioButtonStyle}" Content="🧠 SMART PLAYLIST" Width="152" Height="30" FontSize="11" Padding="4,0" Margin="0,0,4,4" Background="{DynamicResource Brush.Accent.Info}" BorderBrush="{DynamicResource Brush.Accent}"/>
-                        <Button Command="{Binding ClearRotationHistoryCommand}" Style="{StaticResource StudioButtonStyle}" Content="🗑️ LIMPIAR HISTORIAL" Width="152" Height="30" FontSize="10" Padding="4,0" Margin="0,0,4,4" Background="{DynamicResource Brush.Accent.OrangeDeep}" BorderBrush="{DynamicResource Brush.Accent.Orange}"/>
-                    </WrapPanel>
-                </Grid>
-            </Border>
         </Grid>
 
         <!-- ================= FRANJA SFX F1-F12 (UI-3b) =================
@@ -1134,19 +1081,28 @@
                 <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
                     <TextBlock Text="MÓDULOS" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.Muted}" VerticalAlignment="Center" Margin="0,0,12,0"/>
 
-                    <Button Style="{StaticResource ModuleStripButtonStyle}" Command="{Binding OpenModuleCommand}" CommandParameter="Library" Tag="{Binding IsLibraryOpen}" ToolTip="Biblioteca de medios (admin)">
+                    <!-- AutomationProperties.Name en los cinco: el contenido es un TextBlock con
+                         emoji, y WPF no siempre le saca nombre al boton (H7 en la linea base).
+                         Sin nombre fijo, lector de pantalla y scripts de verificacion venian la
+                         franja vacia unos arranques y llena otros. -->
+                    <Button Style="{StaticResource ModuleStripButtonStyle}" Command="{Binding OpenModuleCommand}" CommandParameter="Library" Tag="{Binding IsLibraryOpen}" ToolTip="Biblioteca de medios (admin)"
+                            AutomationProperties.Name="Abrir Biblioteca">
                         <TextBlock Text="🎵 BIBLIOTECA" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.High}"/>
                     </Button>
-                    <Button Style="{StaticResource ModuleStripButtonStyle}" Command="{Binding OpenModuleCommand}" CommandParameter="Schedule" Tag="{Binding IsScheduleOpen}" ToolTip="Tandas y programación horaria">
+                    <Button Style="{StaticResource ModuleStripButtonStyle}" Command="{Binding OpenModuleCommand}" CommandParameter="Schedule" Tag="{Binding IsScheduleOpen}" ToolTip="Tandas y programación horaria"
+                            AutomationProperties.Name="Abrir Programación">
                         <TextBlock Text="🗓 PROGRAMACIÓN" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.High}"/>
                     </Button>
-                    <Button Style="{StaticResource ModuleStripButtonStyle}" Command="{Binding OpenModuleCommand}" CommandParameter="Dsp" Tag="{Binding IsDspOpen}" ToolTip="Procesador DSP y AUX PFL (admin)">
+                    <Button Style="{StaticResource ModuleStripButtonStyle}" Command="{Binding OpenModuleCommand}" CommandParameter="Dsp" Tag="{Binding IsDspOpen}" ToolTip="Procesador DSP y AUX PFL (admin)"
+                            AutomationProperties.Name="Abrir DSP">
                         <TextBlock Text="🎛 DSP" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.High}"/>
                     </Button>
-                    <Button Style="{StaticResource ModuleStripButtonStyle}" Command="{Binding OpenModuleCommand}" CommandParameter="Streaming" Tag="{Binding IsStreamingOpen}" ToolTip="Streaming Icecast y grabación">
+                    <Button Style="{StaticResource ModuleStripButtonStyle}" Command="{Binding OpenModuleCommand}" CommandParameter="Streaming" Tag="{Binding IsStreamingOpen}" ToolTip="Streaming Icecast y grabación"
+                            AutomationProperties.Name="Abrir Streaming">
                         <TextBlock Text="📡 STREAMING" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.High}"/>
                     </Button>
-                    <Button Style="{StaticResource ModuleStripButtonStyle}" Command="{Binding OpenModuleCommand}" CommandParameter="Reports" Tag="{Binding IsReportsOpen}" ToolTip="Estadísticas y reportes de emisión">
+                    <Button Style="{StaticResource ModuleStripButtonStyle}" Command="{Binding OpenModuleCommand}" CommandParameter="Reports" Tag="{Binding IsReportsOpen}" ToolTip="Estadísticas y reportes de emisión"
+                            AutomationProperties.Name="Abrir Reportes">
                         <TextBlock Text="📊 REPORTES" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.High}"/>
                     </Button>
                 </StackPanel>
@@ -1167,12 +1123,19 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Grid.Column="0" Text="{Binding StatusText}" Foreground="{DynamicResource Brush.Accent.Success}" FontSize="11" FontWeight="SemiBold"
+                <!-- x:Name (AutomationId) en el estado de la consola: la Biblioteca es ventana hija,
+                     así que un AutomationId genérico "StatusText" devuelve el de la biblioteca al
+                     buscar desde la consola. Cada ventana tiene el suyo. -->
+                <TextBlock x:Name="ConsoleStatusText" Grid.Column="0" Text="{Binding StatusText}" Foreground="{DynamicResource Brush.Accent.Success}" FontSize="11" FontWeight="SemiBold"
                            TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="0,0,12,0"/>
                 <StackPanel Grid.Column="1" Orientation="Horizontal">
                     <TextBlock x:Name="CurrentUserText" Foreground="{DynamicResource Brush.Text.Muted}" FontSize="10" VerticalAlignment="Center" Margin="0,0,12,0"/>
-                    <Button x:Name="ManageUsersButton" Content="USUARIOS" Click="OnManageUsersClick" Background="{DynamicResource Brush.Surface.FooterButton}" Foreground="{DynamicResource Brush.Text.High}" BorderThickness="0" Padding="8,3" Margin="0,0,6,0"/>
-                    <Button Content="CERRAR SESIÓN" Click="OnLogoutClick" Background="{DynamicResource Brush.Surface.DangerSoft}" Foreground="{DynamicResource Brush.Text.High}" BorderThickness="0" Padding="8,3" Margin="0,0,12,0"/>
+                    <Button x:Name="IdentifyButton" Content="IDENTIFICARSE" Click="OnIdentifyClick" Background="{DynamicResource Brush.Surface.FooterButton}" Foreground="{DynamicResource Brush.Text.High}" BorderThickness="0" Padding="8,3" Margin="0,0,6,0"
+                            AutomationProperties.Name="Identificarse con una cuenta del sistema"/>
+                    <Button x:Name="ManageUsersButton" Content="USUARIOS" Click="OnManageUsersClick" Background="{DynamicResource Brush.Surface.FooterButton}" Foreground="{DynamicResource Brush.Text.High}" BorderThickness="0" Padding="8,3" Margin="0,0,6,0"
+                            AutomationProperties.Name="Abrir la ventana de usuarios y niveles"/>
+                    <Button x:Name="LogoutButton" Content="CERRAR SESIÓN" Click="OnLogoutClick" Background="{DynamicResource Brush.Surface.DangerSoft}" Foreground="{DynamicResource Brush.Text.High}" BorderThickness="0" Padding="8,3" Margin="0,0,12,0"
+                            AutomationProperties.Name="Cerrar la sesion actual"/>
                     <TextBlock Text="Quasar Radio Pro v3.0" Foreground="{DynamicResource Brush.Text.Faint}" FontSize="10" VerticalAlignment="Center"/>
                 </StackPanel>
             </Grid>

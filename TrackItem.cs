@@ -94,6 +94,27 @@ namespace quasar_radio
             set { _filePath = value; OnPropertyChanged(); }
         }
 
+        // UI-4: el estado del archivo en disco es propiedad del track, no de la ventana.
+        // Lo rellena AudioDatabaseService al escanear y al comprobar archivos, y lo leen
+        // el arbol de categorias de Biblioteca (contador de rotos) y las celdas de la
+        // tabla (Quasar.Cell.Trim pinta el texto en rojo cuando falta el archivo).
+        private bool _fileAvailable = true;
+        public bool FileAvailable
+        {
+            get => _fileAvailable;
+            set
+            {
+                _fileAvailable = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(IsMissing));
+                OnPropertyChanged(nameof(AvailabilityGlyph));
+            }
+        }
+
+        public bool IsMissing => !FileAvailable;
+
+        public string AvailabilityGlyph => FileAvailable ? string.Empty : "⚠";
+
         private TimeSpan _duration = TimeSpan.Zero;
         public TimeSpan Duration
         {

@@ -53,11 +53,15 @@ namespace quasar_radio
             _cartwallEngine.PlaybackFailed += (_, message) => StatusText = message;
 
             bool CanOperate() => App.Auth.IsAuthorized(UserRole.Operator);
-            bool IsAdmin() => App.Auth.IsAuthorized(UserRole.Admin);
+
+            // AUTH-1: disparar un pad es de operador y se hace sin clave. Asignarle un archivo
+            // o quitarle el contenido cambia la botonera de toda la emisora, asi que sigue
+            // siendo de administrador; lo que cambio es que la cuenta se pide al pulsar.
+            bool Admin() => AuthGate.Admin();
 
             TriggerCartPadCommand = new RelayCommand(o => TriggerCartPad(o), o => CanOperate());
-            AssignCartPadCommand = new RelayCommand(o => AssignCartPad(o as CartPadItem), o => IsAdmin());
-            ClearCartPadCommand = new RelayCommand(o => ClearCartPad(o as CartPadItem), o => IsAdmin());
+            AssignCartPadCommand = new RelayCommand(o => { if (Admin()) AssignCartPad(o as CartPadItem); });
+            ClearCartPadCommand = new RelayCommand(o => { if (Admin()) ClearCartPad(o as CartPadItem); });
             StopAllCartPadsCommand = new RelayCommand(o => _cartwallEngine.StopAll(), o => CanOperate());
 
             InitializeCartPads();

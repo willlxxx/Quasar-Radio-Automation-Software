@@ -2,729 +2,469 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:quasar_radio"
-        Title="Gestión de Librería Musical - Quasar Radio Pro" 
-        Height="800" Width="1400"
+        Title="Biblioteca de medios - Quasar Radio Pro"
+        Height="820" Width="1320" MinHeight="640" MinWidth="1040"
         WindowStartupLocation="CenterScreen"
         local:StudioKeys.CartWall="True"
-        Background="{DynamicResource Brush.Surface.Deep}" 
+        Background="{DynamicResource Brush.Surface.Base}"
         Foreground="{DynamicResource Brush.Text.Default}"
-        ResizeMode="CanResize">
+        UseLayoutRounding="True"
+        TextOptions.TextFormattingMode="Display"
+        AutomationProperties.Name="Biblioteca de medios">
+
+    <!-- UI-4: esta ventana era la Gestion de libreria de cuatro pestanas (busqueda,
+         edicion, importar, metadatos) mas un panel "BASE DE DATOS" pegado a la consola.
+         Ahora es un solo espacio de trabajo sin pestanas: arbol a la izquierda, tabla en
+         el centro, inspector y edicion en lote a la derecha, y abajo la barra que toca el
+         aire (encolar, AUTO, SMART, PFL). Ningun hex y ningun FontFamily literal aqui:
+         todo sale de Themes/Tokens.xaml y Themes/Controls.xaml. -->
 
     <Window.Resources>
-        <Style TargetType="Button" x:Key="StudioButtonStyle">
-            <Setter Property="Background" Value="{DynamicResource Brush.Surface.Raised}"/>
-            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.High}"/>
-            <Setter Property="FontSize" Value="11"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="Padding" Value="10,6"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Strong}"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}" 
-                                BorderBrush="{TemplateBinding BorderBrush}" 
-                                BorderThickness="{TemplateBinding BorderThickness}" 
-                                CornerRadius="4" Padding="{TemplateBinding Padding}">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="{DynamicResource Brush.Surface.Hover}"/>
-                                <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Info}"/>
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter Property="Background" Value="{DynamicResource Brush.Surface.Pressed}"/>
-                            </Trigger>
-                            <Trigger Property="IsEnabled" Value="False">
-                                <Setter Property="Opacity" Value="0.4"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <Style TargetType="Button" x:Key="AccentButtonStyle" BasedOn="{StaticResource StudioButtonStyle}">
-            <Setter Property="Background" Value="{DynamicResource Brush.Accent.Info}"/>
-            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent}"/>
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="{DynamicResource Brush.Accent}"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-
-        <Style TargetType="Button" x:Key="SuccessButtonStyle" BasedOn="{StaticResource StudioButtonStyle}">
-            <Setter Property="Background" Value="{DynamicResource Brush.Accent.Play}"/>
-            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Success}"/>
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="{DynamicResource Brush.Accent.Success}"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-
-        <Style TargetType="Button" x:Key="DangerButtonStyle" BasedOn="{StaticResource StudioButtonStyle}">
-            <Setter Property="Background" Value="{DynamicResource Brush.Accent.Stop}"/>
-            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Danger}"/>
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="{DynamicResource Brush.Accent.Danger}"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-
-        <Style TargetType="TabItem">
-            <Setter Property="Background" Value="{DynamicResource Brush.Surface.Panel}"/>
-            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}"/>
-            <Setter Property="FontWeight" Value="Bold"/>
-            <Setter Property="FontSize" Value="12"/>
-            <Setter Property="Padding" Value="12,8"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="TabItem">
-                        <Border Name="Border" Background="{TemplateBinding Background}" CornerRadius="6,6,0,0" Margin="2,0" Padding="{TemplateBinding Padding}">
-                            <ContentPresenter ContentSource="Header"/>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsSelected" Value="True">
-                                <Setter TargetName="Border" Property="Background" Value="{DynamicResource Brush.Surface.Header}"/>
-                                <Setter Property="Foreground" Value="{DynamicResource Brush.Accent}"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <Style TargetType="ComboBox">
-            <Setter Property="Background" Value="{DynamicResource Brush.Surface.Deep}"/>
-            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.High}"/>
-            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Strong}"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Padding" Value="8"/>
-        </Style>
-
-        <Style TargetType="ComboBoxItem">
-            <Setter Property="Background" Value="{DynamicResource Brush.Surface.Deep}"/>
-            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Default}"/>
-            <Setter Property="Padding" Value="8"/>
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="{DynamicResource Brush.Surface.Header}"/>
-                    <Setter Property="Foreground" Value="{DynamicResource Brush.Accent}"/>
-                </Trigger>
-                <Trigger Property="IsSelected" Value="True">
-                    <Setter Property="Background" Value="{DynamicResource Brush.Surface.Header}"/>
-                    <Setter Property="Foreground" Value="{DynamicResource Brush.Accent}"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
+        <!-- Tipo de audio se elige de una lista de KeyValuePair<TrackType,string>. Con la
+             plantilla propia de ComboBox (Quasar.Field.Combo) el DisplayMemberPath no llega
+             a la caja de seleccion: el operador leia "[Music, Musica]" en vez de "Música".
+             Un ItemTemplate explicito si se aplica dentro y fuera de la lista. -->
+        <DataTemplate x:Key="TypeChoiceTemplate">
+            <TextBlock Text="{Binding Value}"/>
+        </DataTemplate>
     </Window.Resources>
 
-    <Grid Margin="16">
+    <Grid Margin="12">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- HEADER -->
-        <Border Grid.Row="0" Background="{DynamicResource Brush.Surface.Header}" CornerRadius="8" Padding="16,12" Margin="0,0,0,12" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
+        <!-- ================= CABECERA ================= -->
+        <Border Grid.Row="0" Style="{StaticResource Quasar.Card}" Padding="14,10" Margin="0,0,0,10">
+            <DockPanel LastChildFill="False">
+                <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="🎵" FontSize="20" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="BIBLIOTECA DE MEDIOS" FontSize="15" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.High}"/>
+                        <TextBlock Text="Un solo espacio: árbol, tabla, metadatos en lote y puntos CUE"
+                                   FontSize="10" Foreground="{DynamicResource Brush.Text.Secondary}"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <StackPanel DockPanel.Dock="Right" VerticalAlignment="Center" HorizontalAlignment="Right">
+                    <TextBlock Text="{Binding LibrarySummary}" FontSize="11" Foreground="{DynamicResource Brush.Text.High}" HorizontalAlignment="Right"/>
+                    <TextBlock Text="{Binding RotationSummary}" FontSize="10" Foreground="{DynamicResource Brush.Text.Faint}" HorizontalAlignment="Right" Margin="0,2,0,0"/>
+                    <TextBlock Text="{Binding SelectionSummary}" FontSize="10" Foreground="{DynamicResource Brush.Accent}" HorizontalAlignment="Right" Margin="0,2,0,0"/>
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <!-- ================= CUERPO: arbol | tabla | inspector ================= -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="250"/>
+                <ColumnDefinition Width="10"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="10"/>
+                <ColumnDefinition Width="376"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- ARBOL DE CATEGORIAS -->
+            <Border Grid.Column="0" Style="{StaticResource Quasar.Card}" Padding="8">
+                <DockPanel LastChildFill="True">
+                    <DockPanel DockPanel.Dock="Top" LastChildFill="False" Margin="2,0,2,6">
+                        <TextBlock DockPanel.Dock="Left" Text="CATEGORÍAS" Style="{StaticResource Quasar.CardHeader}" VerticalAlignment="Center"/>
+                        <Button DockPanel.Dock="Right" Content="LIMPIAR" Command="{Binding ClearFiltersCommand}"
+                                Style="{StaticResource StudioButtonStyle}" Padding="6,2" FontSize="10"
+                                AutomationProperties.Name="Limpiar filtros"/>
+                    </DockPanel>
+
+                    <StackPanel DockPanel.Dock="Bottom" Margin="2,6,2,0">
+                        <!-- GENERO ELEGIDO (UI-4 paso B). Rename/Remove vivian en
+                             AudioDatabaseService sin que ninguna vista los llamara: el
+                             operador que queria escribir "Bachata" donde pone "Pop" tenia que
+                             re-marcar pista por pista. La tarjeta solo aparece con un nodo de
+                             GÉNERO del árbol seleccionado, y la clave se pide al pulsar
+                             (AUTH-1), no dejando el boton apagado. -->
+                        <StackPanel Margin="0,0,0,8"
+                                    Visibility="{Binding IsGenreNodeSelected, Converter={StaticResource BoolToVis}}">
+                            <TextBlock Text="GÉNERO ELEGIDO" Style="{StaticResource Quasar.CardHeader}"/>
+                            <TextBlock Text="{Binding GenreNodeSummary}" FontSize="9" Foreground="{DynamicResource Brush.Text.Faint}"
+                                       TextTrimming="CharacterEllipsis" Margin="0,0,0,4"/>
+                            <TextBox Style="{StaticResource Quasar.Field}" Margin="0"
+                                     Text="{Binding GenreRenameText, UpdateSourceTrigger=PropertyChanged}"
+                                     AutomationProperties.Name="Nombre nuevo para el género elegido"/>
+                            <DockPanel LastChildFill="False" Margin="0,4,0,0">
+                                <Button DockPanel.Dock="Left" Content="✔ RENOMBRAR" Command="{Binding RenameGenreCommand}"
+                                        Style="{StaticResource StudioButtonStyle}" Padding="6,2" FontSize="10"
+                                        AutomationProperties.Name="Renombrar el género elegido y sus pistas"/>
+                                <!-- Sin AutomationProperties.Name a proposito: el botón cambia de
+                                     texto cuando se arma ("¿OTRA VEZ?") y una etiqueta fija se lo
+                                     tapaba, asi que ni un lector de pantalla ni el script de
+                                     verificacion podian leer el estado. Se busca por AutomationId
+                                     (x:Name) y su Nombre es lo que pone. -->
+                                <Button DockPanel.Dock="Right" x:Name="DeleteGenreButton" Content="{Binding DeleteGenreLabel}"
+                                        Command="{Binding DeleteGenreCommand}"
+                                        Style="{StaticResource StudioButtonStyle}" Padding="6,2" FontSize="10"
+                                        ToolTip="{Binding DeleteGenreHelp}"/>
+                            </DockPanel>
+                            <TextBlock Text="sus pistas pasan a" FontSize="9" Foreground="{DynamicResource Brush.Text.Faint}" Margin="0,6,0,2"/>
+                            <ComboBox Style="{StaticResource Quasar.Field.Combo}" Margin="0"
+                                      ItemsSource="{Binding GenreTargetOptions}"
+                                      Text="{Binding GenreDeleteTarget, UpdateSourceTrigger=PropertyChanged}"
+                                      AutomationProperties.Name="Género que recibe las pistas del que se quita"/>
+                        </StackPanel>
+
+                        <TextBlock Text="AÑADIR GÉNERO" Style="{StaticResource Quasar.CardHeader}"/>
+                        <DockPanel LastChildFill="True">
+                            <Button DockPanel.Dock="Right" Content="+" Command="{Binding AddGenreCommand}"
+                                    Style="{StaticResource StudioButtonStyle}" Width="26" Margin="4,0,0,0"
+                                    AutomationProperties.Name="Añadir género a la lista"/>
+                            <TextBox Text="{Binding NewGenreName, UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource Quasar.Field}" Margin="0"
+                                     AutomationProperties.Name="Nombre del género nuevo"/>
+                        </DockPanel>
+                    </StackPanel>
+
+                    <ListBox x:Name="CategoryTree" ItemsSource="{Binding TreeNodes}"
+                             SelectedItem="{Binding SelectedNode}"
+                             ItemContainerStyle="{StaticResource Quasar.TreeNode}"
+                             BorderThickness="0" Background="Transparent"
+                             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                             AutomationProperties.Name="Árbol de categorías de la biblioteca">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="{Binding Glyph}" Margin="{Binding IconIndent}" FontSize="11" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="1" Text="{Binding Label}" Style="{StaticResource Quasar.TreeNodeLabel}" Margin="5,0,0,0"/>
+                                    <TextBlock Grid.Column="2" Text="{Binding CountText}" Style="{StaticResource Quasar.TreeNodeCount}"
+                                               Visibility="{Binding IsCountVisible, Converter={StaticResource BoolToVis}}"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </DockPanel>
+            </Border>
+
+            <!-- BARRA DE FILTROS Y TABLA -->
+            <Grid Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Border Grid.Row="0" Style="{StaticResource Quasar.Card}" Padding="10,6" Margin="0,0,0,8">
+                    <WrapPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,12,0">
+                            <TextBlock Text="BUSCAR" Style="{StaticResource Quasar.FieldLabel.Inline}"/>
+                            <TextBox Width="190" Style="{StaticResource Quasar.Field}" Margin="0"
+                                     Text="{Binding DatabaseService.SearchText, UpdateSourceTrigger=PropertyChanged}"
+                                     AutomationProperties.Name="Buscar por título, artista, álbum o compositor"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,0,12,0">
+                            <TextBlock Text="AÑO" Style="{StaticResource Quasar.FieldLabel.Inline}"/>
+                            <TextBox Width="52" Style="{StaticResource Quasar.Field}" Margin="0" Text="{Binding YearText, UpdateSourceTrigger=PropertyChanged}"
+                                     AutomationProperties.Name="Filtrar por año"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,0,12,0">
+                            <TextBlock Text="PRIORIDAD ≥" Style="{StaticResource Quasar.FieldLabel.Inline}"/>
+                            <ComboBox Width="54" Style="{StaticResource Quasar.Field.Combo}" Margin="0"
+                                      ItemsSource="{Binding PriorityOptions}"
+                                      SelectedValue="{Binding DatabaseService.FilterPriority, Mode=TwoWay}"
+                                      AutomationProperties.Name="Filtrar por prioridad mínima"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,0,12,0">
+                            <TextBlock Text="BPM" Style="{StaticResource Quasar.FieldLabel.Inline}"/>
+                            <TextBox Width="48" Style="{StaticResource Quasar.Field}" Margin="0" Text="{Binding BpmMinText, UpdateSourceTrigger=PropertyChanged}"
+                                     AutomationProperties.Name="BPM mínimo"/>
+                            <TextBlock Text="–" Style="{StaticResource Quasar.Label}" VerticalAlignment="Center" Margin="4,0"/>
+                            <TextBox Width="48" Style="{StaticResource Quasar.Field}" Margin="0" Text="{Binding BpmMaxText, UpdateSourceTrigger=PropertyChanged}"
+                                     AutomationProperties.Name="BPM máximo"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,0,12,0">
+                            <TextBlock Text="ORDEN" Style="{StaticResource Quasar.FieldLabel.Inline}"/>
+                            <ComboBox Width="96" Style="{StaticResource Quasar.Field.Combo}" Margin="0"
+                                      ItemsSource="{Binding SortOptions}"
+                                      SelectedItem="{Binding DatabaseService.SortBy}"
+                                      AutomationProperties.Name="Campo de orden"/>
+                            <CheckBox Content="A→Z" IsChecked="{Binding DatabaseService.SortAscending}" Margin="6,0,0,0" VerticalAlignment="Center"
+                                      AutomationProperties.Name="Orden ascendente"/>
+                        </StackPanel>
+
+                        <CheckBox Content="SOLO ARCHIVOS PROBLEMÁTICOS" VerticalAlignment="Center"
+                                  IsChecked="{Binding DatabaseService.ShowOnlyMissing}"
+                                  AutomationProperties.Name="Mostrar solo archivos que faltan o no se pueden leer"/>
+                    </WrapPanel>
+                </Border>
+
+                <DataGrid x:Name="TrackGrid" Grid.Row="1"
+                          ItemsSource="{Binding DatabaseService.FilteredTracks}"
+                          SelectionMode="Extended" SelectionUnit="FullRow" IsReadOnly="True"
+                          AutoGenerateColumns="False" CanUserAddRows="False" CanUserReorderColumns="False"
+                          HeadersVisibility="Column" RowHeight="26" GridLinesVisibility="Horizontal"
+                          SelectionChanged="OnTrackSelectionChanged"
+                          AutomationProperties.Name="Tabla de tracks">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="⚠" Binding="{Binding AvailabilityGlyph}" Width="24" ElementStyle="{StaticResource Quasar.TreeNodeCount}"/>
+                        <DataGridTextColumn Header="Tipo" Binding="{Binding IconSymbol}" Width="34" ElementStyle="{StaticResource Quasar.TreeNodeCount}"/>
+                        <DataGridTextColumn Header="Título" Binding="{Binding Title}" Width="2*" ElementStyle="{StaticResource Quasar.Cell.Trim}"/>
+                        <DataGridTextColumn Header="Artista" Binding="{Binding Artist}" Width="1.4*" ElementStyle="{StaticResource Quasar.Cell.Trim}"/>
+                        <DataGridTextColumn Header="Género" Binding="{Binding Genre}" Width="*" ElementStyle="{StaticResource Quasar.Cell.Trim}"/>
+                        <DataGridTextColumn Header="Año" Binding="{Binding Year}" Width="46" ElementStyle="{StaticResource Quasar.Cell.Clock}"/>
+                        <DataGridTextColumn Header="Prio" Binding="{Binding Priority}" Width="44" ElementStyle="{StaticResource Quasar.Cell.Clock}"/>
+                        <DataGridTextColumn Header="BPM" Binding="{Binding BpmFormatted}" Width="62" ElementStyle="{StaticResource Quasar.Cell.Clock}"/>
+                        <DataGridTextColumn Header="Duración" Binding="{Binding DurationFormatted}" Width="70" ElementStyle="{StaticResource Quasar.Cell.Clock}"/>
+                        <!-- UI-4 paso B: 'Emitido' existia pero se quedaba en "Nunca" toda la
+                             vida porque nadie apuntaba la reproduccion. Ahora la columna de
+                             al lado cuenta las veces que la pista salio al aire. -->
+                        <DataGridTextColumn Header="Vegas" Binding="{Binding PlayCount}" Width="46" ElementStyle="{StaticResource Quasar.Cell.Clock}"/>
+                        <DataGridTextColumn Header="Emitido" Binding="{Binding LastPlayedFormatted}" Width="110" ElementStyle="{StaticResource Quasar.Cell.Clock}"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+
+            <!-- INSPECTOR, LOTE Y CUE -->
+            <ScrollViewer Grid.Column="4" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                <StackPanel>
+
+                    <!-- METADATOS DE UN TRACK -->
+                    <Border Style="{StaticResource Quasar.Card}" Padding="10,8" Margin="0,0,0,8"
+                            IsEnabled="{Binding IsSingleSelection}">
+                        <StackPanel>
+                            <TextBlock Text="METADATOS DEL TRACK" Style="{StaticResource Quasar.CardHeader}"/>
+                            <TextBlock Text="{Binding AnchorTrack.Title}" FontSize="12" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.High}"
+                                       TextTrimming="CharacterEllipsis" Margin="0,0,0,2"/>
+                            <TextBlock Text="{Binding AnchorTrack.FilePath}" FontSize="9" Foreground="{DynamicResource Brush.Text.Faint}"
+                                       TextWrapping="Wrap" Margin="0,0,0,4"/>
+
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="86"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="Título" Style="{StaticResource Quasar.FieldLabel.Inline}"/>
+                                <TextBox   Grid.Row="0" Grid.Column="1" Style="{StaticResource Quasar.Field}" Text="{Binding EditTitle, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Título del track"/>
+
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="Artista" Style="{StaticResource Quasar.FieldLabel.Inline}"/>
+                                <TextBox   Grid.Row="1" Grid.Column="1" Style="{StaticResource Quasar.Field}" Text="{Binding EditArtist, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Artista del track"/>
+
+                                <TextBlock Grid.Row="2" Grid.Column="0" Text="Álbum" Style="{StaticResource Quasar.FieldLabel.Inline}"/>
+                                <TextBox   Grid.Row="2" Grid.Column="1" Style="{StaticResource Quasar.Field}" Text="{Binding EditAlbum, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Álbum del track"/>
+
+                                <TextBlock Grid.Row="3" Grid.Column="0" Text="Género" Style="{StaticResource Quasar.FieldLabel.Inline}"/>
+                                <ComboBox  Grid.Row="3" Grid.Column="1" Style="{StaticResource Quasar.Field.Combo}" IsEditable="True"
+                                           ItemsSource="{Binding GenreOptions}" Text="{Binding EditGenre, UpdateSourceTrigger=PropertyChanged}"
+                                           AutomationProperties.Name="Género del track"/>
+
+                                <TextBlock Grid.Row="4" Grid.Column="0" Text="Tipo" Style="{StaticResource Quasar.FieldLabel.Inline}"/>
+                                <ComboBox  Grid.Row="4" Grid.Column="1" Style="{StaticResource Quasar.Field.Combo}"
+                                           ItemsSource="{Binding TypeChoices}" ItemTemplate="{StaticResource TypeChoiceTemplate}" SelectedValuePath="Key"
+                                           SelectedValue="{Binding EditType}" AutomationProperties.Name="Tipo de audio"/>
+
+                                <TextBlock Grid.Row="5" Grid.Column="0" Text="Año" Style="{StaticResource Quasar.FieldLabel.Inline}"/>
+                                <TextBox   Grid.Row="5" Grid.Column="1" Style="{StaticResource Quasar.Field}" Text="{Binding EditYearText, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Año del track"/>
+
+                                <TextBlock Grid.Row="6" Grid.Column="0" Text="Prioridad" Style="{StaticResource Quasar.FieldLabel.Inline}"/>
+                                <ComboBox  Grid.Row="6" Grid.Column="1" Style="{StaticResource Quasar.Field.Combo}"
+                                           ItemsSource="{Binding PriorityOptions}" SelectedValue="{Binding EditPriority}"
+                                           AutomationProperties.Name="Prioridad de rotación"/>
+
+                                <TextBlock Grid.Row="7" Grid.Column="0" Text="BPM" Style="{StaticResource Quasar.FieldLabel.Inline}"/>
+                                <TextBox   Grid.Row="7" Grid.Column="1" Style="{StaticResource Quasar.Field}" Text="{Binding EditBpmText, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="BPM"/>
+
+                                <TextBlock Grid.Row="8" Grid.Column="0" Text="Cue in/out" Style="{StaticResource Quasar.FieldLabel.Inline}"/>
+                                <DockPanel Grid.Row="8" Grid.Column="1" LastChildFill="True">
+                                    <TextBox DockPanel.Dock="Right" Width="70" Style="{StaticResource Quasar.Field}" Margin="4,2,0,2" Text="{Binding EditCueOutText, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Cue out en segundos"/>
+                                    <TextBox Style="{StaticResource Quasar.Field}" Text="{Binding EditCueInText, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Cue in en segundos"/>
+                                </DockPanel>
+
+                                <TextBlock Grid.Row="9" Grid.Column="0" Text="Intro/outro" Style="{StaticResource Quasar.FieldLabel.Inline}"/>
+                                <DockPanel Grid.Row="9" Grid.Column="1" LastChildFill="True">
+                                    <TextBox DockPanel.Dock="Right" Width="70" Style="{StaticResource Quasar.Field}" Margin="4,2,0,2" Text="{Binding EditOutroText, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Outro en segundos"/>
+                                    <TextBox Style="{StaticResource Quasar.Field}" Text="{Binding EditIntroText, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Intro en segundos"/>
+                                </DockPanel>
+
+                                <TextBlock Grid.Row="10" Grid.Column="0" Text="Fade in/out" Style="{StaticResource Quasar.FieldLabel.Inline}"/>
+                                <DockPanel Grid.Row="10" Grid.Column="1" LastChildFill="True">
+                                    <TextBox DockPanel.Dock="Right" Width="70" Style="{StaticResource Quasar.Field}" Margin="4,2,0,2" Text="{Binding EditFadeOutText, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Fade out en segundos"/>
+                                    <TextBox Style="{StaticResource Quasar.Field}" Text="{Binding EditFadeInText, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Fade in en segundos"/>
+                                </DockPanel>
+
+                                <TextBlock Grid.Row="11" Grid.Column="0" Text="Nota" Style="{StaticResource Quasar.FieldLabel.Inline}"/>
+                                <TextBox   Grid.Row="11" Grid.Column="1" Style="{StaticResource Quasar.Field}" Text="{Binding EditComment, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Comentario del track"/>
+                            </Grid>
+
+                            <TextBlock FontSize="9" Foreground="{DynamicResource Brush.Text.Faint}" Margin="0,6,0,0"
+                                       Text="{Binding EditCuePointsText, StringFormat=Puntos CUE extra: {0}}"/>
+
+                            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                                <Button Content="✔ APLICAR" Command="{Binding ApplyEditsCommand}" Style="{StaticResource SuccessButtonStyle}" Height="28" Padding="10,2" Margin="0,0,6,0"
+                                        AutomationProperties.Name="Aplicar metadatos del track"/>
+                                <Button Content="DESCARTAR" Command="{Binding RevertEditsCommand}" Style="{StaticResource StudioButtonStyle}" Height="28" Padding="10,2"
+                                        AutomationProperties.Name="Descartar los cambios del formulario"/>
+                            </StackPanel>
+
+                            <TextBlock Text="Se edita de a un track. Para cambiar género, prioridad, tipo, año o fades a varios a la vez, la edición en lote está debajo."
+                                       FontSize="9" Foreground="{DynamicResource Brush.Text.Faint}" TextWrapping="Wrap" Margin="0,6,0,0"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- EDICION EN LOTE -->
+                    <Border Style="{StaticResource Quasar.Card}" Padding="10,8" Margin="0,0,0,8"
+                            IsEnabled="{Binding HasSelection}">
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource Quasar.CardHeader}" Text="EDICIÓN EN LOTE"/>
+                            <TextBlock Text="{Binding SelectionSummary}" FontSize="10" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,0,0,6"/>
+
+                            <DockPanel LastChildFill="True" Margin="0,2,0,0">
+                                <CheckBox DockPanel.Dock="Left" IsChecked="{Binding BatchGenreEnabled}" VerticalAlignment="Center" Margin="0,0,6,0"
+                                          AutomationProperties.Name="Aplicar género"/>
+                                <TextBlock DockPanel.Dock="Left" Text="Género" Style="{StaticResource Quasar.FieldLabel.Inline}" Margin="0,0,6,0"/>
+                                <ComboBox IsEditable="True" Style="{StaticResource Quasar.Field.Combo}" Margin="0"
+                                          ItemsSource="{Binding GenreOptions}" Text="{Binding BatchGenre, UpdateSourceTrigger=PropertyChanged}"
+                                          AutomationProperties.Name="Género para el lote"/>
+                            </DockPanel>
+
+                            <DockPanel LastChildFill="True" Margin="0,4,0,0">
+                                <CheckBox DockPanel.Dock="Left" IsChecked="{Binding BatchPriorityEnabled}" VerticalAlignment="Center" Margin="0,0,6,0"
+                                          AutomationProperties.Name="Aplicar prioridad"/>
+                                <TextBlock DockPanel.Dock="Left" Text="Prioridad" Style="{StaticResource Quasar.FieldLabel.Inline}" Margin="0,0,6,0"/>
+                                <ComboBox Style="{StaticResource Quasar.Field.Combo}" Margin="0" ItemsSource="{Binding PriorityOptions}"
+                                          SelectedValue="{Binding BatchPriority}" AutomationProperties.Name="Prioridad para el lote"/>
+                            </DockPanel>
+
+                            <DockPanel LastChildFill="True" Margin="0,4,0,0">
+                                <CheckBox DockPanel.Dock="Left" IsChecked="{Binding BatchTypeEnabled}" VerticalAlignment="Center" Margin="0,0,6,0"
+                                          AutomationProperties.Name="Aplicar tipo"/>
+                                <TextBlock DockPanel.Dock="Left" Text="Tipo" Style="{StaticResource Quasar.FieldLabel.Inline}" Margin="0,0,6,0"/>
+                                <ComboBox Style="{StaticResource Quasar.Field.Combo}" Margin="0" ItemsSource="{Binding TypeChoices}"
+                                          ItemTemplate="{StaticResource TypeChoiceTemplate}" SelectedValuePath="Key" SelectedValue="{Binding BatchType}"
+                                          AutomationProperties.Name="Tipo de audio para el lote"/>
+                            </DockPanel>
+
+                            <DockPanel LastChildFill="True" Margin="0,4,0,0">
+                                <CheckBox DockPanel.Dock="Left" IsChecked="{Binding BatchYearEnabled}" VerticalAlignment="Center" Margin="0,0,6,0"
+                                          AutomationProperties.Name="Aplicar año"/>
+                                <TextBlock DockPanel.Dock="Left" Text="Año" Style="{StaticResource Quasar.FieldLabel.Inline}" Margin="0,0,6,0"/>
+                                <TextBox Style="{StaticResource Quasar.Field}" Margin="0" Text="{Binding BatchYearText, UpdateSourceTrigger=PropertyChanged}"
+                                         AutomationProperties.Name="Año para el lote"/>
+                            </DockPanel>
+
+                            <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                                <CheckBox IsChecked="{Binding BatchFadeEnabled}" VerticalAlignment="Center" Margin="0,0,6,0"
+                                          AutomationProperties.Name="Aplicar fades"/>
+                                <TextBlock Text="Fades" Style="{StaticResource Quasar.FieldLabel.Inline}" Margin="0,0,6,0"/>
+                                <TextBox Width="70" Style="{StaticResource Quasar.Field}" Margin="0,2,4,2" Text="{Binding BatchFadeInText, UpdateSourceTrigger=PropertyChanged}"
+                                         AutomationProperties.Name="Fade in para el lote"/>
+                                <TextBox Width="70" Style="{StaticResource Quasar.Field}" Margin="0,2" Text="{Binding BatchFadeOutText, UpdateSourceTrigger=PropertyChanged}"
+                                         AutomationProperties.Name="Fade out para el lote"/>
+                            </StackPanel>
+
+                            <Button Content="✔ APLICAR A LA SELECCIÓN" Command="{Binding ApplyBatchCommand}" Style="{StaticResource AccentButtonStyle}"
+                                    Height="30" Margin="0,8,0,0" AutomationProperties.Name="Aplicar edición en lote"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- PUNTOS CUE -->
+                    <Border Style="{StaticResource Quasar.Card}" Padding="10,8" IsEnabled="{Binding HasSelection}">
+                        <StackPanel>
+                            <TextBlock Text="PUNTOS CUE DE LA SELECCIÓN" Style="{StaticResource Quasar.CardHeader}"/>
+                            <DockPanel LastChildFill="True" Margin="0,0,0,6">
+                                <Button DockPanel.Dock="Right" Content="APLICAR PRESET" Command="{Binding ApplyPresetCommand}"
+                                        Style="{StaticResource StudioButtonStyle}" Height="26" Padding="8,2" Margin="4,0,0,0"
+                                        AutomationProperties.Name="Aplicar preset de puntos CUE"/>
+                                <ComboBox Style="{StaticResource Quasar.Field.Combo}" Margin="0" ItemsSource="{Binding PresetOptions}"
+                                          SelectedItem="{Binding SelectedPreset}" AutomationProperties.Name="Preset de edición"/>
+                            </DockPanel>
+
+                            <WrapPanel>
+                                <Button Content="CUE INTELIGENTE" Style="{StaticResource Quasar.ActionChip}" Command="{Binding IntelligentCueCommand}"/>
+                                <Button Content="NORMALIZAR" Style="{StaticResource Quasar.ActionChip}" Command="{Binding NormalizeCueCommand}"/>
+                                <Button Content="RESET" Style="{StaticResource Quasar.ActionChip}" Command="{Binding ResetCueCommand}"/>
+                                <Button Content="COPIAR EL DEL PRIMERO" Style="{StaticResource Quasar.ActionChip}" Command="{Binding CopyCueToSelectionCommand}"
+                                        ToolTip="Copia los puntos CUE de la primera fila seleccionada al resto"/>
+                                <Button Content="BORRAR PUNTOS EXTRA" Style="{StaticResource Quasar.ActionChip}" Command="{Binding ClearExtraCuePointsCommand}"/>
+                            </WrapPanel>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+
+        <!-- ================= BARRA DE ACCIONES ================= -->
+        <Border Grid.Row="2" Style="{StaticResource Quasar.Card}" Padding="10,6" Margin="0,10,0,0">
             <Grid>
                 <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <StackPanel Grid.Column="0" Orientation="Horizontal">
-                    <TextBlock Text="🎵" FontSize="24" Margin="0,0,12,0" VerticalAlignment="Center"/>
-                    <StackPanel VerticalAlignment="Center">
-                        <TextBlock Text="GESTIÓN DE LIBRERÍA MUSICAL" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.High}"/>
-                        <TextBlock Text="Administración avanzada de tracks, metadatos y puntos CUE" FontSize="12" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,2,0,0"/>
-                    </StackPanel>
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="A LA EMISIÓN" Style="{StaticResource Quasar.CardHeader}"/>
+                    <WrapPanel>
+                        <Button Content="➕ ENCOLAR SELECCIÓN" Style="{StaticResource Quasar.ActionChip}" Background="{DynamicResource Brush.Accent.Play}"
+                                Command="{Binding QueueSelectionCommand}" AutomationProperties.Name="Encolar los tracks seleccionados"/>
+                        <Button Content="▶ PFL AUX 1" Style="{StaticResource Quasar.ActionChip}" Command="{Binding PlayAux1Command}" ToolTip="Monitoreo privado por AUX 1, no sale al aire"/>
+                        <Button Content="▶ PFL AUX 2" Style="{StaticResource Quasar.ActionChip}" Command="{Binding PlayAux2Command}" ToolTip="Monitoreo privado por AUX 2, no sale al aire"/>
+                        <Button Content="⚡ AUTO PLAYLIST" Style="{StaticResource Quasar.ActionChip}" Command="{Binding GenerateAutoPlaylistCommand}"/>
+                        <Button Content="🧠 SMART PLAYLIST" Style="{StaticResource Quasar.ActionChip}" Background="{DynamicResource Brush.Accent.Info}"
+                                Command="{Binding GenerateSmartPlaylistCommand}" ToolTip="Rotación sin repetir según el historial del motor"/>
+                        <Button Content="🗑 LIMPIAR HISTORIAL" Style="{StaticResource Quasar.ActionChip}" Background="{DynamicResource Brush.Accent.OrangeDeep}"
+                                Command="{Binding ClearRotationHistoryCommand}"
+                                ToolTip="Solo administrador: olvida lo emitido en esta sesión. Lo ya guardado en track_metadata.json vuelve al reiniciar el programa."/>
+                    </WrapPanel>
                 </StackPanel>
 
-                <StackPanel Grid.Column="1" Orientation="Horizontal">
-                    <Button Command="{Binding RefreshLibraryCommand}" Style="{StaticResource StudioButtonStyle}" Content="🔄 Recargar" Margin="0,0,8,0"/>
-                    <Button Command="{Binding CloseWindowCommand}" Style="{StaticResource DangerButtonStyle}" Content="✖ Cerrar"/>
+                <StackPanel Grid.Column="2">
+                    <TextBlock Text="LIBRERÍA" Style="{StaticResource Quasar.CardHeader}" HorizontalAlignment="Right"/>
+                    <WrapPanel>
+                        <Button Content="🔄 RECARGAR" Style="{StaticResource Quasar.ActionChip}" Command="{Binding ReloadLibraryCommand}" ToolTip="Vuelve a escanear las carpetas de música (solo administrador)"/>
+                        <Button Content="✔ COMPROBAR ARCHIVOS" Style="{StaticResource Quasar.ActionChip}" Command="{Binding RecheckFilesCommand}"/>
+                        <Button Content="⬆ IMPORTAR ARCHIVOS" Style="{StaticResource Quasar.ActionChip}" Command="{Binding ImportFilesCommand}"/>
+                        <Button Content="📁 IMPORTAR CARPETA" Style="{StaticResource Quasar.ActionChip}" Command="{Binding ImportFolderCommand}"/>
+                        <Button Content="💾 GUARDAR" Style="{StaticResource Quasar.ActionChip}" Command="{Binding SaveMetadataCommand}"/>
+                        <Button Content="⟲ CARGAR JSON" Style="{StaticResource Quasar.ActionChip}" Command="{Binding LoadMetadataCommand}"/>
+                        <Button Content="📤 CSV" Style="{StaticResource Quasar.ActionChip}" Command="{Binding ExportCsvCommand}"/>
+                        <Button Content="🗑 QUITAR SELECCIONADOS" Style="{StaticResource Quasar.ActionChip}" Background="{DynamicResource Brush.Accent.Stop}"
+                                Command="{Binding DeleteSelectedCommand}" ToolTip="Los quita de la base de datos; no borra archivos del disco"/>
+                        <Button Content="✖ CERRAR" Style="{StaticResource Quasar.ActionChip}" Margin="0" Click="OnCloseClick"/>
+                    </WrapPanel>
+
+                    <DockPanel LastChildFill="True" Margin="0,2,0,0">
+                        <TextBlock DockPanel.Dock="Left" Text="Importar como" Style="{StaticResource Quasar.FieldLabel.Inline}" Margin="0,0,6,0"/>
+                        <ComboBox Width="96" Style="{StaticResource Quasar.Field.Combo}" Margin="0,0,4,0" ItemsSource="{Binding TypeChoices}"
+                                  ItemTemplate="{StaticResource TypeChoiceTemplate}" SelectedValuePath="Key" SelectedValue="{Binding ImportType}"
+                                  AutomationProperties.Name="Tipo para los archivos importados"/>
+                        <TextBox Style="{StaticResource Quasar.Field}" Margin="0" Text="{Binding ImportGenre, UpdateSourceTrigger=PropertyChanged}"
+                                 AutomationProperties.Name="Género para los archivos importados"/>
+                    </DockPanel>
                 </StackPanel>
             </Grid>
         </Border>
 
-        <!-- CONTENIDO PRINCIPAL CON TABS -->
-        <TabControl Grid.Row="1" Background="{DynamicResource Brush.Surface.Panel}" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
-            
-            <!-- TAB 1: BÚSQUEDA Y FILTROS -->
-            <TabItem Header="🔍 BÚSQUEDA Y FILTROS">
-                <Grid Margin="16">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-
-                    <!-- Filtros Principales -->
-                    <Border Grid.Row="0" Background="{DynamicResource Brush.Surface.Card}" CornerRadius="6" Padding="12" Margin="0,0,0,8" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-
-                            <StackPanel Grid.Column="0" Margin="0,0,8,0">
-                                <TextBlock Text="Búsqueda General" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent}" Margin="0,0,0,4"/>
-                                <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" 
-                                         Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Strong}" 
-                                         Padding="8" FontSize="11" Height="32"/>
-                            </StackPanel>
-
-                            <StackPanel Grid.Column="1" Margin="0,0,8,0">
-                                <TextBlock Text="Filtro Año" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent}" Margin="0,0,0,4"/>
-                                <ComboBox ItemsSource="{Binding GetYearRange()}" SelectedItem="{Binding FilterYear}" 
-                                          Style="{StaticResource {x:Type ComboBox}}"
-                                          FontSize="11" Height="32"/>
-                            </StackPanel>
-
-                            <StackPanel Grid.Column="2" Margin="0,0,8,0">
-                                <TextBlock Text="Filtro Artista" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent}" Margin="0,0,0,4"/>
-                                <TextBox Text="{Binding FilterArtist, UpdateSourceTrigger=PropertyChanged}" 
-                                         Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Strong}" 
-                                         Padding="8" FontSize="11" Height="32"/>
-                            </StackPanel>
-
-                            <StackPanel Grid.Column="3">
-                                <TextBlock Text="Acciones" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent}" Margin="0,0,0,4"/>
-                                <UniformGrid Columns="2" Height="32">
-                                    <Button Command="{Binding SearchCommand}" Style="{StaticResource AccentButtonStyle}" Content="🔍 Buscar" Margin="0,0,4,0"/>
-                                    <Button Command="{Binding SmartSearchCommand}" Style="{StaticResource StudioButtonStyle}" Content="🧠 Smart" Margin="4,0,0,0"/>
-                                </UniformGrid>
-                            </StackPanel>
-                        </Grid>
-                    </Border>
-
-                    <!-- Filtros Avanzados -->
-                    <Border Grid.Row="1" Background="{DynamicResource Brush.Surface.Card}" CornerRadius="6" Padding="12" Margin="0,0,0,8" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-
-                            <StackPanel Grid.Column="0" Margin="0,0,8,0">
-                                <TextBlock Text="Prioridad Mínima" FontSize="10" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,0,0,2"/>
-                                <ComboBox ItemsSource="{Binding GetPriorityRange()}" SelectedItem="{Binding FilterMinPriority}" 
-                                          Style="{StaticResource {x:Type ComboBox}}"
-                                          FontSize="10" Height="26"/>
-                            </StackPanel>
-
-                            <StackPanel Grid.Column="1" Margin="0,0,8,0">
-                                <TextBlock Text="Prioridad Máxima" FontSize="10" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,0,0,2"/>
-                                <ComboBox ItemsSource="{Binding GetPriorityRange()}" SelectedItem="{Binding FilterMaxPriority}" 
-                                          Style="{StaticResource {x:Type ComboBox}}"
-                                          FontSize="10" Height="26"/>
-                            </StackPanel>
-
-                            <StackPanel Grid.Column="2" Margin="0,0,8,0">
-                                <TextBlock Text="BPM Mínimo" FontSize="10" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,0,0,2"/>
-                                <TextBox Text="{Binding FilterMinBpm, UpdateSourceTrigger=PropertyChanged}" 
-                                         Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Strong}" 
-                                         Padding="6" FontSize="10" Height="26"/>
-                            </StackPanel>
-
-                            <StackPanel Grid.Column="3" Margin="0,0,8,0">
-                                <TextBlock Text="BPM Máximo" FontSize="10" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,0,0,2"/>
-                                <TextBox Text="{Binding FilterMaxBpm, UpdateSourceTrigger=PropertyChanged}" 
-                                         Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Strong}" 
-                                         Padding="6" FontSize="10" Height="26"/>
-                            </StackPanel>
-
-                            <StackPanel Grid.Column="4" VerticalAlignment="Center">
-                                <Button Command="{Binding ClearFiltersCommand}" Style="{StaticResource StudioButtonStyle}" Content="🗑️ Limpiar Filtros" Height="26"/>
-                            </StackPanel>
-                        </Grid>
-                    </Border>
-
-                    <!-- Resultados -->
-                    <DataGrid Grid.Row="2" ItemsSource="{Binding SearchResults}" SelectedItem="{Binding SelectedTrack}"
-                              AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True"
-                              Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.Default}" RowBackground="{DynamicResource Brush.Surface.Panel}" 
-                              AlternatingRowBackground="{DynamicResource Brush.Surface.Card}" GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="{DynamicResource Brush.Border.Subtle}"
-                              BorderThickness="1" BorderBrush="{DynamicResource Brush.Border.Default}" RowHeight="28" SelectionMode="Single">
-                        <DataGrid.Resources>
-                            <Style TargetType="DataGridColumnHeader">
-                                <Setter Property="Background" Value="{DynamicResource Brush.Surface.Header}"/>
-                                <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}"/>
-                                <Setter Property="FontWeight" Value="Bold"/>
-                                <Setter Property="Height" Value="30"/>
-                                <Setter Property="Padding" Value="8,0"/>
-                                <Setter Property="BorderThickness" Value="0,0,1,1"/>
-                                <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Header}"/>
-                            </Style>
-                            <Style TargetType="DataGridCell">
-                                <Setter Property="Padding" Value="8,0"/>
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate TargetType="DataGridCell">
-                                            <Border Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}">
-                                                <ContentPresenter VerticalAlignment="Center" />
-                                            </Border>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                                <Style.Triggers>
-                                    <Trigger Property="IsSelected" Value="True">
-                                        <Setter Property="Background" Value="{DynamicResource Brush.Selection.Deep}"/>
-                                        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.High}"/>
-                                    </Trigger>
-                                </Style.Triggers>
-                            </Style>
-                        </DataGrid.Resources>
-
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="Icon" Binding="{Binding IconSymbol}" Width="40"/>
-                            <DataGridTextColumn Header="Título" Binding="{Binding Title}" Width="2*"/>
-                            <DataGridTextColumn Header="Artista" Binding="{Binding Artist}" Width="1.5*"/>
-                            <DataGridTextColumn Header="Álbum" Binding="{Binding Album}" Width="1*"/>
-                            <DataGridTextColumn Header="Género" Binding="{Binding Genre}" Width="80"/>
-                            <DataGridTextColumn Header="Año" Binding="{Binding Year}" Width="60"/>
-                            <DataGridTextColumn Header="Prioridad" Binding="{Binding PriorityFormatted}" Width="90"/>
-                            <DataGridTextColumn Header="BPM" Binding="{Binding BpmFormatted}" Width="70"/>
-                            <DataGridTextColumn Header="Duración" Binding="{Binding DurationFormatted}" Width="70" FontFamily="{StaticResource Sys.Font.Clock}"/>
-                            <DataGridTextColumn Header="Repro." Binding="{Binding PlayCount}" Width="50"/>
-                        </DataGrid.Columns>
-                    </DataGrid>
-
-                    <!-- Estadísticas -->
-                    <Border Grid.Row="3" Background="{DynamicResource Brush.Surface.Card}" CornerRadius="6" Padding="12" Margin="0,8,0,0" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
-                        <DockPanel>
-                            <TextBlock Text="📊" FontSize="16" DockPanel.Dock="Left" Margin="0,0,8,0"/>
-                            <TextBlock Text="{Binding StatisticsText}" FontSize="11" Foreground="{DynamicResource Brush.Accent}" DockPanel.Dock="Left"/>
-                            <UniformGrid Columns="4" DockPanel.Dock="Right" HorizontalAlignment="Right">
-                                <ComboBox ItemsSource="{Binding GetSortOptions()}" SelectedItem="{Binding SortBy}" 
-                                          Style="{StaticResource {x:Type ComboBox}}"
-                                          FontSize="10" Height="26" Margin="0,0,4,0"/>
-                                <CheckBox Content="Ascendente" IsChecked="{Binding SortAscending}" Foreground="{DynamicResource Brush.Text.High}" FontSize="10" VerticalAlignment="Center" Margin="4,0,4,0"/>
-                                <Button Command="{Binding UpdateStatisticsCommand}" Style="{StaticResource StudioButtonStyle}" Content="🔄 Stats" Margin="4,0,4,0" Height="26"/>
-                            </UniformGrid>
-                        </DockPanel>
-                    </Border>
-                </Grid>
-            </TabItem>
-
-            <!-- TAB 2: EDICIÓN DE TRACKS -->
-            <TabItem Header="✏️ EDICIÓN DE TRACKS">
-                <Grid Margin="16">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-
-                    <!-- Selección de Track -->
-                    <Border Grid.Row="0" Background="{DynamicResource Brush.Surface.Card}" CornerRadius="6" Padding="12" Margin="0,0,0,8" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-
-                            <TextBlock Grid.Column="0" FontSize="12" Foreground="{DynamicResource Brush.Text.Secondary}" VerticalAlignment="Center">
-                                <Run Text="Track seleccionado: "/>
-                                <Run Text="{Binding SelectedTrack.Title, Mode=OneWay}" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.High}"/>
-                                <Run Text=" - "/>
-                                <Run Text="{Binding SelectedTrack.Artist, Mode=OneWay}" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent}"/>
-                            </TextBlock>
-
-                            <StackPanel Grid.Column="1" Orientation="Horizontal">
-                                <Button Command="{Binding EditTrackCommand}" Style="{StaticResource AccentButtonStyle}" Content="📋 Ver Info" Margin="0,0,8,0"/>
-                                <Button Command="{Binding DeleteTrackCommand}" Style="{StaticResource DangerButtonStyle}" Content="🗑️ Eliminar"/>
-                            </StackPanel>
-                        </Grid>
-                    </Border>
-
-                    <!-- Panel de Edición -->
-                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-                        <StackPanel>
-                            <!-- Información del Track -->
-                            <Border Background="{DynamicResource Brush.Surface.Card}" CornerRadius="6" Padding="16" Margin="0,0,0,8" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
-                                <StackPanel>
-                                    <TextBlock Text="📋 INFORMACIÓN DEL TRACK" FontSize="13" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent}" Margin="0,0,0,12"/>
-                                    
-                                    <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-
-                                    <StackPanel Grid.Column="0" Margin="0,0,8,0">
-                                        <TextBlock Text="Título" FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,0,0,4"/>
-                                        <TextBox Text="{Binding SelectedTrack.Title, UpdateSourceTrigger=PropertyChanged}" 
-                                                 Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Strong}" Padding="8" FontSize="11" Height="30"/>
-
-                                        <TextBlock Text="Artista" FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,8,0,4"/>
-                                        <TextBox Text="{Binding SelectedTrack.Artist, UpdateSourceTrigger=PropertyChanged}" 
-                                                 Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Strong}" Padding="8" FontSize="11" Height="30"/>
-
-                                        <TextBlock Text="Álbum" FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,8,0,4"/>
-                                        <TextBox Text="{Binding SelectedTrack.Album, UpdateSourceTrigger=PropertyChanged}" 
-                                                 Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Strong}" Padding="8" FontSize="11" Height="30"/>
-                                    </StackPanel>
-
-                                    <StackPanel Grid.Column="1">
-                                        <TextBlock Text="Género" FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,0,0,4"/>
-                                        <TextBox Text="{Binding SelectedTrack.Genre, UpdateSourceTrigger=PropertyChanged}" 
-                                                 Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Strong}" Padding="8" FontSize="11" Height="30"/>
-
-                                        <TextBlock Text="Año" FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,8,0,4"/>
-                                        <TextBox Text="{Binding SelectedTrack.Year, UpdateSourceTrigger=PropertyChanged}" 
-                                                 Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Strong}" Padding="8" FontSize="11" Height="30"/>
-
-                                        <TextBlock Text="Prioridad (1-10)" FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,8,0,4"/>
-                                        <TextBox Text="{Binding SelectedTrack.Priority, UpdateSourceTrigger=PropertyChanged}" 
-                                                 Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Strong}" Padding="8" FontSize="11" Height="30"/>
-                                    </StackPanel>
-                                </Grid>
-                                </StackPanel>
-                            </Border>
-
-                            <!-- Puntos CUE -->
-                            <Border Background="{DynamicResource Brush.Surface.Card}" CornerRadius="6" Padding="16" Margin="0,0,0,8" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
-                                <StackPanel>
-                                    <TextBlock Text="🎯 PUNTOS CUE" FontSize="13" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent}" Margin="0,0,0,12"/>
-                                    
-                                    <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-
-                                    <StackPanel Grid.Column="0" Margin="0,0,8,0">
-                                        <TextBlock Text="Cue In (segundos)" FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,0,0,4"/>
-                                        <TextBox Text="{Binding SelectedTrack.CueInSeconds, UpdateSourceTrigger=PropertyChanged}" 
-                                                 Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Strong}" Padding="8" FontSize="11" Height="30"/>
-
-                                        <TextBlock Text="Cue Out (segundos)" FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,8,0,4"/>
-                                        <TextBox Text="{Binding SelectedTrack.CueOutSeconds, UpdateSourceTrigger=PropertyChanged}" 
-                                                 Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Strong}" Padding="8" FontSize="11" Height="30"/>
-
-                                        <TextBlock Text="Intro (segundos)" FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,8,0,4"/>
-                                        <TextBox Text="{Binding SelectedTrack.IntroSeconds, UpdateSourceTrigger=PropertyChanged}" 
-                                                 Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Strong}" Padding="8" FontSize="11" Height="30"/>
-                                    </StackPanel>
-
-                                    <StackPanel Grid.Column="1">
-                                        <TextBlock Text="Outro (segundos)" FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,0,0,4"/>
-                                        <TextBox Text="{Binding SelectedTrack.OutroSeconds, UpdateSourceTrigger=PropertyChanged}" 
-                                                 Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Strong}" Padding="8" FontSize="11" Height="30"/>
-
-                                        <TextBlock Text="End Cue (segundos)" FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,8,0,4"/>
-                                        <TextBox Text="{Binding SelectedTrack.EndCueSeconds, UpdateSourceTrigger=PropertyChanged}" 
-                                                 Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Strong}" Padding="8" FontSize="11" Height="30"/>
-
-                                        <TextBlock Text="BPM" FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,8,0,4"/>
-                                        <TextBox Text="{Binding SelectedTrack.Bpm, UpdateSourceTrigger=PropertyChanged}" 
-                                                 Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Strong}" Padding="8" FontSize="11" Height="30"/>
-                                    </StackPanel>
-                                </Grid>
-                                </StackPanel>
-                            </Border>
-
-                            <!-- Fade Settings -->
-                            <Border Background="{DynamicResource Brush.Surface.Card}" CornerRadius="6" Padding="16" Margin="0,0,0,8" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
-                                <StackPanel>
-                                    <TextBlock Text="🎚️ CONFIGURACIÓN DE FADE" FontSize="13" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent}" Margin="0,0,0,12"/>
-                                    
-                                    <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-
-                                    <StackPanel Grid.Column="0" Margin="0,0,8,0">
-                                        <TextBlock Text="Fade In (segundos)" FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,0,0,4"/>
-                                        <TextBox Text="{Binding SelectedTrack.FadeIn, UpdateSourceTrigger=PropertyChanged}" 
-                                                 Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Strong}" Padding="8" FontSize="11" Height="30"/>
-                                    </StackPanel>
-
-                                    <StackPanel Grid.Column="1">
-                                        <TextBlock Text="Fade Out (segundos)" FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,0,0,4"/>
-                                        <TextBox Text="{Binding SelectedTrack.FadeOut, UpdateSourceTrigger=PropertyChanged}" 
-                                                 Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Strong}" Padding="8" FontSize="11" Height="30"/>
-                                    </StackPanel>
-                                </Grid>
-                                </StackPanel>
-                            </Border>
-
-                            <!-- Metadatos Adicionales -->
-                            <Border Background="{DynamicResource Brush.Surface.Card}" CornerRadius="6" Padding="16" Margin="0,0,0,8" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
-                                <StackPanel>
-                                    <TextBlock Text="📝 METADATOS ADICIONALES" FontSize="13" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent}" Margin="0,0,0,12"/>
-                                    
-                                    <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-
-                                    <StackPanel Grid.Column="0" Margin="0,0,8,0">
-                                        <TextBlock Text="Compositor" FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,0,0,4"/>
-                                        <TextBox Text="{Binding SelectedTrack.Composer, UpdateSourceTrigger=PropertyChanged}" 
-                                                 Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Strong}" Padding="8" FontSize="11" Height="30"/>
-
-                                        <TextBlock Text="Copyright" FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,8,0,4"/>
-                                        <TextBox Text="{Binding SelectedTrack.Copyright, UpdateSourceTrigger=PropertyChanged}" 
-                                                 Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Strong}" Padding="8" FontSize="11" Height="30"/>
-                                    </StackPanel>
-
-                                    <StackPanel Grid.Column="1">
-                                        <TextBlock Text="Comentarios" FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,0,0,4"/>
-                                        <TextBox Text="{Binding SelectedTrack.Comment, UpdateSourceTrigger=PropertyChanged}" 
-                                                 Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Strong}" Padding="8" FontSize="11" Height="30" TextWrapping="Wrap" AcceptsReturn="True"/>
-                                    </StackPanel>
-                                </Grid>
-                                </StackPanel>
-                            </Border>
-                        </StackPanel>
-                    </ScrollViewer>
-
-                    <!-- Botones de Acción Rápida -->
-                    <Border Grid.Row="2" Background="{DynamicResource Brush.Surface.Card}" CornerRadius="6" Padding="12" Margin="0,8,0,0" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
-                        <UniformGrid Columns="5">
-                            <Button Command="{Binding IntelligentCuePointsCommand}" Style="{StaticResource AccentButtonStyle}" Content="🧠 CUE Inteligente" Margin="0,0,4,0"/>
-                            <Button Command="{Binding NormalizeCuePointsCommand}" Style="{StaticResource StudioButtonStyle}" Content="📐 Normalizar" Margin="4,0,4,0"/>
-                            <Button Command="{Binding ResetCuePointsCommand}" Style="{StaticResource StudioButtonStyle}" Content="🔄 Reset CUE" Margin="4,0,4,0"/>
-                            <ComboBox ItemsSource="{Binding GetPresetOptions()}" SelectedItem="{Binding SelectedPreset}" 
-                                      Style="{StaticResource {x:Type ComboBox}}"
-                                      FontSize="10" Height="30" Margin="4,0,4,0"/>
-                            <Button Command="{Binding ApplyPresetCommand}" CommandParameter="{Binding SelectedPreset}" Style="{StaticResource SuccessButtonStyle}" Content="✅ Aplicar Preset" Margin="4,0,0,0"/>
-                        </UniformGrid>
-                    </Border>
-                </Grid>
-            </TabItem>
-
-            <!-- TAB 3: IMPORTACIÓN Y ANÁLISIS -->
-            <TabItem Header="🎯 IMPORTAR Y ANALIZAR">
-                <Grid Margin="16">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-
-                    <!-- Importación -->
-                    <Border Grid.Row="0" Background="{DynamicResource Brush.Surface.Card}" CornerRadius="6" Padding="16" Margin="0,0,0,8" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
-                        <StackPanel>
-                            <TextBlock Text="📥 IMPORTACIÓN DE TRACKS" FontSize="13" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent}" Margin="0,0,0,8"/>
-                            
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-
-                                <StackPanel Grid.Column="0">
-                                    <TextBlock Text="Género:" FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,0,0,4"/>
-                                    <ComboBox ItemsSource="{Binding DatabaseService.Genres}" SelectedItem="{Binding SelectedGenreForEdit}" 
-                                              Style="{StaticResource {x:Type ComboBox}}"
-                                              FontSize="11" Height="32"/>
-                                </StackPanel>
-
-                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="16,0,0,0">
-                                    <Button Command="{Binding ImportTracksCommand}" Style="{StaticResource AccentButtonStyle}" Content="📁 Archivos" Margin="0,0,8,0" Height="32"/>
-                                    <Button Command="{Binding ImportFolderCommand}" Style="{StaticResource StudioButtonStyle}" Content="📂 Carpeta" Height="32"/>
-                                </StackPanel>
-                            </Grid>
-                        </StackPanel>
-                    </Border>
-
-                    <!-- Gestión de géneros -->
-                    <Border Grid.Row="1" Background="{DynamicResource Brush.Surface.Card}" CornerRadius="6" Padding="16" Margin="0,0,0,8" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
-                        <StackPanel>
-                            <TextBlock Text="🎼 GESTIÓN DE GÉNEROS" FontSize="13" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent}" Margin="0,0,0,8"/>
-                            
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-
-                                <StackPanel Grid.Column="0" Orientation="Horizontal">
-                                    <TextBox Text="{Binding NewGenreName, UpdateSourceTrigger=PropertyChanged}" 
-                                             Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Strong}" 
-                                             Padding="8" FontSize="11" Width="200" Height="32" Margin="0,0,8,0"/>
-                                    <Button Command="{Binding AddGenreCommand}" Style="{StaticResource SuccessButtonStyle}" Content="➕ Agregar" Height="32"/>
-                                </StackPanel>
-
-                                <ComboBox Grid.Column="1" ItemsSource="{Binding DatabaseService.Genres}" SelectedItem="{Binding SelectedGenreForEdit}" 
-                                          Style="{StaticResource {x:Type ComboBox}}"
-                                          FontSize="11" Width="150" Height="32" Margin="8,0,8,0"/>
-
-                                <StackPanel Grid.Column="2" Orientation="Horizontal">
-                                    <Button Command="{Binding UpdateGenreCommand}" Style="{StaticResource AccentButtonStyle}" Content="✏️ Renombrar" Margin="0,0,8,0" Height="32"/>
-                                    <Button Command="{Binding RemoveGenreCommand}" Style="{StaticResource DangerButtonStyle}" Content="🗑️ Eliminar" Height="32"/>
-                                </StackPanel>
-                            </Grid>
-                        </StackPanel>
-                    </Border>
-
-                    <!-- Análisis de audio -->
-                    <Border Grid.Row="2" Background="{DynamicResource Brush.Surface.Card}" CornerRadius="6" Padding="16" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
-                        <StackPanel>
-                            <TextBlock Text="🔊 ANÁLISIS INTELIGENTE DE AUDIO" FontSize="13" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent}" Margin="0,0,0,8"/>
-                            
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-
-                                <StackPanel Grid.Column="0">
-                                    <TextBlock Text="Selecciona un track y analiza sus características automáticamente: BPM, silencios, volumen, frecuencia" FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}"/>
-                                    <TextBlock Text="{Binding AnalysisStatus}" FontSize="11" Foreground="{DynamicResource Brush.Accent}" Margin="0,4,0,0"/>
-                                </StackPanel>
-
-                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="16,0,0,0">
-                                    <Button Command="{Binding AnalyzeAudioCommand}" Style="{StaticResource AccentButtonStyle}" Content="🔍 Analizar" Height="32" Margin="0,0,8,0" IsEnabled="{Binding IsTrackSelected}"/>
-                                    <Button Command="{Binding ApplyAutoCueCommand}" Style="{StaticResource StudioButtonStyle}" Content="🎯 AutoCue" Height="32" Margin="0,0,8,0"/>
-                                    <Button Command="{Binding ApplyAutoGainCommand}" Style="{StaticResource StudioButtonStyle}" Content="📊 Ganancia" Height="32"/>
-                                </StackPanel>
-                            </Grid>
-
-                            <!-- Resultados del análisis -->
-                            <Border Background="{DynamicResource Brush.Surface.Deep}" CornerRadius="4" Padding="12" Margin="0,8,0,0" BorderBrush="{DynamicResource Brush.Border.Strong}" BorderThickness="1">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-
-                                    <StackPanel Grid.Column="0">
-                                        <TextBlock Text="BPM" FontSize="10" Foreground="{DynamicResource Brush.Text.Secondary}"/>
-                                        <TextBlock Text="{Binding CurrentAnalysisResult.Bpm, StringFormat='{}{0:F0}'}" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent}"/>
-                                    </StackPanel>
-
-                                    <StackPanel Grid.Column="1">
-                                        <TextBlock Text="Pico" FontSize="10" Foreground="{DynamicResource Brush.Text.Secondary}"/>
-                                        <TextBlock Text="{Binding CurrentAnalysisResult.PeakAmplitude, StringFormat='{}{0:F2}'}" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent.Orange}"/>
-                                    </StackPanel>
-
-                                    <StackPanel Grid.Column="2">
-                                        <TextBlock Text="RMS" FontSize="10" Foreground="{DynamicResource Brush.Text.Secondary}"/>
-                                        <TextBlock Text="{Binding CurrentAnalysisResult.RmsAmplitude, StringFormat='{}{0:F2}'}" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent.Play}"/>
-                                    </StackPanel>
-
-                                    <StackPanel Grid.Column="3">
-                                        <TextBlock Text="Ganancia" FontSize="10" Foreground="{DynamicResource Brush.Text.Secondary}"/>
-                                        <TextBlock Text="{Binding CurrentAnalysisResult.RecommendedGain, StringFormat='{}{0:F2}'}" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent.Pink}"/>
-                                    </StackPanel>
-                                </Grid>
-                            </Border>
-                        </StackPanel>
-                    </Border>
-                </Grid>
-            </TabItem>
-
-            <!-- TAB 4: METADATOS Y PERSISTENCIA -->
-            <TabItem Header="💾 METADATOS">
-                <Grid Margin="16">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-
-                    <!-- Información de Persistencia -->
-                    <Border Grid.Row="0" Background="{DynamicResource Brush.Surface.Card}" CornerRadius="6" Padding="16" Margin="0,0,0,8" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
-                        <StackPanel>
-                            <TextBlock Text="💾 GESTIÓN DE METADATOS" FontSize="13" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent}" Margin="0,0,0,12"/>
-                            
-                            <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-
-                            <StackPanel Grid.Column="0" Margin="0,0,8,0">
-                                <TextBlock Text="Los metadatos se almacenan en formato JSON para persistencia entre sesiones." FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,0,0,8" TextWrapping="Wrap"/>
-                                <TextBlock Text="• Guarda configuraciones de puntos CUE, fades y metadatos extendidos" FontSize="10" Foreground="{DynamicResource Brush.Text.MutedAlt}"/>
-                                <TextBlock Text="• Permite exportar a CSV para análisis externo" FontSize="10" Foreground="{DynamicResource Brush.Text.MutedAlt}" Margin="0,2,0,0"/>
-                                <TextBlock Text="• Incluye backup automático ante errores" FontSize="10" Foreground="{DynamicResource Brush.Text.MutedAlt}" Margin="0,2,0,0"/>
-                            </StackPanel>
-
-                            <StackPanel Grid.Column="1">
-                                <UniformGrid Columns="2" Margin="0,0,0,8">
-                                    <Button Command="{Binding SaveMetadataCommand}" Style="{StaticResource SuccessButtonStyle}" Content="💾 Guardar Metadatos" Margin="0,0,4,0" Height="36"/>
-                                    <Button Command="{Binding LoadMetadataCommand}" Style="{StaticResource AccentButtonStyle}" Content="📂 Cargar Metadatos" Margin="4,0,0,0" Height="36"/>
-                                </UniformGrid>
-                                <Button Command="{Binding ExportToCsvCommand}" Style="{StaticResource StudioButtonStyle}" Content="📊 Exportar a CSV" Height="36"/>
-                            </StackPanel>
-                        </Grid>
-                        </StackPanel>
-                    </Border>
-
-                    <!-- Estadísticas Detalladas -->
-                    <Border Grid.Row="1" Background="{DynamicResource Brush.Surface.Card}" CornerRadius="6" Padding="16" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
-                        <StackPanel>
-                            <TextBlock Text="📊 ESTADÍSTICAS DE LA BIBLIOTECA" FontSize="13" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent}" Margin="0,0,0,12"/>
-                            
-                            <ScrollViewer VerticalScrollBarVisibility="Auto">
-                            <StackPanel>
-                                <TextBlock Text="{Binding StatisticsText}" FontSize="12" Foreground="{DynamicResource Brush.Text.High}" Margin="0,0,0,12" TextWrapping="Wrap"/>
-                                
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-
-                                    <Border Grid.Column="0" Background="{DynamicResource Brush.Surface.Deep}" CornerRadius="4" Padding="12" Margin="0,0,4,0">
-                                        <StackPanel>
-                                            <TextBlock Text="TOTAL TRACKS" FontSize="10" Foreground="{DynamicResource Brush.Text.Secondary}"/>
-                                            <TextBlock Text="{Binding DatabaseService.GetTotalTracks()}" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent}"/>
-                                        </StackPanel>
-                                    </Border>
-
-                                    <Border Grid.Column="1" Background="{DynamicResource Brush.Surface.Deep}" CornerRadius="4" Padding="12" Margin="4,0,4,0">
-                                        <StackPanel>
-                                            <TextBlock Text="DURACIÓN TOTAL" FontSize="10" Foreground="{DynamicResource Brush.Text.Secondary}"/>
-                                            <TextBlock Text="{Binding DatabaseService.GetTotalDuration(), StringFormat='{}{0:hh\\:mm\\:ss}'}" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent.Play}"/>
-                                        </StackPanel>
-                                    </Border>
-
-                                    <Border Grid.Column="2" Background="{DynamicResource Brush.Surface.Deep}" CornerRadius="4" Padding="12" Margin="4,0,0,0">
-                                        <StackPanel>
-                                            <TextBlock Text="DURACIÓN PROMEDIO" FontSize="10" Foreground="{DynamicResource Brush.Text.Secondary}"/>
-                                            <TextBlock Text="{Binding DatabaseService.GetAverageDuration(), StringFormat='{}{0:mm\\:ss}'}" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent.Orange}"/>
-                                        </StackPanel>
-                                    </Border>
-                                </Grid>
-                            </StackPanel>
-                            </ScrollViewer>
-                        </StackPanel>
-                    </Border>
-                </Grid>
-            </TabItem>
-        </TabControl>
-
-        <!-- FOOTER -->
-        <Border Grid.Row="2" Background="{DynamicResource Brush.Surface.Header}" CornerRadius="8" Padding="12,8" Margin="0,12,0,0" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
-            <DockPanel>
-                <TextBlock Text="ℹ️" FontSize="14" DockPanel.Dock="Left" Margin="0,0,8,0"/>
-                <TextBlock Text="Selecciona un track para editar sus propiedades, puntos CUE y metadatos. Los cambios se guardan automáticamente en la sesión actual." FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}" DockPanel.Dock="Left"/>
-                <TextBlock Text="{Binding EditInfo}" FontSize="10" Foreground="{DynamicResource Brush.Accent}" DockPanel.Dock="Right" FontFamily="{StaticResource Sys.Font.Clock}"/>
-            </DockPanel>
+        <!-- ================= ESTADO ================= -->
+        <Border Grid.Row="3" Background="{DynamicResource Brush.Surface.Panel}" BorderBrush="{DynamicResource Brush.Border.Subtle}"
+                BorderThickness="1" CornerRadius="5" Padding="10,6" Margin="0,8,0,0">
+            <!-- Sin AutomationProperties.Name: un TextBlock ya dice lo que pone, y taparlo con
+                 una etiqueta fija hacia que lector de pantalla y scripts de verificacion leyeran
+                 "Estado de la biblioteca" en vez del mensaje real ("Lista automatica: 11 ...").
+                 El x:Name es el que UIA expone como AutomationId, y por ahi lo busca el script. -->
+            <TextBlock x:Name="StatusText" Text="{Binding StatusText}" FontSize="11" Foreground="{DynamicResource Brush.Text.Faint}" TextWrapping="Wrap"/>
         </Border>
     </Grid>
 </Window>

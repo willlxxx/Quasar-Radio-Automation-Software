@@ -208,33 +208,28 @@ try {
     L ("CONSOLA_VIVA_DESPUES_DE_CERRAR_$k = " + ($consolaSigue -gt 0))
   }
 
-  # ---------- puerta de administrador: DSP debe pedir acceso y no abrir la ventana
+  # ---------- AUTH-1: DSP abre SIN clave. Antes esta prueba comprobaba lo contrario
+  # (DSP_pide_acceso=True y sin ventana). Desde que la contraseña solo atribuye acciones, la
+  # ventana del procesador tiene que abrirse de una con sesion de invitado; el nivel se pide
+  # al pulsar una operacion, y eso se comprueba en verificar_permisos.ps1.
   $bdsp = Find-Button $main 'DSP'
-  if ($SkipDsp) { L 'DSP : prueba de puerta omitida (-SkipDsp)' }
+  if ($SkipDsp) { L 'DSP : prueba de apertura omitida (-SkipDsp)' }
   elseif ($null -eq $bdsp) { L 'BOTON DSP : no encontrado' }
   else {
     $r = RectOf $bdsp
-    $cx = $r.X + [int]($r.W / 2)
-    $cy = $r.Y + [int]($r.H / 2)
-
-    $login = $null
-    for ($try = 1; $try -le 3 -and $null -eq $login; $try++) {
-      [void][QsrMod]::SetForegroundWindow([IntPtr]$console.Hwnd)
-      Start-Sleep -Milliseconds (900 * $try)
-      [QsrMod]::Click($cx, $cy)
-      Start-Sleep -Seconds 3
-      $login = [QsrMod]::Top($proc.Id) | Where-Object { $_.Visible -and $_.Title -like '*Acceso*' } | Select-Object -First 1
-      if ($null -eq $login) { L ("INTENTO $try DSP : clic en $cx,$cy sin dialogo de acceso") }
-    }
+    [void][QsrMod]::SetForegroundWindow([IntPtr]$console.Hwnd)
+    Start-Sleep -Milliseconds 900
+    [QsrMod]::Click(($r.X + [int]($r.W / 2)), ($r.Y + [int]($r.H / 2)))
+    Start-Sleep -Seconds 3
+    $login = [QsrMod]::Top($proc.Id) | Where-Object { $_.Visible -and $_.Title -like 'Quasar Radio | *' } | Select-Object -First 1
     $dspWin = [QsrMod]::Top($proc.Id) | Where-Object { $_.Visible -and $_.Title -like '*Procesador DSP*' } | Select-Object -First 1
-    L ('DSP_pide_acceso=' + ($null -ne $login))
-    L ('DSP_sin_ventana=' + ($null -eq $dspWin))
-    if ($null -ne $login) {
-      CapWindow $login "${Tag}_login_dsp"
-      [QsrMod]::Close([IntPtr]$login.Hwnd)   # se cancela: no se toca ninguna credencial
+    L ('DSP_abre_sin_clave=' + ($null -ne $dspWin) + ' | modal_de_identificacion=' + ($null -ne $login) + ' | ' + $dspWin.Rect)
+    if ($null -ne $dspWin) {
+      CapWindow $dspWin "${Tag}_dsp_sin_login"
+      [QsrMod]::Close([IntPtr]$dspWin.Hwnd)
       Start-Sleep -Seconds 2
-      $dspWin2 = @([QsrMod]::Top($proc.Id) | Where-Object { $_.Visible -and $_.Title -like '*Procesador DSP*' }).Count
-      L ('DSP_cancelado_sin_ventana=' + ($dspWin2 -eq 0))
+      $siguen = @([QsrMod]::Top($proc.Id) | Where-Object { $_.Visible -and $_.Title -like '*Quasar Radio Pro*' }).Count
+      L ('CONSOLA_VIVA_DESPUES_DE_CERRAR_DSP=' + ($siguen -gt 0))
     }
   }
 

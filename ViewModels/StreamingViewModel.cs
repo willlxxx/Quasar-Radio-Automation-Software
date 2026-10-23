@@ -43,10 +43,14 @@ namespace quasar_radio
             _streamingService = streamingService ?? throw new ArgumentNullException(nameof(streamingService));
 
             bool CanOperate() => App.Auth.IsAuthorized(UserRole.Operator);
-            bool IsAdmin() => App.Auth.IsAuthorized(UserRole.Admin);
 
+            // AUTH-1: PROBAR la conexion es una lectura (conecta, pregunta y se va), y un
+            // operador que ve el aire caido tiene que poder comprobarlo sin buscar la clave
+            // del jefe. Bajar al aire (ToggleStreaming) ya era de operador. Lo que sigue
+            // pidiendo nivel de administrador es tocar la configuracion: URL, puerto, mount,
+            // contrasena del Icecast y ruta de ffmpeg, que van gated en StreamingWindow.xaml.
             ToggleStreamingCommand = new RelayCommand(o => ToggleStreaming(), o => CanOperate());
-            TestIcecastConnectionCommand = new RelayCommand(o => TestIcecastConnection(), o => IsAdmin());
+            TestIcecastConnectionCommand = new RelayCommand(o => TestIcecastConnection(), o => CanOperate());
         }
 
         private void ToggleStreaming()

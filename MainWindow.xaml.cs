@@ -13,6 +13,11 @@ namespace quasar_radio
             InitializeComponent();
             this.DataContext = viewModel;
             UpdateUserDisplay();
+
+            // AUTH-1: quien se identifica desde el pie, desde la ventana de usuarios o desde
+            // el sello de una operacion (AuthGate) tiene que verse reflejado al momento en el
+            // pie de la consola, sin reabrir nada.
+            App.Auth.SessionChanged += (_, _) => Dispatcher.BeginInvoke(UpdateUserDisplay);
         }
 
         /// <summary>
@@ -57,17 +62,38 @@ namespace quasar_radio
                 ? $"{App.Auth.CurrentUserName} | {App.Auth.CurrentUserRole}"
                 : "Invitado";
 
+            // AUTH-1: INVITADO es un estado normal, no un error. Se opera sin identificarse
+            // (reproducir, encolar, curar la biblioteca, cambiar de tema); la identificacion
+            // aparece cuando hace falta un nivel. Por eso el boton de identificarse se muestra
+            // solo mientras no haya sesion, y el de cerrar solo cuando la hay.
             ManageUsersButton.Visibility = Visibility.Visible;
+            IdentifyButton.Visibility = App.Auth.IsAuthenticated ? Visibility.Collapsed : Visibility.Visible;
+            LogoutButton.Visibility = App.Auth.IsAuthenticated ? Visibility.Visible : Visibility.Collapsed;
+
             if (DataContext is MainViewModel viewModel)
             {
                 viewModel.RefreshAuthorizationState();
             }
         }
 
+        /// <summary>
+        /// Identificarse por voluntad propia, sin que lo exija una operacion. Acepta
+        /// cualquier nivel: un operador que se registra ve como sus acciones quedan atribuidas.
+        /// </summary>
+        private void OnIdentifyClick(object sender, RoutedEventArgs e)
+        {
+            var login = new LoginWindow(App.Auth) { Owner = this };
+            login.ShowDialog();
+            UpdateUserDisplay();
+        }
+
         private void OnManageUsersClick(object sender, RoutedEventArgs e)
         {
+            // AUTH-1: la ventana de usuarios se abre SIN clave. Es el sitio donde se crean
+            // las cuentas de nivel (administrador / operador), y si estuviera detras de un
+            // login no se podria crear la primera. Lo que si lleva sello por nivel es crear
+            // la segunda cuenta en adelante: UserManagementWindow usa AuthGate.
             var navigator = App.Services.GetRequiredService<IModuleNavigator>();
-            if (!navigator.EnsureAdmin()) return;
 
             // Refresca IsAdmin en los comandos antes de abrir: la ventana de usuarios
             // ya no es modal, asi que lo que cambie aqui se ve en la consola al momento.

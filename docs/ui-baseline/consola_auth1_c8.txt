@@ -1,0 +1,31 @@
+﻿TEMA=Studio Dark Neon
+MONITOR: bounds=0,0 1600x900 work=0,0 1600x860
+CONSOLA: 80,0 1440x860
+D2_barra_titulo_en_area=True
+D2_dentro_arriba=True
+D2_dentro_izq=True
+D2_dentro_der=True
+ARRANQUE_consola_minimizada=False
+ARRANQUE_arbol_uia_completo=True en_ms=477 (tras los 10 s de cortesía)
+CAPW c8_consola : PrintWindow=True 1440x860 md5=F7CAF3DE7E3A14CF54C67FF8C38221BA
+D1_TXT [NIVEL DE SALIDA MASTER (VU METER)] rect=1016,210 471x13 dentro=True
+D1_TXT [VOLUMEN MASTER] rect=1016,293 92x13 dentro=True
+D1_TXT [🔇 DETECTOR SILENCIO] rect=1025,271 114x13 dentro=True
+D1_ledvu_controls=4
+  LED class=LedVuMeterControl rect=212,223 220x20 visible=False
+  LED class=LedVuMeterControl rect=665,223 220x20 visible=False
+  LED class=LedVuMeterControl rect=1044,232 180x20 visible=False
+  LED class=LedVuMeterControl rect=1284,232 180x20 visible=False
+CAPC c8_master : PrintWindow 434x224 md5=6CBDDA9E89D9D612B6B57140382EB93C
+E1_botonera_sfx rect=111,626 127x15 dentro=True
+E1_pads_visibles=12 [F1,F2,F3,F4,F5,F6,F7,F8,F9,F10,F11,F12]
+  pad rect=115,654 222x38
+  pad rect=345,654 221x38
+  pad rect=574,654 222x38
+CAPC c8_franja_sfx : PrintWindow 1403x150 md5=67AED147B1AD3A85E6C13F5D2EE0BD7D
+E2_pestanas_de_suite=0
+E3_panel_base_de_datos_en_consola=no esta (correcto)
+E3_botones_en_el_arbol=58 | franja=[Abrir Biblioteca, Abrir Programación, Abrir DSP, Abrir Streaming, Abrir Reportes]
+DECK_fila_hasta_volumen=306
+SALIO_SIN_MATARLO=True
+RESTANTES=0

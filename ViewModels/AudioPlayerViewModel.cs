@@ -14,6 +14,7 @@ namespace quasar_radio
     {
         private readonly ILogger _logger = Log.ForContext<AudioPlayerViewModel>();
         private readonly AudioEngine _audioEngine;
+        private readonly PlaybackAttributionService _attribution;
         private readonly DispatcherTimer _playbackTimer;
         private const int SpectrumBarCount = 18;
 
@@ -215,9 +216,10 @@ namespace quasar_radio
         public ICommand DeckBPauseCommand { get; }
         public ICommand DeckBCueCommand { get; }
 
-        public AudioPlayerViewModel(AudioEngine audioEngine)
+        public AudioPlayerViewModel(AudioEngine audioEngine, PlaybackAttributionService attribution)
         {
             _audioEngine = audioEngine ?? throw new ArgumentNullException(nameof(audioEngine));
+            _attribution = attribution ?? throw new ArgumentNullException(nameof(attribution));
             _audioEngine.GetNextTrackProvider = GetNextTrackForEngine;
             _audioEngine.TrackChanged += OnEngineTrackChanged;
             _audioEngine.PositionChanged += OnEnginePositionChanged;
@@ -315,6 +317,9 @@ namespace quasar_radio
                 if (CurrentTrack != null)
                 {
                     CurrentTrack.Status = TrackStatus.Played;
+                    // UI-4 paso B: la que deja el aire se cierra con el tiempo que sonó de
+                    // verdad, y la que entra se apunta en rotacion, contador y "ahora suena".
+                    _attribution.TrackEnded(IsAutoMode);
                 }
 
                 CurrentTrack = newTrack;
@@ -324,6 +329,7 @@ namespace quasar_radio
                 {
                     CurrentTrack.Status = TrackStatus.Playing;
                     CurrentDuration = CurrentTrack.Duration;
+                    _attribution.TrackStarted(CurrentTrack, IsAutoMode);
                 }
 
                 UpdateNextTrackAndStatuses();
@@ -351,7 +357,9 @@ namespace quasar_radio
                 if (CurrentTrack != null)
                 {
                     CurrentTrack.Status = TrackStatus.Played;
+                    _attribution.TrackEnded(IsAutoMode);
                 }
+                _attribution.ClearNowPlaying();
                 CurrentTrack = null;
                 NextTrack = null;
                 CurrentPosition = TimeSpan.Zero;
@@ -398,7 +406,11 @@ namespace quasar_radio
                 if (CurrentTrack != null)
                 {
                     CurrentTrack.Status = TrackStatus.Played;
+                    // UI-4 paso B: parar tambien cierra la emision, con el tiempo que llego
+                    // a sonar. Un corte a los 15 segundos apunta 15 segundos, no 3 minutos.
+                    _attribution.TrackEnded(IsAutoMode);
                 }
+                _attribution.ClearNowPlaying();
                 CurrentTrack = null;
                 NextTrack = null;
                 CurrentPosition = TimeSpan.Zero;

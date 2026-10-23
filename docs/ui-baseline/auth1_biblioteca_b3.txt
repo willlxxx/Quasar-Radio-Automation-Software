@@ -1,0 +1,66 @@
+﻿FIXTURES: 7 wav + 1 mp3 roto en musica, 2 wav en jingles -> C:\Users\CY-KILL\AppData\Local\Temp\qsr_bib_test
+B1_ventana_biblioteca=True | -32000,-32000 160x28
+B1_consola_viva=True | 80,0 1440x860
+B1_uia_name=Biblioteca de medios
+B1_biblioteca_lista_en_ms=481
+B2_arbol_items=14
+   NODO: [Toda la biblioteca, 10 tracks]
+   NODO: [TIPO DE AUDIO]
+   NODO: [Música, 8 tracks]
+   NODO: [Jingles, 2 tracks]
+   NODO: [Separadores, 0 tracks]
+   NODO: [Voces, 0 tracks]
+   NODO: [Publicidad, 0 tracks]
+   NODO: [Horarias, 0 tracks]
+   NODO: [ESTADO DE LOS ARCHIVOS]
+   NODO: [Faltan en disco, 0 tracks]
+   NODO: [No se pueden leer, 1 tracks]
+   NODO: [GÉNERO]
+   NODO: [Jingle, 2 tracks]
+   NODO: [Pop, 8 tracks]
+B3_filas=10 (esperadas 10: 7 wav + 1 ilegible + 2 jingles)
+B4_fila2:  | 🎵 | Pista 2 | QSRBIB Artista 2 | Pop | 2026 | 5 | 120 BPM | 00:02 | Nunca
+B4_resumen_seleccion=2 seleccionados · duración 00:00:04
+B5_lote_boton_habilitado=True
+B5_json_total=10 | genero nuevo=2 | sin cambiar=8
+   LOTEADO: musica\QSRBIB Artista 2 - Pista 2.wav
+   LOTEADO: musica\QSRBIB Artista 4 - Pista 4.wav
+B5_json_es_la_copia_de_ensayo=True
+B5_estado=1 campo(s) aplicados a 2 tracks: género. Guardado.
+B5_arbol_nodo_genero_nuevo=True | Lote Verify, 2 tracks
+B6_tarjeta_habilitada=True
+B6_titulo_persistido=True | musica\QSRBIB Artista 1 - Pista 1.wav
+B7_consola_lista_en_ms=942
+B7_filas_pintadas_en_la_cola_antes=10 (proxy: el DataGrid solo pinta las que caben en pantalla; el numero real lo dice el texto de estado)
+B7_encolar_habilitado=True
+B7_estado_tras_encolar=Encolados 2 tracks. La cola tiene 10 elementos. | filas_pintadas=10
+B8_auto_estado=Lista automática: 11 elementos (puede repetir tracks).
+B8_cola_despues_de_auto=10 (AUTO vacia la cola y la rellena desde la libreria)
+CAP b3_consola_tras_auto : PrintWindow=True 1440x860 md5=C3370D397E6A7E3B2EF3ED7A9329DBCC
+B9_fila_rota: ⚠ | 🎵 | Pista | QSRBIB Roto | Pop | 2026 | 5 | 120 BPM | 00:00 | Nunca
+B9_solo_problematicos_filas=1
+   NODO ESTADO: [Faltan en disco, 0 tracks]
+   NODO ESTADO: [No se pueden leer, 1 tracks]
+B10_RECARGAR : accesible_sin_login=True
+B10_COMPROBAR : accesible_sin_login=True
+B10_GUARDAR : accesible_sin_login=True
+B10_CARGAR JSON : accesible_sin_login=True
+B10_CSV : accesible_sin_login=True
+B10_QUITAR : accesible_sin_login=False
+CAP b3_biblioteca : rect invalida
+CAP b3_biblioteca_max : PrintWindow=True 1616x876 md5=54D516041A23686465E44DAC2FF41F1D
+B11_maximizada=-8,-8 1616x876
+B12_biblioteca_desaparecio=True
+B12_consola_viva=True
+LOG=quasar_radio-20261022_004.log
+   2026-10-22 22:29:49.709 -04:00 [WRN] VERIFICACION DE INTERFAZ: se abre "Library" sin exigir administrador
+   2026-10-22 23:53:59.945 -04:00 [WRN] VERIFICACION DE INTERFAZ: se abre "Library" por linea de comandos
+   2026-10-22 23:53:06.254 -04:00 [INF] Modulo abierto: "Users"
+   2026-10-22 23:54:00.617 -04:00 [INF] Modulo abierto: "Library"
+   2026-10-22 22:30:14.079 -04:00 [INF] Encolados 2 tracks desde Biblioteca
+   2026-10-22 23:54:25.171 -04:00 [INF] Encolados 2 tracks desde Biblioteca
+   2026-10-22 23:53:33.449 -04:00 [INF] Generada lista automatica con 3 elementos
+   2026-10-22 23:54:27.971 -04:00 [INF] Generada lista automatica con 11 elementos
+   2026-10-22 22:30:29.337 -04:00 [INF] Biblioteca cerrada: base de datos recargada
+   2026-10-22 23:54:40.591 -04:00 [INF] Biblioteca cerrada: base de datos recargada
+RESTANTES=0

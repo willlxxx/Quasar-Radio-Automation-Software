@@ -142,6 +142,66 @@
         <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Danger}" />
     </Style>
 
+    <!-- Variantes por intention (UI-4): Biblioteca las necesita todas y hasta ahora
+         cada ventana de modulo las reescribia en Window.Resources. Acento = accion
+         principal, Exito = va al aire, Aviso = irreversible pero util,
+         Peligro = borra. El color nunca es el unico aviso: el texto lo dice tambien. -->
+    <Style TargetType="Button" x:Key="AccentButtonStyle" BasedOn="{StaticResource StudioButtonStyle}">
+        <Setter Property="Background" Value="{DynamicResource Brush.Accent.Info}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.OnAccent}" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{DynamicResource Brush.Accent}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style TargetType="Button" x:Key="SuccessButtonStyle" BasedOn="{StaticResource StudioButtonStyle}">
+        <Setter Property="Background" Value="{DynamicResource Brush.Accent.Play}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Success}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.OnAccent}" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{DynamicResource Brush.Accent.Success}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style TargetType="Button" x:Key="WarnButtonStyle" BasedOn="{StaticResource StudioButtonStyle}">
+        <Setter Property="Background" Value="{DynamicResource Brush.Accent.OrangeDeep}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Orange}" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{DynamicResource Brush.Accent.Orange}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style TargetType="Button" x:Key="DangerButtonStyle" BasedOn="{StaticResource StudioButtonStyle}">
+        <Setter Property="Background" Value="{DynamicResource Brush.Accent.Stop}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Danger}" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{DynamicResource Brush.Accent.Danger}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- Boton de franja de modulos: el borde de acento avisa del modulo ya abierto.
+         Estaba solo en MainWindow; aqui queda canonico para que ninguna ventana
+         vuelva a declararlo en Window.Resources. -->
+    <Style TargetType="Button" x:Key="ModuleStripButtonStyle" BasedOn="{StaticResource StudioButtonStyle}">
+        <Setter Property="Margin" Value="0,0,8,0" />
+        <Setter Property="Padding" Value="10,4" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Self}}" Value="True">
+                <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
+                <Setter Property="BorderThickness" Value="2" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
     <!-- ====================== CAJAS Y CABECERAS ====================== -->
     <Style TargetType="Border" x:Key="Quasar.Card">
         <Setter Property="Background" Value="{DynamicResource Brush.Surface.Card}" />
@@ -162,6 +222,32 @@
     <Style TargetType="TextBlock" x:Key="Quasar.Label">
         <Setter Property="FontSize" Value="11" />
         <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}" />
+    </Style>
+
+    <!-- Etiqueta de un campo de formulario (Biblioteca): va encima del control. -->
+    <Style TargetType="TextBlock" x:Key="Quasar.FieldLabel" BasedOn="{StaticResource Quasar.Label}">
+        <Setter Property="Margin" Value="0,6,0,2" />
+    </Style>
+
+    <!-- La misma etiqueta, para formularios de dos columnas (etiqueta | campo). -->
+    <Style TargetType="TextBlock" x:Key="Quasar.FieldLabel.Inline" BasedOn="{StaticResource Quasar.Label}">
+        <Setter Property="Margin" Value="0,3,8,3" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="HorizontalAlignment" Value="Right" />
+    </Style>
+
+    <!-- Boton plano de fila de acciones (Biblioteca): mismo comportamiento, menos alto. -->
+    <Style TargetType="Button" x:Key="Quasar.ActionChip" BasedOn="{StaticResource StudioButtonStyle}">
+        <Setter Property="Height" Value="30" />
+        <Setter Property="Margin" Value="0,0,6,6" />
+        <Setter Property="Padding" Value="9,3" />
+        <Setter Property="FontSize" Value="11" />
+    </Style>
+
+    <!-- Cabecera de seccion dentro de una tarjeta de modulo. -->
+    <Style TargetType="TextBlock" x:Key="Quasar.CardHeader" BasedOn="{StaticResource Quasar.SectionHeader}">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Accent}" />
+        <Setter Property="FontSize" Value="11" />
     </Style>
 
     <!-- Texto por defecto de la ventana: evita el negro de WPF en temas oscuros -->
@@ -199,6 +285,20 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+    </Style>
+
+    <!-- Campo de texto de formulario: rellena su celda y no se come con el borde.
+         Va DESPUES del estilo implicito de TextBox y con BasedOn porque, si no, no
+         hereda nada: WPF deja de aplicar el estilo implicito en cuanto la vista pide
+         uno con x:Key, y el TextBox cae en su plantilla de fabrica (fondo blanco
+         SystemColors.Window). Se vio en la captura de Biblioteca del ui4h: los 21
+         campos del inspector y de la barra de importacion salian como cajas blancas
+         sobre el tema oscuro. Same forward-reference rule as Quasar.Field.Combo. -->
+    <Style TargetType="TextBox" x:Key="Quasar.Field" BasedOn="{StaticResource {x:Type TextBox}}">
+        <Setter Property="Margin" Value="0,2,0,2" />
+        <Setter Property="Padding" Value="5,3" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
     </Style>
 
     <!-- ComboBox: la plantilla por defecto de WPF pinta su propio chrome claro y
@@ -309,6 +409,18 @@
         </Setter>
     </Style>
 
+    <!-- El mismo campo de formulario pero para ComboBox. No puede reutilizarse el de TextBox:
+         WPF comprueba el TargetType del Style al aplicarlo y suelta una InvalidOperationException
+         ("El TargetType TextBox no coincide con ComboBox") que tumba la construcción de la
+         ventana entera. Se descubrio abriendo Biblioteca de verdad, no compilando: el XAML es
+         legal y el fallo solo aparece al instanciar la vista. Va despues del estilo implicito
+         porque BasedOn con StaticResource solo ve lo declarado mas arriba. -->
+    <Style TargetType="ComboBox" x:Key="Quasar.Field.Combo" BasedOn="{StaticResource {x:Type ComboBox}}">
+        <Setter Property="Margin" Value="0,2,0,2" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+
     <Style TargetType="ProgressBar">
         <Setter Property="Background" Value="{DynamicResource Brush.Surface.Track}" />
         <Setter Property="Foreground" Value="{DynamicResource Brush.Accent}" />
@@ -334,6 +446,27 @@
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Default}" />
         <Setter Property="Padding" Value="6,3" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+    </Style>
+
+    <!-- Fila del arbol de categorias de Biblioteca (UI-4): jerarquia por sangria e
+         icono, seleccion con el acento del tema. El ancho del contenido tiene que
+         estirarse, por eso el HorizontalContentAlignment de arriba. -->
+    <Style TargetType="ListBoxItem" x:Key="Quasar.TreeNode" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+        <Setter Property="Height" Value="24" />
+        <!-- El nombre accesible lo pone el nodo ("Música, 7 tracks"): sin esto el lector de
+             pantalla y los scripts de verificacion solo ven la fila vacia, porque el contenido
+             son tres TextBlock sueltos dentro de una plantilla. -->
+        <Setter Property="AutomationProperties.Name" Value="{Binding AutomationName}" />
+        <Style.Triggers>
+            <Trigger Property="IsSelected" Value="True">
+                <Setter Property="Background" Value="{DynamicResource Brush.Selection.Deep}" />
+                <Setter Property="Foreground" Value="{DynamicResource Brush.Accent}" />
+            </Trigger>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{DynamicResource Brush.Surface.Hover}" />
+            </Trigger>
+        </Style.Triggers>
     </Style>
 
     <Style TargetType="Menu">
@@ -385,6 +518,52 @@
                 <Setter Property="Foreground" Value="{DynamicResource Brush.Text.High}" />
             </Trigger>
         </Style.Triggers>
+    </Style>
+
+    <!-- Celda de texto de una tabla: se recorta con puntos suspensivos, el tooltip
+         deja leer el titulo entero (D3) y el texto se pone en rojo cuando el archivo
+         del track no esta (UI-4: el locutor tiene que ver el roto sin abrir nada). -->
+    <Style x:Key="Quasar.Cell.Trim" TargetType="TextBlock">
+        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+        <Setter Property="ToolTip" Value="{Binding Text, RelativeSource={RelativeSource Self}}" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding FileAvailable}" Value="False">
+                <Setter Property="Foreground" Value="{DynamicResource Brush.Accent.DangerSoft}" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- Igual, para las columnas de tiempo/BPM/prioridad, que van en monoespaciada
+         para que las cifras no salten de ancho entre filas. -->
+    <Style x:Key="Quasar.Cell.Clock" TargetType="TextBlock" BasedOn="{StaticResource Quasar.Cell.Trim}">
+        <Setter Property="FontFamily" Value="{StaticResource Sys.Font.Clock}" />
+    </Style>
+
+    <!-- ====================== ARBOL DE CATEGORIAS (Biblioteca, UI-4) ====================== -->
+    <BooleanToVisibilityConverter x:Key="BoolToVis" />
+
+    <Style x:Key="Quasar.TreeNodeLabel" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Default}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+        <Style.Triggers>
+            <!-- Las lineas de seccion (TIPO DE AUDIO, GÉNERO) no son seleccionables:
+                 se leen como etiqueta, no como fila. -->
+            <DataTrigger Binding="{Binding IsHeader}" Value="True">
+                <Setter Property="FontSize" Value="10" />
+                <Setter Property="FontWeight" Value="Bold" />
+                <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Faint}" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="Quasar.TreeNodeCount" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource Sys.Font.Clock}" />
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}" />
+        <Setter Property="HorizontalAlignment" Value="Right" />
+        <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
 
     <!-- ====================== DECKS (identidad A/B, invariante al tema) ====================== -->

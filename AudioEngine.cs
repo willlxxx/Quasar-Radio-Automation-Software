@@ -361,15 +361,22 @@ namespace quasar_radio
             }
         }
 
-        public void TriggerCrossfadeToNext()
+        public void TriggerCrossfadeToNext() => TryCrossfadeToNext();
+
+        /// <summary>
+        /// Igual que <see cref="TriggerCrossfadeToNext"/> pero diciendo si de verdad paso algo:
+        /// quien llama necesita saber que no habia siguiente para poder cerrar el aire
+        /// (ver el tick de <see cref="OnPlaybackTimerTick"/>).
+        /// </summary>
+        private bool TryCrossfadeToNext()
         {
-            if (!IsPlaying || _crossfadeTriggered) return;
+            if (!IsPlaying || _crossfadeTriggered) return false;
 
             var nextTrack = GetNextTrackProvider?.Invoke();
             if (nextTrack == null)
             {
                 // No hay más canciones en la lista
-                return;
+                return false;
             }
 
             _crossfadeTriggered = true;
@@ -379,7 +386,7 @@ namespace quasar_radio
             if (!InitAndPlayDeck(incomingDeck, nextTrack, 0.0f))
             {
                 _crossfadeTriggered = false;
-                return;
+                return false;
             }
 
             _activeDeck = incomingDeck;
@@ -389,6 +396,7 @@ namespace quasar_radio
             outgoingDeck.IsFading = true;
             incomingDeck.IsFading = true;
             _fadeTimer.Start();
+            return true;
         }
 
         private void OnPlaybackTimerTick(object? sender, EventArgs e)
@@ -433,11 +441,18 @@ namespace quasar_radio
             // Fin absoluto de la pista
             if (pos >= total || remaining.TotalMilliseconds <= 100)
             {
-                if (!_crossfadeTriggered && IsAutoMode)
+                // UI-4 paso B: aqui estaba el agujero. En AUTO se llamaba a TriggerCrossfadeToNext
+                // y, si la cola no tenía siguiente, el metodo volvia sin hacer nada: _crossfadeTriggered
+                // seguia en false, la rama del else nunca se ejecutaba y el motor se quedaba con
+                // IsPlaying=true y el deck clavado en el ultimo tick. En cabina eso deja el "AL AIRE"
+                // encendido con silencio, la pista nunca se cierra en estadisticas y "ahora suena"
+                // se queda con la cancion que ya termino. Ahora el aire se cierra por su cuenta.
+                if (IsAutoMode && TryCrossfadeToNext())
                 {
-                    TriggerCrossfadeToNext();
+                    return;
                 }
-                else if (!_fadeTimer.IsEnabled && !_crossfadeTriggered)
+
+                if (!_fadeTimer.IsEnabled && !_crossfadeTriggered)
                 {
                     StopAll();
                     PlaybackFinished?.Invoke(this, EventArgs.Empty);

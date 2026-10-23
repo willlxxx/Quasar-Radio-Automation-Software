@@ -39,6 +39,19 @@ public partial class App : Application
         services.AddSingleton<AuxPlayerEngine>();
         services.AddSingleton<AudioDatabaseService>();
 
+        // UI-4: los servicios de libreria pasan a ser singleton. Antes la ventana de
+        // Gestion de libreria se los construia con `new` dentro de su ViewModel, asi que
+        // cada apertura montaba un TrackMetadataService y un TrackEditorService nuevos y
+        // la libreria que se editaba no era la misma que veia la consola.
+        services.AddSingleton<TrackMetadataService>();
+        services.AddSingleton<TrackEditorService>();
+
+        // UI-4 paso B: el apuntador de lo que suena. Es el unico que convierte un
+        // TrackChanged del motor en dato de emisora (rotacion, veces emitido, estadisticas
+        // y el nowplaying.txt que leen RDS/OBS), y vive aparte para que un fallo escribiendo
+        // el JSON no pueda cortar el aire.
+        services.AddSingleton<PlaybackAttributionService>();
+
         services.AddSingleton(Auth);
 
         // Transient services (creados cada vez que se solicitan)
@@ -54,6 +67,9 @@ public partial class App : Application
         services.AddSingleton(sp => new LibraryViewModel(
             sp.GetRequiredService<AudioDatabaseService>(),
             sp.GetRequiredService<SmartRotationEngine>(),
+            sp.GetRequiredService<TrackMetadataService>(),
+            sp.GetRequiredService<TrackEditorService>(),
+            sp.GetRequiredService<AuxPlayerEngine>(),
             sp.GetRequiredService<AudioPlayerViewModel>().Playlist,
             sp.GetRequiredService<IModuleNavigator>()));
 
@@ -94,7 +110,36 @@ public partial class App : Application
         Log.Information("Mostrando MainWindow...");
         mainWindow.Show();
         mainWindow.Activate();
+
+#if DEBUG
+        OpenModuleForUiCheck(e.Args);
+#endif
     }
+
+#if DEBUG
+    /// <summary>
+    /// <c>QuasarRadio.exe --ui-check Biblioteca</c> abre un modulo al arrancar para que los
+    /// scripts de verificacion (<c>scripts/ui/verificar_biblioteca.ps1</c>) puedan capturar
+    /// una ventana que de otra forma exige una cuenta de administrador. No hay ruta normal
+    /// de uso que lo invoque y no compila en Release.
+    /// </summary>
+    private void OpenModuleForUiCheck(string[] args)
+    {
+        var index = Array.IndexOf(args, "--ui-check");
+        if (index < 0 || index + 1 >= args.Length) return;
+
+        if (!Enum.TryParse<ModuleKey>(args[index + 1], true, out var key))
+        {
+            Log.Warning("--ui-check: modulo desconocido {Module}", args[index + 1]);
+            return;
+        }
+
+        if (Services.GetRequiredService<IModuleNavigator>() is ModuleNavigator navigator)
+        {
+            navigator.OpenForUiCheck(key);
+        }
+    }
+#endif
 
     private static void ConfigureLogging()
     {

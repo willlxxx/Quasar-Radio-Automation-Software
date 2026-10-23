@@ -40,18 +40,45 @@ namespace quasar_radio
 
         public AuthService()
         {
-            var dataDirectory = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                "QuasarRadio");
+            var dataDirectory = DataDirectory();
             Directory.CreateDirectory(dataDirectory);
             _usersFilePath = Path.Combine(dataDirectory, "users.json");
             _users = LoadUsers();
+            Log.Information("Base de usuarios en {Path}", _usersFilePath);
+        }
+
+        /// <summary>
+        /// Carpeta donde vive <c>users.json</c>. Por defecto es el dato local de Windows.
+        /// Existe la variable <c>QUASAR_RADIO_DATA_DIR</c> por dos motivos: montar una
+        /// instalacion portable, y -el que lo pidio- poder verificar en vivo el login y la
+        /// creacion de cuentas SIN tocar las cuentas reales del fundador. Los scripts de
+        /// interfaz la apuntan a su sandbox de %TEMP%.
+        /// </summary>
+        private static string DataDirectory()
+        {
+            var custom = Environment.GetEnvironmentVariable("QUASAR_RADIO_DATA_DIR");
+            if (!string.IsNullOrWhiteSpace(custom))
+            {
+                return custom;
+            }
+
+            return Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "QuasarRadio");
         }
 
         public bool HasUsers => _users.Count > 0;
         public string CurrentUserName => _currentUser?.Username ?? string.Empty;
         public UserRole? CurrentUserRole => _currentUser?.Role;
         public IReadOnlyList<UserAccount> Users => _users.Values.OrderBy(user => user.Username).ToArray();
+
+        /// <summary>
+        /// AUTH-1: se dispara al identificar o al salir de una sesion. Como la clave ya no
+        /// abre ventanas sino que sella acciones, la interfaz tiene que reaccionar en el
+        /// momento: los botones que dependian del nivel cambian de estado sin reiniciar nada,
+        /// y el pie de la consola pasa de «Invitado» a «willlxxx | Admin».
+        /// </summary>
+        public event EventHandler? SessionChanged;
 
         public bool CreateInitialAdmin(string username, string password, out string error)
         {
@@ -66,9 +93,14 @@ namespace quasar_radio
 
         public bool CreateUser(string username, string password, UserRole role, out string error)
         {
-            if (!IsAuthorized(UserRole.Admin))
+            // AUTH-1: el programa no pide login al arrancar, asi que la unica forma de montar
+            // una instalacion nueva es poder crear la primera cuenta sin estar dentro. Con esa
+            // excepcion cerrada, crear usuarios si es una atribucion de nivel: la segunda
+            // cuenta en adelante exige sesion de administrador, y quien la abre desde la
+            // ventana de usuarios recibe el dialogo de identificacion (AuthGate).
+            if (HasUsers && !IsAuthorized(UserRole.Admin))
             {
-                error = "Solo un administrador puede crear usuarios.";
+                error = "Hace falta una sesion de administrador para crear mas usuarios.";
                 return false;
             }
 
@@ -103,6 +135,7 @@ namespace quasar_radio
 
             _currentUser = user;
             Log.Information("Usuario autenticado: {Username} con rol {Role}", user.Username, user.Role);
+            SessionChanged?.Invoke(this, EventArgs.Empty);
             return true;
         }
 
@@ -114,6 +147,7 @@ namespace quasar_radio
             }
 
             _currentUser = null;
+            SessionChanged?.Invoke(this, EventArgs.Empty);
         }
 
         public bool IsAuthenticated => _currentUser != null;

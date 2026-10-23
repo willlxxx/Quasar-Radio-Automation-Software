@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace quasar_radio
@@ -13,6 +14,15 @@ namespace quasar_radio
         private int _historySize = 50; // Mantener historial de últimos 50 tracks
         private TimeSpan _minIntervalBetweenRepeats = TimeSpan.FromHours(2); // Mínimo 2 horas entre repeticiones
         private int _maxRotationCycles = 3; // Rotar 3 veces antes de permitir repetición
+
+        // UI-4 paso B: si se admiten datos heredados de track_metadata.json. Se apaga con
+        // LIMPIAR HISTORIAL y solo vuelve con el siguiente arranque del programa.
+        private bool _acceptsSeed = true;
+
+        // Cuantas veces se apunto una salida al aire DESDE QUE ARRANCO EL PROGRAMA. El
+        // contador de _playCount incluye lo sembrado desde track_metadata.json, asi que no
+        // sirve para decir "hoy"; esta linea si, y es la que se ve en la cabecera de Biblioteca.
+        private int _sessionPlays;
         
         public int HistorySize
         {
@@ -50,6 +60,8 @@ namespace quasar_radio
             _recentHistory.Enqueue(trackKey);
             if (_recentHistory.Count > _historySize)
                 _recentHistory.Dequeue();
+
+            _sessionPlays++;
         }
         
         public List<TrackItem> GetSmartRotation(List<TrackItem> availableTracks, int count)
@@ -126,15 +138,67 @@ namespace quasar_radio
         
         private string GetTrackKey(TrackItem track)
         {
-            // Usar FilePath como identificador único
-            return track.FilePath.ToLowerInvariant();
+            // Usar FilePath como identificador único.
+            // UI-4 paso B: se resuelve la ruta antes de usarla de clave. El escaneo de las
+            // carpetas guarda "musica\tema.wav" y la cola que arma la consola guarda la ruta
+            // absoluta del mismo archivo; con la cadena cruda el motor veia dos pistas
+            // distintas y la rotacion podia repetir la misma cancion creyendo que eran otras.
+            try
+            {
+                return Path.GetFullPath(track.FilePath).ToLowerInvariant();
+            }
+            catch (Exception ex) when (ex is ArgumentException or NotSupportedException or PathTooLongException)
+            {
+                return track.FilePath.ToLowerInvariant();
+            }
         }
         
+        /// <summary>
+        /// UI-4 paso B: sembrar el motor con lo que ya esta publicado en la libreria
+        /// (TrackItem.PlayCount y TrackItem.LastPlayed, que viven en track_metadata.json).
+        /// Sin esto la rotacion "inteligente" empezaba cada arranque de cero y elegia al
+        /// azar: el operador veia SMART PLAYLIST y salia lo mismo que AUTO.
+        ///
+        /// Solo sembras entradas que el motor NO conoce todavia, para que lo ocurrido en la
+        /// sesion en curso tenga prioridad sobre la foto del disco.
+        /// </summary>
+        /// <param name="tracks">La libreria recien cargada.</param>
+        /// <returns>Cuantas pistas quedaron sembradas (0 si el historial se acaban de limpiar).</returns>
+        public int SeedFromLibrary(IEnumerable<TrackItem> tracks)
+        {
+            if (tracks == null || !_acceptsSeed) return 0;
+
+            var seeded = 0;
+            foreach (var track in tracks)
+            {
+                if (track == null || string.IsNullOrEmpty(track.FilePath)) continue;
+
+                string trackKey = GetTrackKey(track);
+
+                if (track.PlayCount > 0 && !_playCount.ContainsKey(trackKey))
+                {
+                    _playCount[trackKey] = track.PlayCount;
+                    seeded++;
+                }
+
+                if (track.LastPlayed.HasValue && !_lastPlayedTimes.ContainsKey(trackKey))
+                    _lastPlayedTimes[trackKey] = track.LastPlayed.Value;
+            }
+
+            return seeded;
+        }
+
         public void ClearHistory()
         {
             _lastPlayedTimes.Clear();
             _playCount.Clear();
             _recentHistory.Clear();
+            _sessionPlays = 0;
+
+            // UI-4 paso B: tras limpiar, la siguiente recarga de libreria NO puede volver a
+            // leer el historial persistido o el boton no habria hecho nada (se llama al
+            // cerrar Biblioteca). Se vuelve a admitir el sembrado con el siguiente arranque.
+            _acceptsSeed = false;
         }
         
         public void RemoveTrackFromHistory(TrackItem track)
@@ -163,6 +227,7 @@ namespace quasar_radio
             {
                 TotalTracksTracked = _playCount.Count,
                 TotalPlays = _playCount.Values.Sum(),
+                SessionPlays = _sessionPlays,
                 MostPlayedTrack = _playCount.OrderByDescending(x => x.Value).FirstOrDefault(),
                 AveragePlaysPerTrack = _playCount.Count > 0 ? (double)_playCount.Values.Sum() / _playCount.Count : 0,
                 HistorySize = _recentHistory.Count
@@ -174,6 +239,7 @@ namespace quasar_radio
     {
         public int TotalTracksTracked { get; set; }
         public int TotalPlays { get; set; }
+        public int SessionPlays { get; set; }
         public KeyValuePair<string, int> MostPlayedTrack { get; set; }
         public double AveragePlaysPerTrack { get; set; }
         public int HistorySize { get; set; }

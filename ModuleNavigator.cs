@@ -43,14 +43,13 @@ namespace quasar_radio
         void Toggle(ModuleKey key);
 
         /// <summary>
-        /// Devuelve true si hay un administrador autenticado. Si no los hay, abre el
-        /// acceso modal y solo devuelve true si el usuario entra. Es la puerta comun de
-        /// los modulos que antes eran un boton apagado sin cuenta de administrador.
+        /// Devuelve true si hay un administrador autenticado. Si no, pide identificacion en
+        /// este momento y solo devuelve true si la cuenta que entro lo es.
+        /// AUTH-1: ya NO es la puerta de apertura de ningun modulo (ninguna ventana se abre
+        /// detras de una clave); es el sello que ponen las operaciones que cambian el estado
+        /// compartido. Reenviada a <see cref="AuthGate"/> para que haya una sola ruta.
         /// </summary>
         bool EnsureAdmin();
-
-        /// <summary>Modulos que solo un administrador puede abrir (DSP y usuarios).</summary>
-        bool RequiresAdmin(ModuleKey key);
 
         event EventHandler<ModuleKey>? ModuleOpened;
         event EventHandler<ModuleKey>? ModuleClosed;
@@ -75,20 +74,17 @@ namespace quasar_radio
 
         public bool IsOpen(ModuleKey key) => _open.ContainsKey(key);
 
-        /// <summary>
-        /// Los modulos que tocan la señal o los permisos son de administrador. La puerta
-        /// esta en <see cref="Open"/> para que ningun boton de la consola la pueda olvidar.
-        /// </summary>
-        public bool RequiresAdmin(ModuleKey key) => key switch
-        {
-            ModuleKey.Dsp => true,
-            ModuleKey.Users => true,
-            ModuleKey.Library => true,
-            _ => false,
-        };
-
+        /// <summary>Igual que <see cref="Open"/>: nunca cierra un modulo por atajo, para no perder trabajo en cabina.</summary>
         public void Toggle(ModuleKey key) => Open(key);
 
+        /// <summary>
+        /// AUTH-1: la apertura de un modulo NUNCA pide clave. Las seis ventanas (Biblioteca,
+        /// Programacion, DSP, Streaming, Reportes, Usuarios) se abren con sesion o sin ella,
+        /// porque el fundador pidio quitar «el uso de clave para el programa en general» y
+        /// dejarla solo para atribuir acciones por nivel. Lo que antes bloqueaba esta puerta
+        /// (DSP, Usuarios y Biblioteca) se sigue pudiendo hacer, pero la cuenta se pide al
+        /// pulsar la operacion concreta: ver <see cref="AuthGate"/>.
+        /// </summary>
         public void Open(ModuleKey key)
         {
             var app = Application.Current;
@@ -102,14 +98,6 @@ namespace quasar_radio
             {
                 if (existing.WindowState == WindowState.Minimized) existing.WindowState = WindowState.Normal;
                 existing.Activate();
-                return;
-            }
-
-            // Asegurado aqui y no en cada llamada: EnsureAdmin es idempotente, asi que un
-            // llamador que ya pidio acceso no vuelve a ver el dialogo.
-            if (RequiresAdmin(key) && !EnsureAdmin())
-            {
-                _log.Information("Apertura cancelada de {Key}: hace falta administrador", key);
                 return;
             }
 
@@ -139,24 +127,23 @@ namespace quasar_radio
             _log.Information("Modulo abierto: {Key}", key);
         }
 
-        public bool EnsureAdmin()
+#if DEBUG
+        /// <summary>
+        /// SOLO PARA LA VERIFICACION DE INTERFAZ (no existe en Release). Abre un modulo al
+        /// arrancar para que los scripts (<c>scripts/ui/verificar_biblioteca.ps1</c>) lleguen
+        /// a la ventana sin tener que pulsar la franja con el raton. Desde AUTH-1 ya no salta
+        /// ninguna puerta -no hay puerta en la apertura-; deja el Warning en el log solo para
+        /// que la evidencia se distinga de una apertura normal.
+        /// </summary>
+        public void OpenForUiCheck(ModuleKey key)
         {
-            if (App.Auth.IsAuthorized(UserRole.Admin)) return true;
-
-            var owner = Application.Current?.MainWindow;
-            var login = new LoginWindow(App.Auth)
-            {
-                Owner = owner
-            };
-
-            var accepted = login.ShowDialog() == true;
-            if (!accepted || !App.Auth.IsAuthorized(UserRole.Admin))
-            {
-                _log.Information("Acceso denegado: hace falta una cuenta de administrador");
-                return false;
-            }
-            return true;
+            _log.Warning("VERIFICACION DE INTERFAZ: se abre {Key} por linea de comandos", key);
+            Open(key);
         }
+#endif
+
+        /// <summary>El sello de accion, no la puerta de ventana. Ver <see cref="AuthGate"/>.</summary>
+        public bool EnsureAdmin() => AuthGate.Admin();
 
         // ------------------------------------------------------------------ fabrica
 

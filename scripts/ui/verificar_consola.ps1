@@ -25,6 +25,11 @@ public static class QsrWin {
   [DllImport("user32.dll")] static extern bool SetForegroundWindow(IntPtr h);
   [DllImport("user32.dll")] static extern bool BringWindowToTop(IntPtr h);
   [DllImport("user32.dll")] static extern bool ShowWindow(IntPtr h, int n);
+  [DllImport("user32.dll")] static extern bool IsIconic(IntPtr h);
+  // Con la consola minimizada UIA reporta el rectangulo en -32000 y el arbol sale vacio o a
+  // medias: las medidas D1/E1/E3 dependen de que la ventana este visible de verdad.
+  public static void Restore(IntPtr h) { ShowWindow(h, 9); BringWindowToTop(h); }   // SW_RESTORE
+  public static bool Minimizada(IntPtr h) { return IsIconic(h); }
   [DllImport("user32.dll")] static extern void keybd_event(byte vk, byte scan, uint flags, UIntPtr extra);
   // WPF pinta por hardware: con la ventana tapada, PrintWindow devolvia el cliente en blanco.
   // Windows solo deja cambiar el foco a un proceso que acaba de recibir un teclado, asi que se
@@ -139,6 +144,25 @@ function Find-Text($root, $pattern) {
   return $null
 }
 
+# Reconsulta con paciencia. La consola viva tiene reloj, VU y formas de onda moviendose todo el
+# tiempo, y un FindAll(Descendants) sobre un arbol que se esta re-publicando sale por partes:
+# en la corrida c4 falto D1 (NIVEL DE SALIDA / VOLUMEN MASTER / DETECTOR SILENCIO), la franja SFX
+# y los botones de modulos EN LA CONSULTA, mientras la evidencia de PrintWindow los muestra
+# pintados. Antes de escribir "NO APARECE EN EL ARBOL" se vuelve a preguntar varias veces.
+function Find-Text2($root, $pattern, [int]$tries = 6) {
+  for ($i = 1; $i -le $tries; $i++) {
+    $e = Find-Text $root $pattern
+    if ($null -ne $e -and $e.Current.BoundingRectangle.X -gt -20000) {
+      if ($i -gt 1) { L ('  (aparecio en la reconsulta ' + $i + ' de ' + $pattern + ')') }
+      return $e
+    }
+    Start-Sleep -Milliseconds 700
+  }
+  return $null
+}
+
+# Lo mismo para una coleccion: se resuelve por conteo en el punto de uso (ver E3).
+
 function RectOf($e) {
   $r = $e.Current.BoundingRectangle
   return [pscustomobject]@{ X = [int]$r.X; Y = [int]$r.Y; W = [int]$r.Width; H = [int]$r.Height }
@@ -146,6 +170,12 @@ function RectOf($e) {
 
 $pre = @(Get-Process -Name quasar_radio -ErrorAction SilentlyContinue)
 if ($pre.Count -gt 0) { throw "Ya hay $($pre.Count) instancia(s) abiertas; abortando." }
+
+# La geometria que el programa guarda al cerrarse se recupera al arrancar: si la corrida anterior
+# termino maximizada (o la termino el fundador a mano), D2 mide -8,-8 1616x876 y da False en las
+# cuatro comprobaciones de "cabe en el area util". Se arranca siempre de cero.
+$layout = Join-Path $env:APPDATA 'QuasarRadio\layout.json'
+if (Test-Path $layout) { Remove-Item $layout -Force }
 
 $proc = Start-Process -FilePath $exe -WorkingDirectory (Split-Path $exe) -PassThru
 try {
@@ -169,6 +199,46 @@ try {
   $main = $null
   foreach ($w in (Wins $proc.Id)) { if ($w.Current.Name -like '*Quasar*') { $main = $w } }
   if ($null -eq $main) { throw 'sin ventana principal (UIA)' }
+
+  # ---------- ARRANQUE: el arbol de UIA tiene que estar completo antes de medir nada
+  # FindAll(Descendants) sobre una ventana de WPF devuelve lo que la aplicacion alcanza a
+  # publicar mientras su hilo de UI esta ocupado: preguntando durante el escaneo de la libreria
+  # salian las etiquetas de arriba y las franjas de abajo NO, y el informe parecia un boton roto
+  # que si funciona. El centinela es el texto mas profundo del arbol (la pista de la franja de
+  # modulos); cuando ese aparece, todo lo demas ya esta publicado. El tiempo que tarda es la
+  # medida real del arranque con la libreria del fundador (hilo de UI ocupado: A1/1.4 del plan
+  # de arquitectura).
+  # Con la consola minimizada UIA sigue publicando el arbol, pero con todos los rectangulos en
+  # -32000: D1/E1/E3 saldrian "NO APARECE" o con rects imposibles (corrida c7: la franja SFX en
+  # -31977,-31405). Se restaura antes de medir y se deja constancia en el informe.
+  $hwndMain = [int]$main.Current.NativeWindowHandle
+  if ([QsrWin]::Minimizada([IntPtr]$hwndMain)) {
+    L 'ARRANQUE_consola_minimizada=True : se restaura antes de medir'
+    [void][QsrWin]::Restore([IntPtr]$hwndMain)
+    Start-Sleep -Seconds 2
+  } else { L 'ARRANQUE_consola_minimizada=False' }
+
+  # Centinela: el arbol de UIA se publica por partes mientras el escaneo de la libreria tiene
+  # ocupado al hilo de UI (H11). La etiqueta mas profunda de la franja de modulos NO bastaba: en
+  # las corridas de ui4b 'BOTONERA SFX' se publicaba despues que ella, y E1 salia "NO APARECE EN
+  # EL ARBOL" con la franja pintada en la captura. Se esperan las dos etiquetas y un conteo de
+  # botones que ya no cambia entre dos consultas seguidas.
+  $btnCond = New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ControlTypeProperty, [System.Windows.Automation.ControlType]::Button)
+  $espera = [Diagnostics.Stopwatch]::StartNew()
+  $listo = $false; $prev = -1; $igual = 0; $n = 0
+  while ($espera.ElapsedMilliseconds -lt 90000) {
+    $a = Find-Text $main 'abre su propia ventana'
+    $b = Find-Text $main 'BOTONERA SFX'
+    $n = @($main.FindAll([System.Windows.Automation.TreeScope]::Descendants, $btnCond)).Count
+    if ($n -eq $prev) { $igual++ } else { $igual = 0; $prev = $n }
+    # Vale solo si ademas esta en pantalla: minimizada, la etiqueta existe pero su rect es -32000.
+    if ($null -ne $a -and $null -ne $b -and $b.Current.BoundingRectangle.X -gt -20000 -and $n -ge 40 -and $igual -ge 2) {
+      $listo = $true; break
+    }
+    Start-Sleep -Milliseconds 500
+  }
+  L ("ARRANQUE_arbol_uia_completo=" + $listo + " en_ms=" + [int]$espera.ElapsedMilliseconds +
+     " botones=" + $n + " (tras los 10 s de cortesía)")
 
   if ($Maximize) {
     # UIA no expone SetState a traves de PowerShell; se usa el ShowWindow de Win32.
@@ -195,7 +265,7 @@ public static class U32 {
 
   # ---------- D1: el VU master y el volumen master deben estar pintados dentro de la ventana
   foreach ($pat in @('NIVEL DE SALIDA', 'VOLUMEN MASTER', 'DETECTOR SILENCIO')) {
-    $e = Find-Text $main $pat
+    $e = Find-Text2 $main $pat
     if ($null -eq $e) { L ("D1_TXT [$pat] : NO APARECE EN EL ARBOL"); continue }
     $r = RectOf $e
     $dentro = ($r.Y -ge $mr.Y) -and ($r.Y + $r.H -le $mr.Y + $mr.H + 2) -and ($r.X -ge $mr.X)
@@ -204,8 +274,13 @@ public static class U32 {
 
   $vu = New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ControlTypeProperty, [System.Windows.Automation.ControlType]::Custom)
   $leds = @()
-  foreach ($c in $main.FindAll([System.Windows.Automation.TreeScope]::Descendants, $vu)) {
-    if ($c.Current.ClassName -match 'LedVuMeter') { $leds += $c }
+  for ($try = 1; $try -le 6; $try++) {
+    $leds = @()
+    foreach ($c in $main.FindAll([System.Windows.Automation.TreeScope]::Descendants, $vu)) {
+      if ($c.Current.ClassName -match 'LedVuMeter') { $leds += $c }
+    }
+    if ($leds.Count -gt 0) { break }
+    Start-Sleep -Milliseconds 700
   }
   L ("D1_ledvu_controls=" + $leds.Count)
   foreach ($c in $leds) {
@@ -214,7 +289,7 @@ public static class U32 {
   }
 
   # recorte del panel master para la evidencia visual
-  $lbl = Find-Text $main 'NIVEL DE SALIDA'
+  $lbl = Find-Text2 $main 'NIVEL DE SALIDA' 2
   if ($null -ne $lbl) {
     $r = RectOf $lbl
     $x = [Math]::Max($mr.X, $r.X - 14)
@@ -225,7 +300,7 @@ public static class U32 {
   }
 
   # ---------- E1/E2 (UI-3b paso 3): franja SFX siempre visible y cero pestanas
-  $sfx = Find-Text $main 'BOTONERA SFX'
+  $sfx = Find-Text2 $main 'BOTONERA SFX'
   if ($null -eq $sfx) { L 'E1_franja_sfx: NO APARECE EN EL ARBOL' }
   else {
     $r = RectOf $sfx
@@ -250,6 +325,32 @@ public static class U32 {
   }
   $tic = New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ControlTypeProperty, [System.Windows.Automation.ControlType]::TabItem)
   L ("E2_pestanas_de_suite=" + (@($main.FindAll([System.Windows.Automation.TreeScope]::Descendants, $tic)).Count))
+
+  # ---------- E3 (UI-4): BASE DE DATOS dejo de ser un panel de la consola; su puerta es la franja
+  # Aqui la ausencia ES el resultado esperado, asi que se reconsulta poco (2 intentos): lo
+  # suficiente para no cantar un "no esta" que era el arbol a medias.
+  $bdd = Find-Text2 $main 'BASE DE DATOS' 2
+  if ($null -eq $bdd) { L 'E3_panel_base_de_datos_en_consola=no esta (correcto)' }
+  else {
+    $r = RectOf $bdd
+    L ('E3_panel_base_de_datos_en_consola=SIGUE: rect=' + $r.X + ',' + $r.Y + ' ' + $r.W + 'x' + $r.H)
+  }
+  # Los cinco botones de la franja se buscan sobre el total de botones del arbol, y el total se
+  # reimprime en el informe: en la corrida c5 salio E3_franja_botones=[] con la franja pintada en
+  # la captura, y sin el conteo no se puede distinguir "arbol a medias" de "nombre que no
+  # coincide". La sonda probo_botonera.ps1 vio 55 botones y los cinco por su nombre.
+  $btn2 = New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ControlTypeProperty, [System.Windows.Automation.ControlType]::Button)
+  $todos = @()
+  for ($try = 1; $try -le 6; $try++) {
+    $todos = @($main.FindAll([System.Windows.Automation.TreeScope]::Descendants, $btn2))
+    if ($todos.Count -ge 40) { break }
+    Start-Sleep -Milliseconds 700
+  }
+  $franja = @()
+  foreach ($b in $todos) {
+    if ($b.Current.Name -match 'BIBLIOTECA|STREAMING|PROGRAMAC|REPORTES|DSP') { $franja += $b.Current.Name }
+  }
+  L ('E3_botones_en_el_arbol=' + $todos.Count + ' | franja=[' + ($franja -join ', ') + ']')
 
   # D3 (abrir pestana): sin caso desde UI-3b paso 3, la consola ya no tiene TabControl.
   # Se conserva por si una fase futura vuelve a montar pestanas dentro de la consola.

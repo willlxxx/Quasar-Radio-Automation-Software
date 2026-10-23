@@ -1,0 +1,49 @@
+﻿FIXTURES: 3 wav QSRPERM* en musica/ y datos aislados en C:\Users\CY-KILL\AppData\Local\Temp\qsr_perm_test\data
+P1_consola=80,0 1440x860
+P1_arbol_listo_en_ms=359
+P1_pie_invitado=True | (sin texto de estado)
+P1_botones_pie=Identificarse con una cuenta del sistema · Abrir la ventana de usuarios y niveles
+P1_sin_modal_al_arrancar=True
+P2_biblioteca_abre_sin_clave=True | modal_de_login=False | 140,20 1320x820
+P2_biblioteca_lista_en_ms=237
+P2_biblioteca_maximizada=True
+P3_dsp_abre_sin_clave=True | modal=False | 310,100 980x660
+P4_usuarios_sin_clave=True | 460,170 680x520 | sesion: Sesión: invitado (las cuentas definen quién manda)
+P5_rol_por_defecto=Nivel del usuario nuevo
+P5_primera_cuenta_sin_login=True | Cuenta creada con nivel Admin.
+P5_filas_en_la_tabla=1 | users.json en el sandbox=True
+CAP P5_auth10_usuarios : PrintWindow=True 680x520 md5=3616DB36F7B6DCD84E1CE7083C463D77
+P6_clic_en_crear=True
+P6_segunda_cuenta_pide_identificacion=True | Quasar Radio | Identifícate para esta acción
+CAP P6_auth10_pide_clave : PrintWindow=True 430x430 md5=21AD5DC5CA51F54AC3C0199B4E04563A
+P6_tras_identificarse_modal_cerrado=True | filas=2 | Cuenta creada con nivel Operator.
+P7_guardar_habilitado=True
+P7_sin_modal_y_guardado=True | Metadatos guardados
+P7_operacion_de_administrador_hecha=True | json=True | md5=52FB5EF9
+P8_tras_cerrar_sesion_pie=True | pie: Invitado
+P8_guardar_habilitado_siendo_invitado=True
+P8_clic_en_guardar=True
+P8_operacion_de_administrador_pide_clave=True
+CAP P8_auth10_pide_clave : PrintWindow=True 430x430 md5=21AD5DC5CA51F54AC3C0199B4E04563A
+P8_al_volver_no_se_escribe=True | md5 antes=52FB5EF9 despues=52FB5EF9
+P8_modal_cerrado=True
+P9_auto_habilitado_siendo_invitado=True
+P9_auto_funciona_siendo_invitado=True | Lista automática: 3 elementos (puede repetir tracks).
+CAP P9_auth10_consola : PrintWindow=True 1440x860 md5=80A103E55A0815963925B6311E414006
+CAP P9_auth10_biblioteca : PrintWindow=True 1616x876 md5=AB87791E9BD08547034B9FBB46E2B08A
+LOG=quasar_radio-20261023.log
+   2026-10-23 00:15:59.426 -04:00 [INF] Usuario autenticado: jefa con rol "Admin"
+   2026-10-23 00:15:59.433 -04:00 [INF] Accion atribuida a jefa con rol "Admin"
+   2026-10-23 00:15:59.609 -04:00 [INF] Cuenta creada para operador1 con rol "Operator"
+   2026-10-23 00:15:59.610 -04:00 [INF] Ventana de usuarios: Cuenta creada con nivel Operator.
+   2026-10-23 00:16:11.866 -04:00 [INF] LoginWindow: el usuario volvio sin identificarse; la accion no se hace.
+   2026-10-23 00:16:11.881 -04:00 [INF] Accion sin permiso: hace falta "Admin" y no se identifico nadie (sesion actual: invitado)
+   2026-10-23 00:18:08.576 -04:00 [INF] Cuenta creada para jefa con rol "Admin"
+   2026-10-23 00:18:08.577 -04:00 [INF] Ventana de usuarios: Cuenta creada con nivel Admin.
+   2026-10-23 00:18:16.556 -04:00 [INF] Usuario autenticado: jefa con rol "Admin"
+   2026-10-23 00:18:16.563 -04:00 [INF] Accion atribuida a jefa con rol "Admin"
+   2026-10-23 00:18:16.742 -04:00 [INF] Cuenta creada para operador1 con rol "Operator"
+   2026-10-23 00:18:16.742 -04:00 [INF] Ventana de usuarios: Cuenta creada con nivel Operator.
+   2026-10-23 00:18:28.948 -04:00 [INF] LoginWindow: el usuario volvio sin identificarse; la accion no se hace.
+   2026-10-23 00:18:28.973 -04:00 [INF] Accion sin permiso: hace falta "Admin" y no se identifico nadie (sesion actual: invitado)
+RESTANTES=0

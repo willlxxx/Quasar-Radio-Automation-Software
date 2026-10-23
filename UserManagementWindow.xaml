@@ -2,36 +2,97 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:quasar_radio"
-        Title="Usuarios y roles" Height="470" Width="540"
+        Title="Usuarios y niveles - Quasar Radio Pro" Height="520" Width="680"
+        MinHeight="400" MinWidth="560"
         local:StudioKeys.CartWall="True"
-        WindowStartupLocation="CenterOwner" Background="{DynamicResource Brush.Surface.BaseAlt}" Foreground="{DynamicResource Brush.Text.AltHigh}">
+        WindowStartupLocation="CenterOwner" Background="{DynamicResource Brush.Surface.BaseAlt}" Foreground="{DynamicResource Brush.Text.AltHigh}"
+        AutomationProperties.Name="Usuarios y niveles">
+
+    <!-- AUTH-1 (2026-10-22): el programa no pide login para usarse, asi que esta ventana se
+         abre sin clave y es el unico sitio donde existen cuentas con nivel (administrador /
+         operador / espectador). Regla del permiso: sin ninguna cuenta todavia, cualquiera
+         crea la primera; con cuentas ya creadas, crear otra exige sesion de administrador y
+         el dialogo de identificacion sale AL PULSAR, no al abrir la ventana. -->
     <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <TextBlock Text="USUARIOS" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.High}" Margin="0,0,0,12"/>
+
+        <!-- ============ QUIEN SOY ============
+             Tres columnas en vez de un DockPanel: con el titulo, la linea de sesion y los dos
+             botones dockeados, en 620 px el boton IDENTIFICARSE salia RECORTADO ("IDENT") y al
+             haber sesion salia tambien "SALIR DE LA SESION", que se comia el resto. La columna
+             central es la que cede (TextTrimming) y los botones siempre caben. -->
+        <Grid Grid.Row="0" Margin="0,0,0,12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" Text="USUARIOS Y NIVELES" FontSize="18" FontWeight="Bold"
+                       VerticalAlignment="Center" Foreground="{DynamicResource Brush.Text.High}"/>
+            <TextBlock x:Name="SessionText" Grid.Column="1" Margin="14,0,12,0" FontSize="11"
+                       VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
+                       Foreground="{DynamicResource Brush.Text.Alt}"/>
+            <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                <Button x:Name="IdentifyButton" Content="IDENTIFICARSE" Height="28" Padding="10,0"
+                        Background="{DynamicResource Brush.Surface.CardAlt}" Foreground="{DynamicResource Brush.Text.High}"
+                        BorderBrush="{DynamicResource Brush.Border.Alt}" Click="OnIdentifyClick"
+                        AutomationProperties.Name="Identificarse con una cuenta existente"/>
+                <Button x:Name="LogoutButton" Content="SALIR DE LA SESIÓN" Height="28" Padding="10,0" Margin="8,0,0,0"
+                        Background="{DynamicResource Brush.Surface.CardAlt}" Foreground="{DynamicResource Brush.Text.High}"
+                        BorderBrush="{DynamicResource Brush.Border.Alt}" Click="OnLogoutClick"
+                        AutomationProperties.Name="Cerrar la sesion actual"/>
+            </StackPanel>
+        </Grid>
+
+        <!-- ============ CUENTAS ============ -->
         <DataGrid x:Name="UsersGrid" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False"
-                  Background="{DynamicResource Brush.Surface.PanelAlt}" Foreground="{DynamicResource Brush.Text.AltHigh}" BorderBrush="{DynamicResource Brush.Border.Alt}" RowBackground="{DynamicResource Brush.Surface.PanelAlt}" AlternatingRowBackground="{DynamicResource Brush.Surface.RaisedAlt}">
+                  Background="{DynamicResource Brush.Surface.PanelAlt}" Foreground="{DynamicResource Brush.Text.AltHigh}" BorderBrush="{DynamicResource Brush.Border.Alt}" RowBackground="{DynamicResource Brush.Surface.PanelAlt}" AlternatingRowBackground="{DynamicResource Brush.Surface.RaisedAlt}"
+                  AutomationProperties.Name="Cuentas creadas con su nivel">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Usuario" Binding="{Binding Username}" Width="*"/>
-                <DataGridTextColumn Header="Rol" Binding="{Binding Role}" Width="140"/>
+                <DataGridTextColumn Header="Nivel" Binding="{Binding Role}" Width="140"/>
             </DataGrid.Columns>
         </DataGrid>
+
+        <!-- ============ CREAR ============
+             Dos filas: la de arriba son etiquetas visibles. Sin ellas la ventana dejaba dos
+             cajas vacias sin decir cual es cual (el nombre accesible existe, pero en pantalla
+             no se ve), y aqui es donde se crean los niveles del sistema. -->
         <Grid Grid.Row="2" Margin="0,14,0,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="150"/>
                 <ColumnDefinition Width="130"/>
             </Grid.ColumnDefinitions>
-            <StackPanel Grid.Column="0" Margin="0,0,10,0">
-                <TextBox x:Name="UsernameBox" Height="32" Padding="8,5" ToolTip="Nombre de usuario" Background="{DynamicResource Brush.Surface.CardAlt}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Alt}"/>
-                <PasswordBox x:Name="PasswordBox" Height="32" Padding="8,5" Margin="0,6,0,0" ToolTip="Contraseña (mínimo 10 caracteres)" Background="{DynamicResource Brush.Surface.CardAlt}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Alt}"/>
+
+            <StackPanel Grid.Row="0" Grid.ColumnSpan="3" Orientation="Horizontal" Margin="0,0,0,6">
+                <TextBlock Text="NUEVA CUENTA  ·  usuario y contraseña (mínimo 10 caracteres)" FontSize="10" FontWeight="Bold"
+                           Foreground="{DynamicResource Brush.Text.Muted}" VerticalAlignment="Center"/>
+                <TextBlock Text="NIVEL" FontSize="10" FontWeight="Bold" Margin="34,0,0,0" VerticalAlignment="Center"
+                           Foreground="{DynamicResource Brush.Text.Muted}"/>
             </StackPanel>
-            <ComboBox x:Name="RoleBox" Grid.Column="1" Height="32" Margin="0,0,10,0" VerticalAlignment="Top"/>
-            <Button Grid.Column="2" Content="CREAR CUENTA" Height="32" VerticalAlignment="Top" Background="{DynamicResource Brush.Accent.Teal}" Foreground="{DynamicResource Brush.Text.High}" BorderThickness="0" FontWeight="Bold" Click="OnCreateClick"/>
+
+            <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,10,0">
+                <TextBox x:Name="UsernameBox" Height="32" Padding="8,5" ToolTip="Nombre de usuario" Background="{DynamicResource Brush.Surface.CardAlt}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Alt}"
+                         AutomationProperties.Name="Nombre del usuario nuevo"/>
+                <PasswordBox x:Name="PasswordBox" Height="32" Padding="8,5" Margin="0,6,0,0" ToolTip="Contraseña (mínimo 10 caracteres)" Background="{DynamicResource Brush.Surface.CardAlt}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Alt}"
+                             AutomationProperties.Name="Contraseña del usuario nuevo"/>
+            </StackPanel>
+            <ComboBox x:Name="RoleBox" Grid.Row="1" Grid.Column="1" Height="32" Margin="0,0,10,0" VerticalAlignment="Top"
+                      AutomationProperties.Name="Nivel del usuario nuevo"/>
+            <Button Grid.Row="1" Grid.Column="2" Content="CREAR CUENTA" Height="32" VerticalAlignment="Top" Background="{DynamicResource Brush.Accent.Teal}" Foreground="{DynamicResource Brush.Text.High}" BorderThickness="0" FontWeight="Bold" Click="OnCreateClick"
+                    AutomationProperties.Name="Crear la cuenta con el nivel elegido"/>
         </Grid>
-        <TextBlock x:Name="StatusText" Grid.Row="2" Margin="0,78,0,0" Foreground="{DynamicResource Brush.Accent.Coral}" TextWrapping="Wrap"/>
+
+        <TextBlock x:Name="StatusText" Grid.Row="3" Margin="0,10,0,0" FontSize="11" Foreground="{DynamicResource Brush.Accent.Coral}" TextWrapping="Wrap"/>
     </Grid>
 </Window>

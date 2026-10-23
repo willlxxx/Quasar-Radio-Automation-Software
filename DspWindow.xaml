@@ -35,8 +35,10 @@
                 <ColumnDefinition Width="1*"/>
             </Grid.ColumnDefinitions>
 
-            <!-- CADENA DE EFECTOS: la pestaña la tenia gated por IsAdmin a nivel de TabItem -->
-            <Border Grid.Column="0" IsEnabled="{Binding IsAdmin}" Background="{DynamicResource Brush.Surface.Card}" CornerRadius="8" Padding="4" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
+            <!-- CADENA DE EFECTOS: la pestaña la tenia gated por IsAdmin a nivel de TabItem.
+                 AUTH-1: el DSP se abre y se usa sin clave (es el aire del operador), asi que el
+                 panel sigue vivo con sesion de invitado; lo que exige nivel se pide al pulsar. -->
+            <Border Grid.Column="0" IsEnabled="{Binding CanOperate}" Background="{DynamicResource Brush.Surface.Card}" CornerRadius="8" Padding="4" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
                 <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="8">
                     <StackPanel>
                         <Border Background="{DynamicResource Brush.Surface.Panel}" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1" CornerRadius="4" Padding="8" Margin="0,0,0,8">
