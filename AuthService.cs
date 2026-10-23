@@ -48,13 +48,14 @@ namespace quasar_radio
         }
 
         /// <summary>
-        /// Carpeta donde vive <c>users.json</c>. Por defecto es el dato local de Windows.
+        /// Carpeta de los datos del usuario de Windows: <c>users.json</c> y, desde UI-4
+        /// paso C, <c>schedule.json</c>. Por defecto es el dato local de Windows.
         /// Existe la variable <c>QUASAR_RADIO_DATA_DIR</c> por dos motivos: montar una
-        /// instalacion portable, y -el que lo pidio- poder verificar en vivo el login y la
-        /// creacion de cuentas SIN tocar las cuentas reales del fundador. Los scripts de
-        /// interfaz la apuntan a su sandbox de %TEMP%.
+        /// instalacion portable, y -el que lo pidio- poder verificar en vivo el login, la
+        /// creacion de cuentas y la rejilla horaria SIN tocar los datos reales del fundador.
+        /// Los scripts de interfaz la apuntan a su sandbox de %TEMP%.
         /// </summary>
-        private static string DataDirectory()
+        public static string DataDirectory()
         {
             var custom = Environment.GetEnvironmentVariable("QUASAR_RADIO_DATA_DIR");
             if (!string.IsNullOrWhiteSpace(custom))

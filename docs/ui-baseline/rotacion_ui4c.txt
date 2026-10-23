@@ -1,0 +1,85 @@
+﻿FIXTURES: 3 wav en musica/ (2s, 2s, 6s), 1 jingle, 1 wav en importados/ fuera del escaneo, y track_metadata.json sembrado -> C:\Users\CY-KILL\AppData\Local\Temp\qsr_rot_test
+ARRANQUE[sesión 1]: biblioteca lista en 329 ms, consola en 727 ms
+R1_biblioteca=140,20 1320x820 | consola=80,0 1440x860
+R1_estado_arranque=Recuperado de track_metadata.json: 1 fichas guardadas aplicadas, 1 importados recuperados, 2 tracks con historial de rotación.
+R2_filas=5 (esperadas 5: 3 de musica/ + 1 jingle + 1 importado recuperado del JSON, sin duplicar Pista 2)
+R2_fila_importada_presente=True
+   IMPORTADA:  | 🎵 | Tema fuera de carpeta | QSRROT Importado | Import Verify | 2026 | 5 | 120 BPM | 00:02 | 3 | 19/10/2026 21:05
+R2_estado_restaura_importados=True
+R3_rotacion=Rotación: 2 pistas seguidas · 0 salida(s) al aire en esta sesión
+R3_nodo_renombrar=True | nodo_import_verify=True
+   NODOS: Toda la biblioteca, 5 tracks / TIPO DE AUDIO / Música, 4 tracks / Jingles, 1 tracks / Separadores, 0 tracks / Voces, 0 tracks / Publicidad, 0 tracks / Horarias, 0 tracks / ESTADO DE LOS ARCHIVOS / Faltan en disco, 0 tracks / No se pueden leer, 0 tracks / GÉNERO / Import Verify, 1 tracks / Jingle, 1 tracks / Pop, 2 tracks / Renombrar, 1 tracks
+R4_master_silenciado=0
+R4_cola_vaciada_en_ms=354 | filas=0 | estado_consola=Cargadas 3 canciones desde carpeta.
+   FILA ANTES DE EMITIR:  | 🎵 | Pista 3 | QSRROT Artista Tres | Pop | 2026 | 5 | 120 BPM | 00:06 | 0 | Nunca
+R4_encolar_habilitado=True
+R4_cola_tras_encolar_filas=1 | estado=Encolados 1 tracks. La cola tiene 1 elementos.
+R4_play_habilitado=True (tras 288 ms esperando a la cola)
+R4_al_aire_en_ms=258 | nowplaying=QSRROT Artista Tres - Pista 3
+R4_stop_habilitado=True (tras 324 ms buscando el boton vivo)
+R4_se_corto_a_los_s=2.8
+R4_vegas_Pista3=1 | emitido=2026-10-23T19:22:19.1474309-04:00
+R4_aire_persistido_en_json=True
+   FILA TRAS EMITIR:  | 🎵 | Pista 3 | QSRROT Artista Tres | Pop | 2026 | 5 | 120 BPM | 00:06 | 1 | 23/10/2026 19:22
+R5_cola_vaciada_en_ms=387 | despues=0
+R5_encolar_habilitado=True
+R5_al_aire_en_ms=256
+R5_fin_natural_cerrado_en_ms=1584 | nowplaying=Quasar Radio Pro - En Vivo
+R5_vegas_Pista1=1 (si fuera 2, la misma emision se apunto dos veces)
+R6_tracks_en_sesion=2 | tiempo_total=00:00:04 | unicos=2 | registros=2
+R6_tiempo_coherente_con_el_corte=True (4 s; los 6 s de la pista cortada nunca deben entrar)
+R6_dos_aire_dos_registros=True
+R6b_centinela_sembrado=True | prioridad=9 | cueIn=1.25 | fichas_de_esa_pista=1
+R6b_cola_vaciada_en_ms=362
+R6b_encolar_habilitado=True
+R6b_al_aire_en_ms=253 | contador=3 -> 4 | apuntado=True (a los 4 ms)
+R6b_ficha_editorial_intacta=True | comentario=centinela R6b 192235 | prioridad=9 | cueIn=1.25
+R6b_sin_duplicar_la_ficha=True | genero_intacto=True
+R7_tarjeta_de_genero_visible=cierto | resumen=Renombrar · 1 pista(s) | boton=✖ QUITAR
+R7_estado=Género «Renombrar» renombrado a «Renombrado Verify»: 1 pista(s) actualizadas y guardadas.
+R7_nodo_nuevo=True (a los 244 ms, bajando el arbol por ControlType.List) | nodo_viejo_desaparecio=True
+   NODOS TRAS RENOMBRAR: Jingles, 1 tracks / Separadores, 0 tracks / Voces, 0 tracks / Publicidad, 0 tracks / Horarias, 0 tracks / ESTADO DE LOS ARCHIVOS / Faltan en disco, 0 tracks / No se pueden leer, 0 tracks / GÉNERO / Import Verify, 1 tracks / Jingle, 1 tracks / Pop, 2 tracks / Renombrado Verify, 1 tracks
+CAP ui4c_reint_biblioteca_tras_renombrar : PrintWindow=True 1320x820 md5=E20C7245582AD82726372F382D8811FA
+R7_json_genero_Pista2=Renombrado Verify | playCount=7 (renombrar no toca las veces emitidas)
+R8_etiqueta_antes=✖ QUITAR | genero_destino=Género que recibe las pistas del que se quita
+R8_arma_estado=Pulsa otra vez en 12 segundos para quitar «Import Verify»: sus 1 pista(s) pasarán a «General». Ningún archivo se borra.
+R8_etiqueta_armada=⚠ ¿OTRA VEZ?
+R8_estado_despues=Género «Import Verify» quitado: 1 pista(s) ahora son «General».
+R8_genero_Import Verify -> General | playCount=4 (quitar el género no borra el archivo ni el contador)
+R8_nodo_quitado=True
+R8_boton_desarmado=True | etiqueta=(ausente) (ausente = la tarjeta se cerr6 con el nodo)
+CAP ui4c_reint_biblioteca_pasoB : PrintWindow=True 1320x820 md5=779BE775DEDAC8DB9BCC6FBBA20C1716
+CAP ui4c_reint_consola_pasoB : PrintWindow=True 1440x860 md5=8B3E70D128ED1924A9BC6F8FAEAB4270
+ARRANQUE[sesión 2]: biblioteca lista en 314 ms, consola en 725 ms
+R10_estado_rearranque=Recuperado de track_metadata.json: 4 fichas guardadas aplicadas, 1 importados recuperados, 4 tracks con historial de rotación.
+R10_restaura_fichas=True | restaura_importados=True | siembra_rotacion=True
+R10_filas=5 (las 5 de la sesión 1: el importado de importados/ sigue ahí)
+R10_nodo_renombrado_verify=True | nodo_import_verify_desaparecio=True
+R10_rotacion=Rotación: 4 pistas seguidas · 0 salida(s) al aire en esta sesión (las salidas al aire son por proceso; las pistas seguidas vuelven del JSON)
+   FILA:  | 🎵 | Pista 1 | QSRROT Artista Uno | Pop | 2026 | 5 | 120 BPM | 00:02 | 1 | 23/10/2026 19:22
+   FILA:  | 🎵 | Pista 2 sembrada | QSRROT Artista Dos | Renombrado Verify | 2026 | 5 | 120 BPM | 00:02 | 7 | 18/10/2026 09:15
+   FILA:  | 🎵 | Pista 3 | QSRROT Artista Tres | Pop | 2026 | 5 | 120 BPM | 00:06 | 1 | 23/10/2026 19:22
+   FILA:  | 🎵 | Tema fuera de carpeta | QSRROT Importado | General | 2026 | 5 | 120 BPM | 00:02 | 4 | 23/10/2026 19:22
+   JSON: QSRROT Artista Uno - Pista 1.wav -> género=Pop emitidas=1
+   JSON: QSRROT Artista Dos - Pista 2.wav -> género=Renombrado Verify emitidas=7
+   JSON: QSRROT Artista Tres - Pista 3.wav -> género=Pop emitidas=1
+   JSON: QSRROT Fuera de Carpeta - Tema.wav -> género=General emitidas=4
+R10_escritura_atomica_copia=True | sin_tmp_sueltos=True
+R11_biblioteca_desaparecio=True
+R11_consola_viva=True
+CAP ui4c_reint_consola_tras_cerrar_biblioteca : PrintWindow=True 1440x860 md5=44AC03151DD2A514023C0C127C8A45C1
+LOG=quasar_radio-20261023.log
+   2026-10-23 19:21:58.369 -04:00 [WRN] VERIFICACION DE INTERFAZ: se abre "Library" por linea de comandos
+   2026-10-23 19:23:05.985 -04:00 [WRN] VERIFICACION DE INTERFAZ: se abre "Library" por linea de comandos
+   2026-10-23 19:23:05.252 -04:00 [INF] Libreria cargada: 5 tracks, 4 fichas restauradas, 1 importados recuperados, 4 en la rotacion
+   2026-10-23 19:23:19.235 -04:00 [INF] Libreria cargada: 5 tracks, 4 fichas restauradas, 1 importados recuperados, 0 en la rotacion
+   2026-10-23 19:22:28.521 -04:00 [INF] Atribuida reproduccion de Pista 1: 1 veces emitida (auto)
+   2026-10-23 19:22:39.682 -04:00 [INF] Atribuida reproduccion de Tema fuera de carpeta: 4 veces emitida (auto)
+   2026-10-23 19:22:27.190 -04:00 [INF] Encolados 1 tracks desde Biblioteca
+   2026-10-23 19:22:38.340 -04:00 [INF] Encolados 1 tracks desde Biblioteca
+   2026-10-23 19:22:24.817 -04:00 [INF] Emisión detenida correctamente
+   2026-10-23 19:22:36.297 -04:00 [INF] Emisión detenida correctamente
+   2026-10-23 19:12:03.991 -04:00 [INF] Género renombrado de Renombrar a Renombrado Verify en 1 tracks
+   2026-10-23 19:22:47.957 -04:00 [INF] Género renombrado de Renombrar a Renombrado Verify en 1 tracks
+   2026-10-23 19:22:58.017 -04:00 [INF] Género Import Verify quitado, 1 tracks pasan a General
+RESTANTES=0

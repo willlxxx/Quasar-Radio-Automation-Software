@@ -31,6 +31,10 @@ public partial class App : Application
         services.AddSingleton(sp => sp.GetRequiredService<AudioEngine>().DspProcessor);
         services.AddSingleton<CartwallEngine>();
         services.AddSingleton<CommercialScheduler>();
+
+        // UI-4 paso C: la rejilla horaria de siete dias por veinticuatro horas. Singleton y
+        // creada por MainViewModel al arrancar: las pautas se cumplen con Programacion cerrada.
+        services.AddSingleton<WeeklyScheduleService>();
         services.AddSingleton<MicEngine>();
         services.AddSingleton<SmartRotationEngine>();
         services.AddSingleton<SilenceDetector>();
@@ -72,6 +76,9 @@ public partial class App : Application
             sp.GetRequiredService<AuxPlayerEngine>(),
             sp.GetRequiredService<AudioPlayerViewModel>().Playlist,
             sp.GetRequiredService<IModuleNavigator>()));
+
+        // Programacion (UI-4 paso C): ve el mismo servicio de rejilla que ejecuta la consola.
+        services.AddSingleton<ScheduleViewModel>();
 
         // Navegacion de modulos (UI-2): una sola ventana por modulo, no modal,
         // con la geometria recordada en %APPDATA%\QuasarRadio\layout.json.

@@ -1121,6 +1121,7 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
                 <!-- x:Name (AutomationId) en el estado de la consola: la Biblioteca es ventana hija,
@@ -1128,7 +1129,13 @@
                      buscar desde la consola. Cada ventana tiene el suyo. -->
                 <TextBlock x:Name="ConsoleStatusText" Grid.Column="0" Text="{Binding StatusText}" Foreground="{DynamicResource Brush.Accent.Success}" FontSize="11" FontWeight="SemiBold"
                            TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="0,0,12,0"/>
-                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                <!-- El aviso de la ultima pauta que se cumplio. Va aparte del estado porque el
+                     estado se lo come el propio arranque de emision que la pauta dispara. -->
+                <TextBlock x:Name="ConsolePautaText" Grid.Column="1" Text="{Binding LastPautaText}"
+                           Visibility="{Binding HasPauta, Converter={StaticResource BoolToVis}}"
+                           Foreground="{DynamicResource Brush.Accent.Orange}" FontSize="11" FontWeight="SemiBold"
+                           VerticalAlignment="Center" Margin="0,0,12,0"/>
+                <StackPanel Grid.Column="2" Orientation="Horizontal">
                     <TextBlock x:Name="CurrentUserText" Foreground="{DynamicResource Brush.Text.Muted}" FontSize="10" VerticalAlignment="Center" Margin="0,0,12,0"/>
                     <Button x:Name="IdentifyButton" Content="IDENTIFICARSE" Click="OnIdentifyClick" Background="{DynamicResource Brush.Surface.FooterButton}" Foreground="{DynamicResource Brush.Text.High}" BorderThickness="0" Padding="8,3" Margin="0,0,6,0"
                             AutomationProperties.Name="Identificarse con una cuenta del sistema"/>

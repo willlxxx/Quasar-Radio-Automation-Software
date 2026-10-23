@@ -1,0 +1,7 @@
+﻿ROOT  name=Quasar Radio Pro v3.0 - Suite Radial de Emisión & Automatización
+ROOT  botones=55 ::  | 🕒 HORA | MODO: AUTO | PLAY | PAUSE | CUE | PLAY | PAUSE | CUE | PLAY | PAUSA | PARAR | 🎤 MIC AL AIRE | ⏭ CROSSFADE | 🔇 SILENCIO |  |  | + Agregar | + Insertar | + Carpeta | ▲ | ▼ | ✎ CUE/BPM | ✖ | 🗑 Emitidos | 💥 Vaciar | ▶ | ▶ | ▶ | ▶ | ▶ | ▶ | ▶ |  |  | ⏹ PARAR SFX | F1 | F2 | F3 | F4 | F5 | F6 | F7 | F8 | F9 | F10 | F11 | F12 | Abrir Biblioteca | Abrir Programación | Abrir DSP | Abrir Streaming | Abrir Reportes | Identificarse con una cuenta del sistema | Abrir la ventana de usuarios y niveles
+HWND  hwnd=2622538 botones=55 ::  | 🕒 HORA | MODO: AUTO | PLAY | PAUSE | CUE | PLAY | PAUSE | CUE | PLAY | PAUSA | PARAR | 🎤 MIC AL AIRE | ⏭ CROSSFADE | 🔇 SILENCIO |  |  | + Agregar | + Insertar | + Carpeta | ▲ | ▼ | ✎ CUE/BPM | ✖ | 🗑 Emitidos | 💥 Vaciar | ▶ | ▶ | ▶ | ▶ | ▶ | ▶ | ▶ |  |  | ⏹ PARAR SFX | F1 | F2 | F3 | F4 | F5 | F6 | F7 | F8 | F9 | F10 | F11 | F12 | Abrir Biblioteca | Abrir Programación | Abrir DSP | Abrir Streaming | Abrir Reportes | Identificarse con una cuenta del sistema | Abrir la ventana de usuarios y niveles
+HWND  textos=163
+HWND  franja=5 :: Abrir Biblioteca | Abrir Programación | Abrir DSP | Abrir Streaming | Abrir Reportes
+ROOT  franja=5
+RESTANTES=0

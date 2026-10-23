@@ -1,0 +1,21 @@
+﻿TEMA=Studio Dark Neon
+MONITOR: bounds=0,0 1600x900 work=0,0 1600x860
+CONSOLA: 80,0 1440x860
+D2_barra_titulo_en_area=True
+D2_dentro_arriba=True
+D2_dentro_izq=True
+D2_dentro_der=True
+ARRANQUE_consola_minimizada=False
+ARRANQUE_arbol_uia_completo=True en_ms=3927 botones=58 (tras los 10 s de cortesía)
+CAPW ui4c_consola : PrintWindow=True 1440x860 md5=A57E58672B9459E108CB7D6C062A8412
+D1_TXT [NIVEL DE SALIDA] : NO APARECE EN EL ARBOL
+D1_TXT [VOLUMEN MASTER] : NO APARECE EN EL ARBOL
+D1_TXT [DETECTOR SILENCIO] : NO APARECE EN EL ARBOL
+D1_ledvu_controls=0
+E1_franja_sfx: NO APARECE EN EL ARBOL
+E2_pestanas_de_suite=0
+E3_panel_base_de_datos_en_consola=no esta (correcto)
+E3_botones_en_el_arbol=58 | franja=[Abrir Biblioteca, Abrir Programación, Abrir DSP, Abrir Streaming, Abrir Reportes]
+DECK_fila_hasta_volumen=306
+SALIO_SIN_MATARLO=True
+RESTANTES=0

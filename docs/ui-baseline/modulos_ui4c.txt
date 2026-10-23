@@ -1,0 +1,30 @@
+﻿CONSOLA: 80,0 1440x860
+BOTON Streaming : rect=489,766 103x25
+BOTON Schedule : rect=283,766 129x25
+BOTON Reports : rect=600,766 93x25
+FRANJA_botones_faltantes=
+CAP ui4c_consola : PrintWindow=True 1440x860
+INVOCADO Streaming
+VENTANA Streaming : Streaming y Grabación - Quasar Radio | 260,80 1080x700
+CAP ui4c_Streaming : PrintWindow=True 1080x700
+CAP ui4c_franja_Streaming : PrintWindow=True 1440x860
+CIERRE Streaming : desaparecio=True
+CONSOLA_VIVA_DESPUES_DE_CERRAR_Streaming = True
+INVOCADO Schedule
+VENTANA Schedule : Programación - Quasar Radio | 210,40 1180x780
+CAP ui4c_Schedule : PrintWindow=True 1180x780
+CAP ui4c_franja_Schedule : PrintWindow=True 1440x860
+CIERRE Schedule : desaparecio=True
+CONSOLA_VIVA_DESPUES_DE_CERRAR_Schedule = True
+INVOCADO Reports
+VENTANA Reports : Reportes y estadísticas - Quasar Radio | 350,120 900x620
+CAP ui4c_Reports : PrintWindow=True 900x620
+CAP ui4c_franja_Reports : PrintWindow=True 1440x860
+CIERRE Reports : desaparecio=True
+CONSOLA_VIVA_DESPUES_DE_CERRAR_Reports = True
+DSP_abre_sin_clave=True | modal_de_identificacion=False | 310,100 980x660
+CAP ui4c_dsp_sin_login : PrintWindow=True 980x660
+CONSOLA_VIVA_DESPUES_DE_CERRAR_DSP=True
+LAYOUT={ "windows": { "Streaming": { "X": 260, "Y": 80, "W": 1080, "H": 700, "Max": false }, "Schedule": { "X": 210, "Y": 40, "W": 1180, "H": 780, "Max": false }, "Reports": { "X": 350, "Y": 120, "W": 900, "H": 620, "Max": false }, "Dsp": { "X": 310, "Y": 100, "W": 980, "H": 660, "Max": false } } }
+SALIO_SIN_MATARLO=True
+RESTANTES=0

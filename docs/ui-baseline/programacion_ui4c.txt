@@ -1,0 +1,171 @@
+﻿[18:37:55] AUDIT_ANTES: bin/track_metadata.json md5=80D7FA9A (no se toca: el trabajo va en el sandbox)
+[18:37:55] FIXTURES: 3 wav QSRPROG* en musica/, 1 jingle y datos aislados en C:\Users\CY-KILL\AppData\Local\Temp\qsr_prog_test\data
+[18:38:09] ARRANQUE[sesion 1]: programacion lista en 665 ms, consola en 749 ms
+[18:38:09] G0_programacion=210,40 1180x780 | consola=80,0 1440x860
+[18:38:09] G0_estado=Programación vacía: sin schedule.json.
+[18:38:09] G0_cabecera=0 de 168 celdas programadas | sin más pautas programadas
+[18:38:10] G0_vacio_sin_json=True | sin schedule.json todavia=True
+[18:38:11] G0_tandas_vivas=2
+[18:38:11] G1_maximizada=True
+[18:38:12]    Wait-Celdas=168/168 en el intento 1 (raiz refrescada, rejilla ScheduleWeekGrid)
+[18:38:12] G1_celdas=168 (esperadas 168: 7 dias x 24 horas)
+[18:38:12] G1_huecos_por_hora= | por_dia=
+[18:38:12] G1_filas=24 columnas=7 celdas_con_rect_util=168
+[18:38:12] G1_geometria=True
+[18:38:13] G1_etiquetas_de_hora=24 (esperadas 24)
+[18:38:14] G1_cabeceras_de_dia=14 | L M X J V S D L M X J V S D
+[18:38:14] G1_celdas_libres=168 (rejilla nueva: todas libres)
+[18:38:15] G1_arbol=elementos=673 botones=195 celdas_sin_filtro=170 celdas_no_boton=ToolTip:celda sábado 16 · libre: / Text:celda sábado 16 · libre:
+[18:38:15] G1_nombres_repetidos=51 | [15:00] x2 ; [16:00] x2 ; [L] x3 ; [11:00] x2 ; [06:00] x2 ; [13:00] x2 ; [D] x3 ; [celda sábado 16 · libre] x3 ; [ver el jueves] x2 ; [20:00] x2 ; [+ Agregar cuña] x2 ; [tipo de pauta: tanda comercial] x2
+[18:38:16] G2_boton=Cambiar entre vista día y vista semana | True
+[18:38:18]    Wait-Celdas=24/24 en el intento 1 (raiz refrescada, rejilla ScheduleDayGrid)
+[18:38:20] G2_vista_dia_celdas=24 columnas=1 | horas_en_la_rejilla=00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 | etiquetas=24 | titulo=Viernes · las 24 horas
+[18:38:20] G2_dia_huecos= | dia_leido=viernes
+[18:38:22]    G2_dia_por_rejilla=semana=-1 dia=24 | arbol=elementos=251 botones=51 celdas_sin_filtro=26 celdas_no_boton=ToolTip:celda viernes 16 · libre: / Text:celda viernes 16 · libre:
+[18:38:22] G2_dia_correcta=True
+[18:38:22] CAP ui4c_vista_dia : PrintWindow=True 1616x876 md5=C6710FA88F23BB30EEE9ECDABA7F9A14
+[18:38:23] G2_volver_a_semana=True
+[18:38:26]    Wait-Celdas=168/168 en el intento 1 (raiz refrescada, rejilla ScheduleWeekGrid)
+[18:38:26] G2_semana_de_nuevo=True | celdas=168 | horas=00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23
+[18:38:26] G2_semana_huecos_por_hora=
+[18:38:26] G2_semana_huecos_por_dia=
+[18:38:27]    G2_semana_por_rejilla=semana=168 dia=-1
+[18:38:28]    G2_semana_arbol=elementos=673 botones=195 celdas_sin_filtro=170 celdas_no_boton=ToolTip:celda sábado 16 · libre: / Text:celda sábado 16 · libre: | dias_leidos=domingo jueves lunes martes mircoles sbado viernes
+[18:38:28] G2c_editando_en_dia=viernes 20 (hora libre elegida con Hora-Libre)
+[18:38:29]    G2c_a_dia=True
+[18:38:33]    G2c_seleccion=Viernes · 20:00
+[18:38:34]    G2c_ficha_hora=1
+[18:38:36]    G2c_aplicar=1
+[18:38:38] G2c_celda_en_dia=celda viernes 20 · hora hablada
+[18:38:39]    G2c_a_semana=True
+[18:38:41] G2c_semana_refleja=celda viernes 20 · hora hablada | mismo_objeto=True | cabecera=1 de 168 celdas programadas
+[18:38:42]    G2c_a_dia_de_nuevo=True
+[18:38:46]    G2c_quitar=1
+[18:38:47] G2c_dia_vuelve_a_libre=celda viernes 20 · libre
+[18:38:48]    G2c_fin_a_semana=True
+[18:38:51] G2c_semana_libre=celda viernes 20 · libre | cabecera=0 de 168 celdas programadas
+[18:38:52] G5_master_silenciado=0
+[18:38:52] G5_celda_de_la_hora_actual=viernes 18 | minuto=39 (intento 1)
+[18:38:53]    G5_celda_antes_del_clic=celda viernes 18 · libre
+[18:38:54] G5_elegida=Viernes · 18:00
+[18:38:56] G5_activa=On
+[18:38:59]    G5_antes_de_aplicar: seleccion=Viernes · 18:00 | minuto_en_el_campo=39 | estado=Pauta elegida: lista automática. Pulsa APLICAR para dejarla en Viernes · 18:00.
+[18:39:00] G5_aplicar=True (intento 1)
+[18:39:00]    G5_el_minuto_objetivo_ya_paso: reintentando
+[18:39:00] G5_celda_de_la_hora_actual=viernes 18 | minuto=40 (intento 2)
+[18:39:01]    G5_celda_antes_del_clic=celda viernes 18 · lista automática
+[18:39:02] G5_elegida=Viernes · 18:00
+[18:39:05] G5_activa=On
+[18:39:08]    G5_antes_de_aplicar: seleccion=Viernes · 18:00 | minuto_en_el_campo=40 | estado=Pauta elegida: lista automática. Pulsa APLICAR para dejarla en Viernes · 18:00.
+[18:39:10] G5_aplicar=True (intento 1)
+[18:39:12] G5_celda_escrita=celda viernes 18 · lista automática
+[18:39:13] G5_estado=Viernes 18:00 -> lista automática a los :40 | proxima=próxima: viernes 18:40 · lista automática
+[18:40:03] G5_disparo_en_ms=48347 (desde el clic 55 s), minuto objetivo 40
+[18:40:03] G5_aviso_fijo=PAUTA viernes 18:40: lista automática
+[18:40:03] G5_consola=Cargadas 3 canciones desde carpeta.
+[18:40:03] G5_disparo_correcto=True
+[18:40:03] G5_cola_de_emision_filas=2 (la pauta AUTO regenera la lista: 4 fixtures)
+[18:40:03] G5_log_lineas_nuevas=1
+[18:40:03]    2026-10-23 18:31:00.592 -04:00 [INF] Pauta horaria: viernes 18:31 -> lista automática
+[18:40:03]    2026-10-23 18:39:01.590 -04:00 [INF] Pauta horaria: viernes 18:39 -> lista automática
+[18:40:03]    2026-10-23 18:40:00.680 -04:00 [INF] Pauta horaria: viernes 18:40 -> lista automática
+[18:40:07] G5_aire_detenido=True (habia emision en curso)
+[18:41:12] G6_disparos_de_la_misma_ocurrencia=1 (esperado 1)
+[18:41:13] G6_estado_consola_sigue=Cargadas 3 canciones desde carpeta.
+[18:41:13] G6_aviso_fijo_sigue=PAUTA viernes 18:40: lista automática | el de G5 era=PAUTA viernes 18:40: lista automática
+[18:41:14]    G7_celda_antes_del_clic=celda viernes 18 · lista automática
+[18:41:16]    G7_ficha_auto_invocada_en_el_intento=1
+[18:41:17]    G7_pausa_puesta=Off
+[18:41:21]    G7_antes_de_aplicar: seleccion=Viernes · 18:00 | minuto_en_el_campo=42 | activa=Off | estado=Pauta elegida: lista automática. Pulsa APLICAR para dejarla en Viernes · 18:00.
+[18:41:22] G7_aplicar_pausada=True (intento 1 | celda=viernes 18 minuto=42 | intento grande 1)
+[18:41:24] G7_celda=celda viernes 18 · lista automática (pausada) (minuto 42, marcada pausada)
+[18:41:24] G7_cabecera=1 de 168 celdas programadas | proxima=sin más pautas programadas
+[18:41:24] G7_pausada_no_sale_como_proxima=True
+[18:42:08] G7_minuto_alcanzado_en_ms=35325
+[18:42:08] G7_disparos_con_celda_pausada=0 (esperado 0)
+[18:42:08] G7_aviso_fijo_antes=PAUTA viernes 18:40: lista automática
+[18:42:08] G7_aviso_fijo_despues=PAUTA viernes 18:40: lista automática | objetivo=18:42
+[18:42:08] G7_consola_no_mando_nada=True
+[18:42:11] G3_elegida=Miércoles · 06:00 | celda miércoles 06 · libre
+[18:42:17] G3_ficha_marcada_en_rejilla=1 (el testigo de la celda se pinta al aplicar)
+[18:42:18] G3_celda=celda miércoles 06 · hora hablada
+[18:42:18] G3_aplicar_escribe=True
+[18:42:19] G3_cabecera_antes=1 de 168 celdas programadas -> 2 de 168 celdas programadas | estado=Miércoles 06:00 -> hora hablada a los :15
+[18:42:21]    G4_pausa_puesta=Off
+[18:42:24] G4_celda_pausada=celda miércoles 06 · hora hablada (pausada)
+[18:42:24] G4_marcar_pausada=True
+[18:42:28] G4_quitar_deja_libre=celda miércoles 06 · libre -> True
+[18:42:34]    G8_rellenar_invocado_en_el_intento=1
+[18:42:36] G8_celdas_del_rango=7 (esperadas 7: de 06:00 a 12:00) | relleno_correcto=True
+[18:42:37] G8_cabecera=1 de 168 celdas programadas -> 8 de 168 celdas programadas | estado=Martes: 7 hora(s) de 06:00 a 12:00 con hora hablada.
+[18:42:38] G8_fuera_del_rango_libre=True
+[18:42:38] G9_horas_elegidas: semana=20 pegado=3 tanda=17 (en curso=18)
+[18:42:42] G9_pista_de_la_referencia=escribe el atajo del pad: F1 a F12
+[18:42:46] G9_cart_sin_referencia_no_se_escribe=True | estado=Falta la referencia: escribe el atajo del pad (F1 a F12).
+[18:42:52] G9_semana_completa=7 (esperadas 7)
+[18:42:52]    celda lunes 20 · hora hablada / celda martes 20 · hora hablada / celda miércoles 20 · hora hablada / celda jueves 20 · hora hablada / celda viernes 20 · hora hablada / celda sábado 20 · hora hablada / celda domingo 20 · hora hablada
+[18:42:53] G9_estado=Los 7 días a las 20:00 -> hora hablada.
+[18:42:56]    G10_copiar_invocado_en_el_intento=1
+[18:42:57] G10_portapapeles=Portapapeles: Martes 20:00 · hora hablada
+[18:42:59] G10_destino_antes=celda martes 03 · libre
+[18:43:00]    G10_pegar_invocado_en_el_intento=1
+[18:43:02] G10_destino_despues=celda martes 03 · hora hablada
+[18:43:03] G10_pegar_copia_la_pauta=True
+[18:43:03] CAP ui4c_semana_editada : PrintWindow=True 1616x876 md5=018BA2AA91383EE7F465FB49422AD454
+[18:43:05] G13a_boton_por_tanda=2
+[18:43:07] G13a_celda=celda jueves 17 · tanda e4455289
+[18:43:07] G13a_tanda_programada=True
+[18:43:08] G13a_estado=Jueves 17:00 -> tanda «Tanda Minuto 15» a los :15.
+[18:43:09] G11_abrir_usuarios=True
+[18:43:14] G11_rol_por_defecto=Nivel del usuario nuevo (la primera cuenta es Admin: aun no hay cuentas)
+[18:43:16] G11_cuenta_creada=True | Cuenta creada con nivel Admin. | users.json=True
+[18:43:19] G11_clic_guardar=True
+[18:43:20] G11_guardar_pide_identificacion=True
+[18:43:20] CAP G11_ui4c_pide_clave : PrintWindow=True 430x430 md5=21AD5DC5CA51F54AC3C0199B4E04563A
+[18:43:23] G11_modal_cerrado_en_ms=267
+[18:43:26] G11_estado=Programación guardada: 17 celda(s) en schedule.json. (cabecera antes: 17 de 168 celdas programadas)
+[18:43:26] G11_guardado_en_el_sandbox=True | entradas_en_el_json=17
+[18:43:26] G11_json_camelCase=True | sin_tmp_sueltos=True
+[18:43:27] CAP ui4c_guardada : PrintWindow=True 1616x876 md5=28E39D15989EE6D96A6690EE05B6F9A9
+[18:43:27] G11_celdas_en_pantalla=17
+[18:43:44] ARRANQUE[sesion 2]: programacion lista en 646 ms, consola en 751 ms
+[18:43:45] G12_maximizada=True
+[18:43:45] G12_estado=Recuperada schedule.json: 17 celda(s) programadas.
+[18:43:45] G12_recuperada=True
+[18:43:45] G12_cabecera=17 de 168 celdas programadas | proxima=próxima: viernes 20:00 · hora hablada
+[18:43:47] G12_rango_martes=celda martes 09 · hora hablada | semana=celda viernes 20 · hora hablada | pegado=celda martes 03 · hora hablada
+[18:43:48] G12_pausa_sobrevive=True (la celda pausada de G7 era viernes 18)
+[18:43:48] G12_pega_sobrevive=True
+[18:43:49] G12_tanda_sobrevive=True
+[18:43:49] G12_celdas_renovadas=17 | backup=False
+[18:43:50] CAP ui4c_tras_reinicio : PrintWindow=True 1616x876 md5=4C764A090592B848B81136B33E888790
+[18:43:50] G13_ventana_cerrada_en_ms=3
+[18:43:50] G13_consola_viva=True
+[18:43:50] G13_consola_sigue_operando=True
+[18:43:52] G13_estado_consola=Cargadas 3 canciones desde carpeta.
+[18:43:52] G13_reabrir_desde_la_consola=True
+[18:43:55] G13_reabrio=True
+[18:43:56] G13_reabierta_con_lo_mismo=17 de 168 celdas programadas | Recuperada schedule.json: 17 celda(s) programadas.
+[18:43:56] LOG=quasar_radio-20261023.log
+[18:43:56]    2026-10-23 18:34:31.622 -04:00 [INF] Rejilla horaria: Recuperada schedule.json: 17 celda(s) programadas. (17 celdas)
+[18:43:56]    2026-10-23 18:37:56.000 -04:00 [INF] Rejilla horaria: Programación vacía: sin schedule.json. (0 celdas)
+[18:43:56]    2026-10-23 18:43:31.472 -04:00 [INF] Rejilla horaria: Recuperada schedule.json: 17 celda(s) programadas. (17 celdas)
+[18:43:56]    2026-10-23 18:31:00.592 -04:00 [INF] Pauta horaria: viernes 18:31 -> lista automática
+[18:43:56]    2026-10-23 18:39:01.590 -04:00 [INF] Pauta horaria: viernes 18:39 -> lista automática
+[18:43:56]    2026-10-23 18:40:00.680 -04:00 [INF] Pauta horaria: viernes 18:40 -> lista automática
+[18:43:56]    2026-10-23 18:27:22.981 -04:00 [INF] Programación guardada: 17 celda(s) en C:\Users\CY-KILL\AppData\Local\Temp\qsr_prog_test\data\schedule.json
+[18:43:56]    2026-10-23 18:34:23.222 -04:00 [INF] Programación guardada: 17 celda(s) en C:\Users\CY-KILL\AppData\Local\Temp\qsr_prog_test\data\schedule.json
+[18:43:56]    2026-10-23 18:43:23.061 -04:00 [INF] Programación guardada: 17 celda(s) en C:\Users\CY-KILL\AppData\Local\Temp\qsr_prog_test\data\schedule.json
+[18:43:56]    2026-10-23 18:34:14.731 -04:00 [INF] Ventana de usuarios: Cuenta creada con nivel Admin.
+[18:43:56]    2026-10-23 18:43:14.544 -04:00 [INF] Cuenta creada para jefa con rol "Admin"
+[18:43:56]    2026-10-23 18:43:14.545 -04:00 [INF] Ventana de usuarios: Cuenta creada con nivel Admin.
+[18:43:56]    2026-10-23 18:27:22.963 -04:00 [INF] Usuario autenticado: jefa con rol "Admin"
+[18:43:56]    2026-10-23 18:34:23.204 -04:00 [INF] Usuario autenticado: jefa con rol "Admin"
+[18:43:56]    2026-10-23 18:43:23.034 -04:00 [INF] Usuario autenticado: jefa con rol "Admin"
+[18:43:56]    2026-10-23 18:37:56.704 -04:00 [INF] Programación: 0 celda(s) recuperadas de C:\Users\CY-KILL\AppData\Local\Temp\qsr_prog_test\data\schedule.json
+[18:43:56]    2026-10-23 18:43:23.061 -04:00 [INF] Programación guardada: 17 celda(s) en C:\Users\CY-KILL\AppData\Local\Temp\qsr_prog_test\data\schedule.json
+[18:43:56]    2026-10-23 18:43:31.472 -04:00 [INF] Rejilla horaria: Recuperada schedule.json: 17 celda(s) programadas. (17 celdas)
+[18:43:56]    2026-10-23 18:43:32.190 -04:00 [INF] Programación: 17 celda(s) recuperadas de C:\Users\CY-KILL\AppData\Local\Temp\qsr_prog_test\data\schedule.json
+[18:43:59] RESTANTES=0
+[18:43:59] AUDIT_DESPUES: bin/track_metadata.json md5=80D7FA9A (antes=80D7FA9A) -> sin cambios=True
+[18:43:59] AUDIT_DESPUES: schedule.json real del fundador=False (esperado False)

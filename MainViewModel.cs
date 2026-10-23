@@ -24,6 +24,7 @@ namespace quasar_radio
         private readonly DispatcherTimer _clockTimer;
         private readonly AudioDatabaseService _databaseService;
         private readonly IModuleNavigator _navigator;
+        private readonly WeeklyScheduleService _weeklySchedule;
 
         // Sub-ViewModels
         public ThemeViewModel ThemeViewModel { get; }
@@ -79,6 +80,28 @@ namespace quasar_radio
             get => AudioPlayerViewModel.StatusText;
             set => AudioPlayerViewModel.StatusText = value;
         }
+
+        private string _lastPautaText = string.Empty;
+
+        /// <summary>
+        /// El aviso de la última pauta que se cumplió, FIJO en el pie de la consola. La línea de
+        /// estado normal la pisa el propio arranque de emisión que la pauta provoca —dura menos
+        /// de 100 ms—, así que el operador no llegaba a ver qué se había disparado (medido en
+        /// vivo 2026-10-23: «Pauta horaria: viernes 05:31» en el log y nada en la pantalla).
+        /// </summary>
+        public string LastPautaText
+        {
+            get => _lastPautaText;
+            private set
+            {
+                if (_lastPautaText == value) return;
+                _lastPautaText = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(HasPauta));
+            }
+        }
+
+        public bool HasPauta => !string.IsNullOrEmpty(_lastPautaText);
 
         // Propiedades de Deck A expuestas
         public string DeckA_Title => AudioPlayerViewModel.DeckA_Title;
@@ -386,6 +409,7 @@ namespace quasar_radio
             StreamingViewModel streamingViewModel,
             CartWallViewModel cartWallViewModel,
             LibraryViewModel libraryViewModel,
+            WeeklyScheduleService weeklySchedule,
             IModuleNavigator navigator)
         {
             NowPlayingService.ExportFailed += OnNowPlayingExportFailed;
@@ -402,6 +426,12 @@ namespace quasar_radio
             _auxPlayerEngine = auxPlayerEngine;
             _databaseService = databaseService;
             _navigator = navigator ?? throw new ArgumentNullException(nameof(navigator));
+
+            // UI-4 paso C: la rejilla horaria vive aqui, no en su ventana. Se carga al arrancar
+            // y se cumple con Programación cerrada, porque lo que programa el operador es aire,
+            // no una vista.
+            _weeklySchedule = weeklySchedule ?? throw new ArgumentNullException(nameof(weeklySchedule));
+            _weeklySchedule.SlotDue += OnScheduleSlotDue;
 
             // Configurar eventos
             _audioEngine.MeterLevelsChanged += OnEngineMeterLevelsChanged;
@@ -432,6 +462,9 @@ namespace quasar_radio
 
             // Inicialización
             InitializeCommercialBlocks();
+            string scheduleLoaded = _weeklySchedule.Load();
+            _logger.Information("Rejilla horaria: {Message} ({Count} celdas)", scheduleLoaded,
+                _weeklySchedule.ProgrammedCount);
             LoadDefaultMusicFolder();
 
             // Exportar metadata inicial
@@ -569,6 +602,67 @@ namespace quasar_radio
             {
                 InjectCommercialBlock(block, block.Mode == TimingMode.Hard);
             });
+        }
+
+        /// <summary>
+        /// Ejecuta la pauta de una celda de la rejilla (UI-4 paso C). El reloj del servicio ya
+        /// llama en el hilo de UI; aquí solo se decide <b>qué</b> hace cada tipo, y siempre con
+        /// una operación que la consola ya ofrecía al operador: no hay nada en la rejilla que
+        /// un humano no pueda hacer a mano desde la consola.
+        /// </summary>
+        private void OnScheduleSlotDue(int day, int hour, ScheduleSlot slot)
+        {
+            string where = string.Format("{0} {1:00}:{2:00}",
+                WeeklyScheduleService.DayName(day), hour, slot.Minute);
+
+            // Primero el aviso, y en su sitio fijo: lo que viene debajo (regenerar la lista,
+            // arrancar la emisión) pisa StatusText en cuanto empieza.
+            LastPautaText = string.Format("PAUTA {0}: {1}", where, WeeklyScheduleService.Describe(slot));
+
+            switch (slot.Kind)
+            {
+                case ScheduleKind.Hora:
+                    StatusText = $"PAUTA {where}: hora hablada.";
+                    ExecuteAnnounceTime();
+                    break;
+
+                case ScheduleKind.Cart:
+                    var pad = CartPads.FirstOrDefault(p =>
+                        string.Equals(p.ShortcutText, slot.Ref, StringComparison.OrdinalIgnoreCase));
+                    if (pad is null)
+                    {
+                        StatusText = $"PAUTA {where}: sin cart ({slot.Ref}) en la botonera.";
+                        _logger.Warning("Pauta horaria con cart inexistente {Ref}", slot.Ref);
+                        break;
+                    }
+
+                    StatusText = $"PAUTA {where}: cart {pad.ShortcutText} · {pad.Title}.";
+                    CartWallViewModel.TriggerCartPadCommand.Execute(pad);
+                    break;
+
+                case ScheduleKind.Tanda:
+                    var block = CommercialBlocks.FirstOrDefault(b =>
+                        string.Equals(b.BlockId, slot.Ref, StringComparison.OrdinalIgnoreCase));
+                    if (block is null || block.Spots.Count == 0)
+                    {
+                        StatusText = $"PAUTA {where}: la tanda programada no existe o no tiene cuñas.";
+                        _logger.Warning("Pauta horaria con tanda inutilizable {Ref}", slot.Ref);
+                        break;
+                    }
+
+                    StatusText = $"PAUTA {where}: tanda {block.Name} ({block.Spots.Count} comerciales).";
+                    InjectCommercialBlock(block, block.Mode == TimingMode.Hard);
+                    break;
+
+                case ScheduleKind.AutoPlaylist:
+                    LibraryViewModel.GenerateAutoPlaylistCommand.Execute(null);
+                    StatusText = $"PAUTA {where}: lista automática regenerada ({Playlist.Count} elementos).";
+                    if (!IsPlaying && Playlist.Count > 0)
+                    {
+                        AudioPlayerViewModel.PlayCommand.Execute(null);
+                    }
+                    break;
+            }
         }
 
         private void InjectCommercialBlock(CommercialBlock? block, bool forceImmediate)
