@@ -35,7 +35,8 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/> <!-- Header / Studio Bar -->
             <RowDefinition Height="Auto" MinHeight="210"/> <!-- Dashboard / Dual Deck A & B Panel: Auto para que el VU master no se recorte (D1) -->
-            <RowDefinition Height="*"/>    <!-- Rejilla de Emisión & Tabs -->
+            <RowDefinition Height="*"/>    <!-- Rejilla de Emisión & Base de Datos -->
+            <RowDefinition Height="Auto"/> <!-- Franja SFX F1-F12 (UI-3b) -->
             <RowDefinition Height="Auto"/> <!-- Franja de modulos (UI-3b) -->
             <RowDefinition Height="Auto"/> <!-- Status Footer Bar -->
         </Grid.RowDefinitions>
@@ -990,168 +991,140 @@
                 </Grid>
             </Border>
 
-            <!-- SECCIÓN DERECHA CON PESTAÑAS SUITE V3.0 -->
-            <TabControl Grid.Column="1" Background="{DynamicResource Brush.Surface.Card}" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
-                <TabControl.Resources>
-                    <Style TargetType="TabItem">
-                        <Setter Property="Background" Value="{DynamicResource Brush.Surface.Panel}"/>
-                        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}"/>
-                        <Setter Property="FontWeight" Value="Bold"/>
-                        <Setter Property="FontSize" Value="11"/>
-                        <Setter Property="Padding" Value="8,5"/>
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="TabItem">
-                                    <Border Name="Border" Background="{TemplateBinding Background}" CornerRadius="5,5,0,0" Margin="1,0" Padding="{TemplateBinding Padding}">
-                                        <ContentPresenter ContentSource="Header"/>
-                                    </Border>
-                                    <ControlTemplate.Triggers>
-                                        <Trigger Property="IsSelected" Value="True">
-                                            <Setter TargetName="Border" Property="Background" Value="{DynamicResource Brush.Surface.Card}"/>
-                                            <Setter Property="Foreground" Value="{DynamicResource Brush.Accent}"/>
-                                        </Trigger>
-                                    </ControlTemplate.Triggers>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </TabControl.Resources>
+            <!-- BASE DE DATOS. En la suite vieja eran 8 pestañas; UI-3b paso 2 se llevó seis a
+                 su ventana de módulo (DSP y AUX PFL -> DspWindow, TANDAS -> ScheduleWindow,
+                 STREAMING y GRABACIÓN -> StreamingWindow, ESTADÍSTICAS -> ReportsWindow) y ahora
+                 CARTWALL es franja fija abajo. Esta deja de ser pestaña y queda como panel de la
+                 consola hasta que Biblioteca (UI-4) la absorba: el TabControl ya no sirve. -->
+            <Border Grid.Column="1" Background="{DynamicResource Brush.Surface.Card}" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1" CornerRadius="8" Padding="10">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/> <!-- titulo BASE DE DATOS -->
+                        <RowDefinition Height="Auto"/> <!-- filtros -->
+                        <RowDefinition Height="Auto"/> <!-- busqueda -->
+                        <RowDefinition Height="*"/>    <!-- tabla -->
+                        <RowDefinition Height="Auto"/> <!-- acciones -->
+                    </Grid.RowDefinitions>
 
-                <!-- En la suite vieja esto eran 8 pestañas. UI-3b se llevó seis a su ventana
-                     de módulo (PROCESADOR DSP y AUX PFL -> DspWindow, TANDAS -> ScheduleWindow,
-                     STREAMING y GRABACIÓN -> StreamingWindow, ESTADÍSTICAS -> ReportsWindow) y
-                     se abren desde la franja de abajo. Quedan dos: CARTWALL se convierte en
-                     franja fija y BASE DE DATOS se va con Biblioteca en UI-4. -->
-                <!-- TAB 1: BASE DE DATOS DE AUDIO CATEGORIZADA -->
-                <TabItem Header="BASE DE DATOS">
-                    <Grid Margin="8">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,6">
+                        <TextBlock Text="BASE DE DATOS" FontSize="13" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.High}" VerticalAlignment="Center"/>
+                        <TextBlock Text="· se va a Biblioteca en UI-4" FontSize="9" Foreground="{DynamicResource Brush.Text.Faint}" VerticalAlignment="Center" Margin="6,2,0,0"/>
+                    </StackPanel>
 
-                        <DockPanel Grid.Row="0" Margin="0,0,0,6">
-                            <TextBlock Text="Categoría:" FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}" VerticalAlignment="Center" Margin="0,0,4,0"/>
-                            <ComboBox ItemsSource="{Binding DatabaseService.Categories}" SelectedItem="{Binding DatabaseService.SelectedCategory}" Width="100" FontSize="11" Margin="0,0,8,0"/>
+                    <DockPanel Grid.Row="1" LastChildFill="False" Margin="0,0,0,6">
+                        <TextBlock Text="Categoría:" FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}" VerticalAlignment="Center" Margin="0,0,4,0" DockPanel.Dock="Left"/>
+                        <ComboBox ItemsSource="{Binding DatabaseService.Categories}" SelectedItem="{Binding DatabaseService.SelectedCategory}" Width="100" FontSize="11" Margin="0,0,8,0" DockPanel.Dock="Left"/>
 
-                            <TextBlock Text="Género:" FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}" VerticalAlignment="Center" Margin="0,0,4,0"/>
-                            <ComboBox ItemsSource="{Binding DatabaseService.Genres}" SelectedItem="{Binding DatabaseService.SelectedGenre}" Width="100" FontSize="11"/>
-                        </DockPanel>
+                        <TextBlock Text="Género:" FontSize="11" Foreground="{DynamicResource Brush.Text.Secondary}" VerticalAlignment="Center" Margin="0,0,4,0" DockPanel.Dock="Left"/>
+                        <ComboBox ItemsSource="{Binding DatabaseService.Genres}" SelectedItem="{Binding DatabaseService.SelectedGenre}" Width="100" FontSize="11" DockPanel.Dock="Left"/>
+                    </DockPanel>
 
-                        <TextBox Grid.Row="1" Text="{Binding DatabaseService.SearchText, UpdateSourceTrigger=PropertyChanged}" Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Default}" Padding="4" Margin="0,0,0,6"/>
+                    <TextBox Grid.Row="2" Text="{Binding DatabaseService.SearchText, UpdateSourceTrigger=PropertyChanged}" Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.High}" BorderBrush="{DynamicResource Brush.Border.Default}" Padding="4" Margin="0,0,0,6"/>
 
-                        <DataGrid Grid.Row="2" ItemsSource="{Binding DatabaseService.FilteredTracks}" SelectedItem="{Binding SelectedDbTrack}"
-                                  AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True"
-                                  Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.Default}" RowBackground="{DynamicResource Brush.Surface.Panel}" 
-                                  AlternatingRowBackground="{DynamicResource Brush.Surface.Card}" GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="{DynamicResource Brush.Border.Subtle}"
-                                  BorderThickness="1" BorderBrush="{DynamicResource Brush.Border.Default}" RowHeight="26">
-                            <DataGrid.Columns>
-                                <DataGridTextColumn Header="Icon" Binding="{Binding IconSymbol}" Width="35"/>
-                                <DataGridTextColumn Header="Título" Binding="{Binding Title}" Width="2*" ElementStyle="{StaticResource TrimmingCell}"/>
-                                <DataGridTextColumn Header="Artista" Binding="{Binding Artist}" Width="1.5*" ElementStyle="{StaticResource TrimmingCell}"/>
-                                <DataGridTextColumn Header="Duración" Binding="{Binding DurationFormatted}" Width="74" FontFamily="{StaticResource Sys.Font.Clock}"/>
-                            </DataGrid.Columns>
-                        </DataGrid>
+                    <DataGrid Grid.Row="3" ItemsSource="{Binding DatabaseService.FilteredTracks}" SelectedItem="{Binding SelectedDbTrack}"
+                              AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True"
+                              Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.Default}" RowBackground="{DynamicResource Brush.Surface.Panel}"
+                              AlternatingRowBackground="{DynamicResource Brush.Surface.Card}" GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="{DynamicResource Brush.Border.Subtle}"
+                              BorderThickness="1" BorderBrush="{DynamicResource Brush.Border.Default}" RowHeight="26">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Icon" Binding="{Binding IconSymbol}" Width="35"/>
+                            <DataGridTextColumn Header="Título" Binding="{Binding Title}" Width="2*" ElementStyle="{StaticResource TrimmingCell}"/>
+                            <DataGridTextColumn Header="Artista" Binding="{Binding Artist}" Width="1.5*" ElementStyle="{StaticResource TrimmingCell}"/>
+                            <DataGridTextColumn Header="Duración" Binding="{Binding DurationFormatted}" Width="74" FontFamily="{StaticResource Sys.Font.Clock}"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
 
-                        <!-- D3: UniformGrid recortaba "AUTO PLAYLI"/"LIMPIAR HIS" porque el
-                             ancho de celda dependia de la ventana. Con WrapPanel el boton
-                             conserva su ancho y la fila que sobre baja sola. -->
-                        <WrapPanel Grid.Row="3" Margin="0,2,0,0">
-                            <Button Command="{Binding AddTrackFromDbToPlaylistCommand}" Style="{StaticResource StudioButtonStyle}" Content="+ Encolar" Width="152" Height="30" FontSize="11" Padding="4,0" Margin="0,0,4,4"/>
-                            <Button Command="{Binding PlayAux1Command}" Style="{StaticResource StudioButtonStyle}" Content="▶ PFL AUX 1" Width="152" Height="30" FontSize="11" Padding="4,0" Margin="0,0,4,4"/>
-                            <Button Command="{Binding GenerateAutoPlaylistCommand}" Style="{StaticResource StudioButtonStyle}" Content="⚡ AUTO PLAYLIST" Width="152" Height="30" FontSize="11" Padding="4,0" Margin="0,0,4,4"/>
-                            <Button Command="{Binding GenerateSmartPlaylistCommand}" Style="{StaticResource StudioButtonStyle}" Content="🧠 SMART PLAYLIST" Width="152" Height="30" FontSize="11" Padding="4,0" Margin="0,0,4,4" Background="{DynamicResource Brush.Accent.Info}" BorderBrush="{DynamicResource Brush.Accent}"/>
-                            <Button Command="{Binding ClearRotationHistoryCommand}" Style="{StaticResource StudioButtonStyle}" Content="🗑️ LIMPIAR HISTORIAL" Width="152" Height="30" FontSize="10" Padding="4,0" Margin="0,0,4,4" Background="{DynamicResource Brush.Accent.OrangeDeep}" BorderBrush="{DynamicResource Brush.Accent.Orange}"/>
-                        </WrapPanel>
-                    </Grid>
-                </TabItem>
-
-                <!-- TAB 3: CARTWALL SFX -->
-                <TabItem Header="CARTWALL (SFX)">
-                    <Grid Margin="8">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-
-                        <DockPanel Grid.Row="0" Margin="0,0,0,8">
-                            <TextBlock Text="BOTONERA DE EFECTOS [F1-F12]" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent}" VerticalAlignment="Center" DockPanel.Dock="Left"/>
-                            <Button Command="{Binding StopAllCartPadsCommand}" Style="{StaticResource StudioButtonStyle}" Padding="6,3" FontSize="10" Content="⏹ PARAR SFX" DockPanel.Dock="Right" HorizontalAlignment="Right"/>
-                        </DockPanel>
-
-                        <ItemsControl Grid.Row="1" ItemsSource="{Binding CartPads}">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <UniformGrid Columns="3" Rows="4"/>
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Border Margin="2" CornerRadius="5" Background="{DynamicResource Brush.Surface.Panel}" BorderBrush="{Binding StatusBorderColor}" BorderThickness="2">
-                                        <Button Command="{Binding DataContext.TriggerCartPadCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                                                CommandParameter="{Binding}"
-                                                Background="Transparent" BorderThickness="0" Padding="3">
-                                            <Button.ContextMenu>
-                                                <ContextMenu>
-                                                    <MenuItem Header="Asignar Audio..." Command="{Binding DataContext.AssignCartPadCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}"/>
-                                                    <MenuItem Header="Vaciar Pad" Command="{Binding DataContext.ClearCartPadCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}"/>
-                                                </ContextMenu>
-                                            </Button.ContextMenu>
-                                            <Grid>
-                                                <Grid.RowDefinitions>
-                                                    <RowDefinition Height="Auto"/>
-                                                    <RowDefinition Height="*"/>
-                                                </Grid.RowDefinitions>
-
-                                                <DockPanel Grid.Row="0">
-                                                    <Border Background="{Binding ColorHex}" CornerRadius="3" Padding="3,1" HorizontalAlignment="Left" DockPanel.Dock="Left">
-                                                        <TextBlock Text="{Binding ShortcutText}" FontSize="9" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.OnAccent}"/>
-                                                    </Border>
-                                                    <Ellipse Width="7" Height="7" Fill="{DynamicResource Brush.Accent.Success}" HorizontalAlignment="Right" DockPanel.Dock="Right">
-                                                        <Ellipse.Style>
-                                                            <Style TargetType="Ellipse">
-                                                                <Setter Property="Visibility" Value="Collapsed"/>
-                                                                <Style.Triggers>
-                                                                    <DataTrigger Binding="{Binding IsPlaying}" Value="True">
-                                                                        <Setter Property="Visibility" Value="Visible"/>
-                                                                    </DataTrigger>
-                                                                </Style.Triggers>
-                                                            </Style>
-                                                        </Ellipse.Style>
-                                                    </Ellipse>
-                                                </DockPanel>
-
-                                                <TextBlock Grid.Row="1" Text="{Binding Title}" FontSize="10" FontWeight="SemiBold" 
-                                                           Foreground="{DynamicResource Brush.Text.High}" TextTrimming="CharacterEllipsis" TextWrapping="Wrap"
-                                                           HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" Margin="0,2,0,0"/>
-                                            </Grid>
-                                        </Button>
-                                    </Border>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-
-                        <StackPanel Grid.Row="2" Margin="0,6,0,0">
-                            <DockPanel>
-                                <TextBlock Text="VOLUMEN CARTWALL" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.Secondary}" DockPanel.Dock="Left"/>
-                                <TextBlock Text="{Binding CartwallVolumePercentageText}" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent}" DockPanel.Dock="Right" HorizontalAlignment="Right"/>
-                            </DockPanel>
-                            <Slider Value="{Binding CartwallMasterVolume}" Minimum="0" Maximum="1" TickFrequency="0.05" IsSnapToTickEnabled="True" Margin="0,2,0,0" IsEnabled="{Binding CanOperate}"/>
-                        </StackPanel>
-                    </Grid>
-                </TabItem>
-
-            </TabControl>
+                    <!-- D3: UniformGrid recortaba "AUTO PLAYLI"/"LIMPIAR HIS" porque el
+                         ancho de celda dependia de la ventana. Con WrapPanel el boton
+                         conserva su ancho y la fila que sobre baja sola. -->
+                    <WrapPanel Grid.Row="4" Margin="0,2,0,0">
+                        <Button Command="{Binding AddTrackFromDbToPlaylistCommand}" Style="{StaticResource StudioButtonStyle}" Content="+ Encolar" Width="152" Height="30" FontSize="11" Padding="4,0" Margin="0,0,4,4"/>
+                        <Button Command="{Binding PlayAux1Command}" Style="{StaticResource StudioButtonStyle}" Content="▶ PFL AUX 1" Width="152" Height="30" FontSize="11" Padding="4,0" Margin="0,0,4,4"/>
+                        <Button Command="{Binding GenerateAutoPlaylistCommand}" Style="{StaticResource StudioButtonStyle}" Content="⚡ AUTO PLAYLIST" Width="152" Height="30" FontSize="11" Padding="4,0" Margin="0,0,4,4"/>
+                        <Button Command="{Binding GenerateSmartPlaylistCommand}" Style="{StaticResource StudioButtonStyle}" Content="🧠 SMART PLAYLIST" Width="152" Height="30" FontSize="11" Padding="4,0" Margin="0,0,4,4" Background="{DynamicResource Brush.Accent.Info}" BorderBrush="{DynamicResource Brush.Accent}"/>
+                        <Button Command="{Binding ClearRotationHistoryCommand}" Style="{StaticResource StudioButtonStyle}" Content="🗑️ LIMPIAR HISTORIAL" Width="152" Height="30" FontSize="10" Padding="4,0" Margin="0,0,4,4" Background="{DynamicResource Brush.Accent.OrangeDeep}" BorderBrush="{DynamicResource Brush.Accent.Orange}"/>
+                    </WrapPanel>
+                </Grid>
+            </Border>
         </Grid>
+
+        <!-- ================= FRANJA SFX F1-F12 (UI-3b) =================
+             CARTWALL deja de estar escondido tras una pestana: es lo mas pulsado del aire,
+             asi que los 12 pads quedan siempre visibles en 6x2 con su tecla, su nombre y el
+             testigo de reproduccion. F1-F12 responden en cualquier ventana (StudioKeys). -->
+        <Border Grid.Row="3" Background="{DynamicResource Brush.Surface.Panel}" CornerRadius="8" Padding="10,8" Margin="0,8,0,0" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <DockPanel Grid.Row="0" LastChildFill="False" Margin="0,0,0,6">
+                    <TextBlock Text="BOTONERA SFX [F1-F12]" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent}" VerticalAlignment="Center" DockPanel.Dock="Left"/>
+                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" VerticalAlignment="Center">
+                        <TextBlock Text="VOLUMEN" FontSize="9" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.Secondary}" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                        <Slider Width="120" Value="{Binding CartwallMasterVolume}" Minimum="0" Maximum="1" TickFrequency="0.05" IsSnapToTickEnabled="True" VerticalAlignment="Center" IsEnabled="{Binding CanOperate}"/>
+                        <TextBlock Text="{Binding CartwallVolumePercentageText}" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent}" Width="38" VerticalAlignment="Center" Margin="6,0,10,0"/>
+                        <Button Command="{Binding StopAllCartPadsCommand}" Style="{StaticResource StudioButtonStyle}" Padding="8,3" FontSize="10" Content="⏹ PARAR SFX"/>
+                    </StackPanel>
+                </DockPanel>
+
+                <ItemsControl Grid.Row="1" ItemsSource="{Binding CartPads}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Columns="6" Rows="2"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Margin="2" Height="42" CornerRadius="5" Background="{DynamicResource Brush.Surface.Deep}" BorderBrush="{Binding StatusBorderColor}" BorderThickness="2">
+                                <Button Command="{Binding DataContext.TriggerCartPadCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                        CommandParameter="{Binding}" Background="Transparent" BorderThickness="0" Padding="5,2"
+                                        ToolTip="{Binding Title}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center"
+                                        AutomationProperties.Name="{Binding ShortcutText}">
+                                    <Button.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem Header="Asignar Audio..." Command="{Binding DataContext.AssignCartPadCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}"/>
+                                            <MenuItem Header="Vaciar Pad" Command="{Binding DataContext.ClearCartPadCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}"/>
+                                        </ContextMenu>
+                                    </Button.ContextMenu>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <Border Grid.Column="0" Background="{Binding ColorHex}" CornerRadius="3" Padding="4,1" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding ShortcutText}" FontSize="9" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.OnAccent}"/>
+                                        </Border>
+                                        <TextBlock Grid.Column="1" Text="{Binding Title}" FontSize="10" FontWeight="SemiBold" Foreground="{DynamicResource Brush.Text.High}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="6,0"/>
+                                        <Ellipse Grid.Column="2" Width="7" Height="7" Fill="{DynamicResource Brush.Accent.Success}" VerticalAlignment="Center">
+                                            <Ellipse.Style>
+                                                <Style TargetType="Ellipse">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsPlaying}" Value="True">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Ellipse.Style>
+                                        </Ellipse>
+                                    </Grid>
+                                </Button>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Grid>
+        </Border>
 
         <!-- ================= FRANJA DE MODULOS (UI-3b) =================
              Lo que eran las pestañas de la suite: cada una es ahora su propia ventana,
              abierta por IModuleNavigator. El borde de acento avisa de la que ya está
              abierta para no duplicarla. -->
-        <Border Grid.Row="3" Background="{DynamicResource Brush.Surface.Panel}" CornerRadius="5" Padding="10,6" Margin="0,8,0,0" BorderBrush="{DynamicResource Brush.Border.Subtle}" BorderThickness="1">
+        <Border Grid.Row="4" Background="{DynamicResource Brush.Surface.Panel}" CornerRadius="5" Padding="10,6" Margin="0,8,0,0" BorderBrush="{DynamicResource Brush.Border.Subtle}" BorderThickness="1">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
@@ -1185,7 +1158,7 @@
         </Border>
 
         <!-- ================= STATUS FOOTER BAR ================= -->
-        <Border Grid.Row="4" Background="{DynamicResource Brush.Surface.Panel}" CornerRadius="4" Padding="10,5" Margin="0,8,0,0" BorderBrush="{DynamicResource Brush.Border.Subtle}" BorderThickness="1">
+        <Border Grid.Row="5" Background="{DynamicResource Brush.Surface.Panel}" CornerRadius="4" Padding="10,5" Margin="0,8,0,0" BorderBrush="{DynamicResource Brush.Border.Subtle}" BorderThickness="1">
             <!-- El DockPanel con LastChildFill por defecto hacia que el bloque de la derecha
                  ocupara lo que dejaba el estado y lo pegara al "Invitado" (D3). -->
             <Grid>

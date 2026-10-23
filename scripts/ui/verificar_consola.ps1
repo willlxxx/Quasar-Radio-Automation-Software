@@ -22,6 +22,19 @@ public static class QsrWin {
   [DllImport("user32.dll", CharSet=CharSet.Unicode)] static extern int GetWindowText(IntPtr h, StringBuilder s, int n);
   [DllImport("user32.dll")] static extern bool GetWindowRect(IntPtr h, out RECT r);
   [DllImport("user32.dll")] public static extern bool PrintWindow(IntPtr h, IntPtr hdc, uint flags);
+  [DllImport("user32.dll")] static extern bool SetForegroundWindow(IntPtr h);
+  [DllImport("user32.dll")] static extern bool BringWindowToTop(IntPtr h);
+  [DllImport("user32.dll")] static extern bool ShowWindow(IntPtr h, int n);
+  [DllImport("user32.dll")] static extern void keybd_event(byte vk, byte scan, uint flags, UIntPtr extra);
+  // WPF pinta por hardware: con la ventana tapada, PrintWindow devolvia el cliente en blanco.
+  // Windows solo deja cambiar el foco a un proceso que acaba de recibir un teclado, asi que se
+  // simula un ALT antes; sin ese truco SetForegroundWindow devuelve false y la evidencia salia
+  // con el navegador del fundador por delante (blanco).
+  public static void Raise(IntPtr h) {
+    ShowWindow(h, 5); BringWindowToTop(h);
+    keybd_event(0x12, 0, 0, UIntPtr.Zero); keybd_event(0x12, 0, 2, UIntPtr.Zero);
+    SetForegroundWindow(h);
+  }
   [StructLayout(LayoutKind.Sequential)] struct RECT { public int Left, Top, Right, Bottom; }
   static int _target; static List<WinInfo> _found;
   public static List<WinInfo> Top(int pid) {
@@ -73,6 +86,7 @@ function CapWindow($win, $t) {
   if ($w -lt 50 -or $h -lt 50) { L "CAP $t : rect invalida"; return }
   $bmp = New-Object Drawing.Bitmap($w, $h)
   $g = [Drawing.Graphics]::FromImage($bmp)
+  [void][QsrWin]::Raise([IntPtr]$win.Hwnd); Start-Sleep -Milliseconds 350
   $hdc = $g.GetHdc()
   $ok = [QsrWin]::PrintWindow([IntPtr]$win.Hwnd, $hdc, 2)   # PW_RENDERFULLCONTENT
   $g.ReleaseHdc($hdc)
@@ -81,6 +95,31 @@ function CapWindow($win, $t) {
   $bmp.Save($path, [Drawing.Imaging.ImageFormat]::Png)
   $bmp.Dispose()
   L "CAPW $t : PrintWindow=$ok ${w}x${h} md5=$((Get-FileHash $path -Algorithm MD5).Hash)"
+}
+
+# Recorte a partir del bitmap de PrintWindow: CapRect captura lo que hay en el monitor, y
+# cuando el fundador tiene otra ventana delante la evidencia salia en blanco o con su navegador.
+function CapWindowCrop($win, $x, $y, $w, $h, $t) {
+  if ($w -lt 20 -or $h -lt 20) { L "CAP $t : recorte invalido ${w}x${h}"; return }
+  $bmp = New-Object Drawing.Bitmap([int]$win.W, [int]$win.H)
+  $g = [Drawing.Graphics]::FromImage($bmp)
+  [void][QsrWin]::Raise([IntPtr]$win.Hwnd); Start-Sleep -Milliseconds 350
+  $hdc = $g.GetHdc()
+  [void][QsrWin]::PrintWindow([IntPtr]$win.Hwnd, $hdc, 2)
+  $g.ReleaseHdc($hdc); $g.Dispose()
+  $cx = [int]($x - $win.L); $cy = [int]($y - $win.T)
+  if ($cx -lt 0) { $cx = 0 }; if ($cy -lt 0) { $cy = 0 }
+  if ($cx + $w -gt $bmp.Width) { $w = $bmp.Width - $cx }
+  if ($cy + $h -gt $bmp.Height) { $h = $bmp.Height - $cy }
+  if ($w -lt 20 -or $h -lt 20) { L "CAP $t : recorte fuera de la ventana"; $bmp.Dispose(); return }
+  $crop = New-Object Drawing.Bitmap([int]$w, [int]$h, ([Drawing.Imaging.PixelFormat]::Format32bppArgb))
+  $g2 = [Drawing.Graphics]::FromImage($crop)
+  $g2.DrawImage($bmp, (New-Object Drawing.Rectangle(0, 0, [int]$w, [int]$h)), $cx, $cy, [int]$w, [int]$h, [Drawing.GraphicsUnit]::Pixel)
+  $g2.Dispose()
+  $path = Join-Path $out "$t.png"
+  $crop.Save($path, [Drawing.Imaging.ImageFormat]::Png)
+  $crop.Dispose(); $bmp.Dispose()
+  L "CAPC $t : PrintWindow ${w}x${h} md5=$((Get-FileHash $path -Algorithm MD5).Hash)"
 }
 
 function Wins($ownerPid) {
@@ -149,6 +188,8 @@ public static class U32 {
     CapWindow $t2 ("$($Tag)_consola_max")
   }
 
+  # Tras maximizar, la geometria leida antes ya no vale: se vuelve a tomar ventana y rect.
+  $t = ([QsrWin]::Top($proc.Id) | Where-Object { $_.Visible -and $_.Title -like '*Quasar*' } | Select-Object -First 1)
   $mr = RectOf $main
   CapWindow $t ("$($Tag)_consola")
 
@@ -180,10 +221,38 @@ public static class U32 {
     $y = [Math]::Max($mr.Y, $r.Y - 74)
     $w = [Math]::Min($mr.W, $r.X + 420) - $x
     $h = [Math]::Min($mr.H, $r.Y + 150) - $y
-    CapRect $x $y $w $h ("$($Tag)_master")
+    CapWindowCrop $t $x $y $w $h ("$($Tag)_master")
   }
 
-  # D3: abrir una pestana concreta y recortar su zona de botones
+  # ---------- E1/E2 (UI-3b paso 3): franja SFX siempre visible y cero pestanas
+  $sfx = Find-Text $main 'BOTONERA SFX'
+  if ($null -eq $sfx) { L 'E1_franja_sfx: NO APARECE EN EL ARBOL' }
+  else {
+    $r = RectOf $sfx
+    $dentro = ($r.Y -ge $mr.Y) -and ($r.Y + $r.H -le $mr.Y + $mr.H + 2) -and ($r.X -ge $mr.X)
+    L ("E1_botonera_sfx rect=" + $r.X + "," + $r.Y + " " + $r.W + "x" + $r.H + " dentro=" + $dentro)
+    $btn = New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ControlTypeProperty, [System.Windows.Automation.ControlType]::Button)
+    $pads = @(); $nom = @()
+    foreach ($b in $main.FindAll([System.Windows.Automation.TreeScope]::Descendants, $btn)) {
+      # El nombre del pad sale de AutomationProperties.Name (F1..F12): sin el, WPF no lo
+      # deduce del contenido complejo y el pad era invisible para UIA.
+      if ($b.Current.Name -match '^F(1[0-2]|[1-9])$') { $pads += $b; $nom += $b.Current.Name }
+    }
+    L ("E1_pads_visibles=" + $pads.Count + " [" + (($nom | Sort-Object {[int]($_.Substring(1))}) -join ',') + "]")
+    foreach ($p in ($pads | Select-Object -First 3)) {
+      $pr = RectOf $p
+      L ("  pad rect=" + $pr.X + "," + $pr.Y + " " + $pr.W + "x" + $pr.H)
+    }
+    # recorte de la franja para la evidencia visual
+    $x = [Math]::Max($mr.X, $r.X - 14)
+    $y = [Math]::Max($mr.Y, $r.Y - 10)
+    CapWindowCrop $t $x $y ([Math]::Min($mr.W - 20, $mr.X + $mr.W - $x - 20)) ([Math]::Min($mr.H, $r.Y + 140) - $y) ("$($Tag)_franja_sfx")
+  }
+  $tic = New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ControlTypeProperty, [System.Windows.Automation.ControlType]::TabItem)
+  L ("E2_pestanas_de_suite=" + (@($main.FindAll([System.Windows.Automation.TreeScope]::Descendants, $tic)).Count))
+
+  # D3 (abrir pestana): sin caso desde UI-3b paso 3, la consola ya no tiene TabControl.
+  # Se conserva por si una fase futura vuelve a montar pestanas dentro de la consola.
   if ($Tab -ne '') {
     $tcc = New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ControlTypeProperty, [System.Windows.Automation.ControlType]::TabItem)
     $hit = $null
