@@ -21,6 +21,7 @@ public static class QsrWin {
   [DllImport("user32.dll")] static extern bool IsWindowVisible(IntPtr h);
   [DllImport("user32.dll", CharSet=CharSet.Unicode)] static extern int GetWindowText(IntPtr h, StringBuilder s, int n);
   [DllImport("user32.dll")] static extern bool GetWindowRect(IntPtr h, out RECT r);
+  [DllImport("user32.dll")] public static extern bool PrintWindow(IntPtr h, IntPtr hdc, uint flags);
   [StructLayout(LayoutKind.Sequential)] struct RECT { public int Left, Top, Right, Bottom; }
   static int _target; static List<WinInfo> _found;
   public static List<WinInfo> Top(int pid) {
@@ -61,6 +62,25 @@ function CapRect($x, $y, $w, $h, $t) {
   $bmp.Save($path, [Drawing.Imaging.ImageFormat]::Png)
   $g.Dispose(); $bmp.Dispose()
   L "CAP $t : ${w}x${h} md5=$((Get-FileHash $path -Algorithm MD5).Hash)"
+}
+
+# PrintWindow pinta la ventana aunque otra este delante. CopyFromScreen capturo el navegador
+# del fundador por encima de la consola (ver H6 en docs/UI_BASELINE.md), asi que la evidencia
+# completa de la ventana se toma aqui y los recortes siguen siendo de pantalla.
+function CapWindow($win, $t) {
+  if ($null -eq $win) { L "CAP $t : sin ventana"; return }
+  $w = [int]$win.W; $h = [int]$win.H
+  if ($w -lt 50 -or $h -lt 50) { L "CAP $t : rect invalida"; return }
+  $bmp = New-Object Drawing.Bitmap($w, $h)
+  $g = [Drawing.Graphics]::FromImage($bmp)
+  $hdc = $g.GetHdc()
+  $ok = [QsrWin]::PrintWindow([IntPtr]$win.Hwnd, $hdc, 2)   # PW_RENDERFULLCONTENT
+  $g.ReleaseHdc($hdc)
+  $g.Dispose()
+  $path = Join-Path $out "$t.png"
+  $bmp.Save($path, [Drawing.Imaging.ImageFormat]::Png)
+  $bmp.Dispose()
+  L "CAPW $t : PrintWindow=$ok ${w}x${h} md5=$((Get-FileHash $path -Algorithm MD5).Hash)"
 }
 
 function Wins($ownerPid) {
@@ -126,10 +146,11 @@ public static class U32 {
     Start-Sleep -Seconds 3
     $t2 = ([QsrWin]::Top($proc.Id) | Where-Object { $_.Visible -and $_.Title -like '*Quasar*' } | Select-Object -First 1)
     L ("MAXIMIZADA rect=" + $t2.Rect)
+    CapWindow $t2 ("$($Tag)_consola_max")
   }
 
   $mr = RectOf $main
-  CapRect $mr.X $mr.Y $mr.W $mr.H ("$($Tag)_consola")
+  CapWindow $t ("$($Tag)_consola")
 
   # ---------- D1: el VU master y el volumen master deben estar pintados dentro de la ventana
   foreach ($pat in @('NIVEL DE SALIDA', 'VOLUMEN MASTER', 'DETECTOR SILENCIO')) {
