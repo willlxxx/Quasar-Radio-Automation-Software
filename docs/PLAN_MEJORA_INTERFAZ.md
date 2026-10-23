@@ -181,6 +181,8 @@ Implementación: mapa `ModuleKey → (singleton de ventana, rect guardado)`. Las
 
 **UI-3b · paso 1 · las ventanas antes de quitar las pestañas.** ✅ **Entregado 2026-10-22.** `ScheduleWindow`, `DspWindow`, `StreamingWindow` y `ReportsWindow` reciben el XAML de sus pestañas (traslado casi literal, `DataContext` = el `MainViewModel` singleton), se registran transient en DI y se abren por `ModuleNavigator`, que ahora aplica la puerta de administrador dentro de `Open()` (`RequiresAdmin`) en lugar de fiarse del `IsEnabled` de la pestaña. La consola gana una **franja de módulos** sobre el pie con indicador de ventana abierta y pierde el botón duplicado de LIBRERÍA. De paso revive lo que estaba muerto en GRABACIÓN: `RecordingFiles` ya se rellena y ELIMINAR recibe el archivo seleccionado. Verificado en vivo en las 4 ventanas no bloqueantes + la puerta de DSP en `docs/UI_BASELINE.md` §7. **Las pestañas siguen puestas a propósito**: el paso 2 las retira cuando lo que queda en la consola (botonera fija, decks, rejilla, BASE DE DATOS hasta UI-4) esté cerrado. *Aceptación del paso 1: cada dominio movido abre su ventana, recuerda geometría y se cierra sin apagar la emisora — cumplido.*
 
+**UI-3b · paso 2 · seis pestañas fuera de la consola.** ✅ **Entregado 2026-10-22.** Retiradas PROCESADOR DSP, AUX PFL, TANDAS, STREAMING, GRABACIÓN y ESTADÍSTICAS: su contenido ya está en las ventanas del paso 1 y se abre desde la franja. `MainWindow.xaml` **1.583 → 1.208 líneas**; quedan BASE DE DATOS (se va con Biblioteca en UI-4) y CARTWALL (franja fija F1–F12). De paso se cerró D8: el badge «REPRODUCIENDO» estaba verde siempre porque su color era valor local del `Border` y el `Style.Trigger` de `IsPlaying=False` no podía ganarle. Medido tras el corte en `docs/UI_BASELINE.md` §8. **La meta de ≤ 350 líneas no se alcanza todavía** y no se fuerza: el resto está en BASE DE DATOS y en la botonera, que son UI-4 y el cierre de esta fase.
+
 **UI-4 · Biblioteca y Programación** (los dos de mayor uso, y donde más se justifica el monitor secundario). *Aceptación: editar metadatos en lote y re-generar auto-playlist sin salir de Biblioteca; rejilla horaria editable con vista día/semana.*
 
 **UI-5 · DSP, Streaming/Grabación, Configuración, Reportes.** *Aceptación: DSP con espectro en vivo y permisos re-evaluados al abrir; Configuración con secciones navegables y rutas funcionando.*
@@ -204,11 +206,11 @@ Cada fase se entrega con `dotnet build quasar_radio.sln` en 0 errores / 0 advert
 
 | Métrica | Antes (UI-0) | Tras UI-1/2 | Tras UI-3a | Objetivo |
 |---|---|---|---|---|
-| Líneas de `MainWindow.xaml` | 1.680 | 1.527 | 1.583 (UI-3a dejó 1.534; UI-3b-1 suma la franja de módulos y el estilo de botón) | ≤ 350 (UI-3b paso 2) |
+| Líneas de `MainWindow.xaml` | 1.680 | 1.527 | **1.208** tras UI-3b (1.534 → 1.583 con la franja → 1.208 al cortar las 6 pestañas) | ≤ 350 cuando se vayan BASE DE DATOS y la botonera (UI-4) |
 | Literales hex en vistas | 328 | **0 en todos los `.xaml` fuera de `Themes/`** | 0 | 0 (solo en `Tokens.xaml`) ✔ |
 | Literales `FontFamily` en vistas | 14 | **0** (todos vía `Sys.Font.Clock`) | 0 | 0 ✔ |
 | Estilos/plantillas duplicados | ~45 en línea + 8 locales | 36 en línea + 1 local (`LibraryManagementWindow`) | igual | 100% en `Controls.xaml` (UI-3b/UI-4) |
-| Pestañas de la suite | 8 dentro de la consola | 8 | 8, pero **4 dominios ya tienen ventana propia** (Programación, DSP+PFL, Streaming+Grabación, Reportes) | 0 (6 ventanas + 3 diálogos) |
+| Pestañas de la suite | 8 dentro de la consola | 8 → **2** tras UI-3b (quedan BASE DE DATOS y CARTWALL) | 6 dominios con ventana propia: Programación, DSP+PFL, Streaming+Grabación, Reportes, Biblioteca, Usuarios | 0 (6 ventanas + 3 diálogos) |
 | Enlaces efectivos del tema | 7 en toda la app | 234 `DynamicResource` solo en la consola; 4 ventanas sin un solo hex | 234 | todas las superficies ✔ |
 | Propiedades de reenvío en `MainViewModel` | 69 contadas | 66 | 66 | 0 (UI-3b) |
 | Contraste del texto más usado | 3,4:1 (footer, calculado sobre `#0F111A`) | **5,4:1** | 5,4:1 | ≥ 4,5:1 ✔; críticos ≥ 7:1 |
@@ -220,3 +222,4 @@ Cada fase se entrega con `dotnet build quasar_radio.sln` en 0 errores / 0 advert
 | **VU de salida master visible** | **no** (recortado por arriba, D1) | no | **sí**: etiqueta en `1016,210` y dos barras `180x20`, también maximizada | siempre |
 | **Consola dentro del área útil del panel 1600 × 900** | **no**: `80,-20 1440x900`, barra de título fuera (D2) | no | **sí**: `80,0 1440x860`, los 4 bordes dentro (`WindowFitting`) | idem, y por monitor en UI-6 |
 | **Etiquetas recortadas** | sí: "AUTO PLAYLI", "LIMPIAR HIS", "Duració" y el pie pegado (D3) | sí | **no**: `WrapPanel` en las dos pestañas, `TrimmingCell` con tooltip en las tablas, pie en `Grid` | 0 |
+| **Badge «REPRODUCIENDO» en la cabecera (D8)** | verde siempre, suene o no (el color era valor local del `Border` y el `Style.Trigger` no podía ganarle) | igual | **apagado cuando `IsPlaying=False`**, probado con captura antes/después | estado real en todos los badges |

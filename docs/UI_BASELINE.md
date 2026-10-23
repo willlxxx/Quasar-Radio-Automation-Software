@@ -15,6 +15,8 @@ Estas dos imágenes son la referencia visual contra la que se compara todo el pl
 
 **Estado tras UI-3b paso 1 (2026-10-22): D5 en camino** — PROGRAMACIÓN, DSP, STREAMING y REPORTES ya tienen su ventana propia y se abren desde la franja de módulos; las pestañas siguen vivas hasta el paso 2 para no perder ninguna función a media fase. Detalle y evidencia en §7.
 
+**Estado tras UI-3b paso 2 (2026-10-22): D5 cerrado** — fuera las seis pestañas trasladadas; quedan BASE DE DATOS (se va en UI-4) y CARTWALL (franja fija). **D8 corregido** (el badge REPRODUCIENDO no se apagaba nunca). Detalle en §8.
+
 **D1 · El VU de salida master no se ve.** `MainWindow.xaml:988-1005` mete el medidor en un `StackPanel` con `VerticalAlignment="Bottom"` dentro de una fila `*`. El contenido es más alto que la fila, así que el desbordamiento **recorta por arriba**: en las dos capturas aparecen "DETECTOR SILENCIO" y "VOLUMEN MASTER", pero nunca "NIVEL DE SALIDA MASTER (VU METER)" ni los dos `LedVuMeterControl`. El operador está emitiendo sin ver su nivel de salida. Es el defecto más grave de los cuatro y es puramente de layout.
 
 **D2 · La consola no cabe en la pantalla del fundador.** `Height="900"` con barra de título y taskbar en un panel de 1600 × 900 deja el pie de ventana cortado: en `consola_antes_1440.png` se ven los bordes de la fila de botones asomando bajo la taskbar. La pantalla base real es **1600 × 860 útil**, no 1440 × 900.
@@ -163,4 +165,21 @@ Verificación en vivo con `scripts/ui/verificar_modulos.ps1` (lanza desde `bin/D
 **Hallazgo nuevo (H6) · la verificación por ratón real no es fiable si alguien está usando el equipo.** Con `SetCursorPos` + `mouse_event` hubo dos ejecuciones en las que los clics caían al vacío (el puntero se movía en los 120 ms de espera) y el log de la app no registraba ni "Modulo abierto" ni error: parecía un botón roto y era el entorno. Dos cambios en el script: los módulos se abren con `InvokePattern` de UIA (no depende del puntero) y las capturas se hacen con `PrintWindow` + `PW_RENDERFULLCONTENT` en vez de `CopyFromScreen`, porque con otra ventana delante la evidencia había salido… una página de YouTube. La puerta de DSP sigue probándose con clic real, porque su `ShowDialog` modal bloquea el `Invoke`.
 
 **Pendiente para el paso 2 y para tenerle delante:** abrir Biblioteca y DSP de verdad (hacen falta sus credenciales), comprobar F1–F12 con el foco en una de estas ventanas, y ver cómo se comportan las cuatro ventanas nuevas con los otros tres temas. El contenido de DSP y STREAMING se trasladó con las cajas de texto de ancho fijo que ya tenía la pestaña: `streaming.quasar-radio.co` y la ruta de FFmpeg se siguen recortando, y la contraseña Icecast se muestra en claro — eso se rediseña en UI-4, no en el traslado.
+
+## 8. Después de UI-3b · paso 2: seis pestañas fuera de la consola
+
+Retiradas del `TabControl` las seis cuyo contenido ya vive en su ventana (PROCESADOR DSP, AUX PFL, TANDAS, STREAMING, GRABACIÓN, ESTADÍSTICAS). **`MainWindow.xaml` pasa de 1.583 a 1.208 líneas** y en la consola quedan dos pestañas: BASE DE DATOS (se va con Biblioteca en UI-4) y CARTWALL (que será la franja fija F1–F12). Con dos pestañas el bloque de D5 ya no se parte en dos hileras.
+
+Comprobado después del corte, con las mismas dos pruebas (`verificar_consola.ps1 -Tag ui3d` y `verificar_modulos.ps1 -Tag ui3c -Solo Streaming,Reports -SkipDsp`, `RESTANTES=0` en las dos):
+
+| Comprobación | Resultado |
+|---|---|
+| Consola tras el corte | `D2_*` los cuatro `True`, `D1` etiqueta master + 4 `LedVuMeterControl` dentro, franja de módulos intacta ([`consola_tras_ui3b2.png`](ui-baseline/consola_tras_ui3b2.png)) |
+| Enlaces colgados por el borrado | 0: el fichero no deja ningún `ElementName=` sin destino y el build sigue en 0 errores / 0 advertencias |
+| Franja de módulos después del corte | STREAMING y REPORTES siguen abriendo, cerrando y recordando su geometría |
+| Cerrar un módulo no apaga la emisora | `CONSOLA_VIVA_DESPUES_DE_CERRAR_*=True` |
+
+**Hallazgo nuevo (D8) · el badge «REPRODUCIENDO» mentía.** Estaba siempre en verde aunque nada sonara: el color venía puesto como valor local en el `Border` (`Background="{DynamicResource Brush.Accent.Success}"`) y un `Setter` de un `Style.Trigger` no puede ganarle a un valor local, así que el disparador de `IsPlaying=False` no se aplicaba nunca. Movido el verde a un `Setter` del propio estilo, el badge se apaga ([antes](ui-baseline/badge_reproduciendo_antes_ui3b.png) → [después](ui-baseline/consola_tras_ui3b2.png)). Es el mismo error de patrón que los MIC LIVE / STREAM LIVE, pero esos sí funcionaban porque su valor local era `Visibility` por defecto del estilo.
+
+**Y una comprobación que ahora da tranquilidad:** ninguna ejecución de verificación sonó por los altavoces. `IsPlaying` enlaza con `AudioEngine.IsPlaying`, nadie lo arranca en el arranque y el comando PLAY está apagado sin sesión (`CanOperate()`), así que las ventanas que se abren solas no emiten. Lo que sí se cargó en cada ejecución es la librería real de `bin/` (14 canciones) y el `nowplaying.*` del directorio de trabajo.
 
