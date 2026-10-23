@@ -179,6 +179,8 @@ Implementación: mapa `ModuleKey → (singleton de ventana, rect guardado)`. Las
 
 **UI-3b · Consola al aire.** Layout nuevo de la §4.1, franja de módulos, botonera fija, barra de estado. Se retiran las 8 pestañas. *Aceptación: la consola no contiene DSP, Streaming, Grabación ni Estadísticas; ≤ 350 líneas.*
 
+**UI-3b · paso 1 · las ventanas antes de quitar las pestañas.** ✅ **Entregado 2026-10-22.** `ScheduleWindow`, `DspWindow`, `StreamingWindow` y `ReportsWindow` reciben el XAML de sus pestañas (traslado casi literal, `DataContext` = el `MainViewModel` singleton), se registran transient en DI y se abren por `ModuleNavigator`, que ahora aplica la puerta de administrador dentro de `Open()` (`RequiresAdmin`) en lugar de fiarse del `IsEnabled` de la pestaña. La consola gana una **franja de módulos** sobre el pie con indicador de ventana abierta y pierde el botón duplicado de LIBRERÍA. De paso revive lo que estaba muerto en GRABACIÓN: `RecordingFiles` ya se rellena y ELIMINAR recibe el archivo seleccionado. Verificado en vivo en las 4 ventanas no bloqueantes + la puerta de DSP en `docs/UI_BASELINE.md` §7. **Las pestañas siguen puestas a propósito**: el paso 2 las retira cuando lo que queda en la consola (botonera fija, decks, rejilla, BASE DE DATOS hasta UI-4) esté cerrado. *Aceptación del paso 1: cada dominio movido abre su ventana, recuerda geometría y se cierra sin apagar la emisora — cumplido.*
+
 **UI-4 · Biblioteca y Programación** (los dos de mayor uso, y donde más se justifica el monitor secundario). *Aceptación: editar metadatos en lote y re-generar auto-playlist sin salir de Biblioteca; rejilla horaria editable con vista día/semana.*
 
 **UI-5 · DSP, Streaming/Grabación, Configuración, Reportes.** *Aceptación: DSP con espectro en vivo y permisos re-evaluados al abrir; Configuración con secciones navegables y rutas funcionando.*
@@ -202,16 +204,18 @@ Cada fase se entrega con `dotnet build quasar_radio.sln` en 0 errores / 0 advert
 
 | Métrica | Antes (UI-0) | Tras UI-1/2 | Tras UI-3a | Objetivo |
 |---|---|---|---|---|
-| Líneas de `MainWindow.xaml` | 1.680 | 1.527 | 1.534 (+7 del `WrapPanel`/tooltip) | ≤ 350 (UI-3b) |
+| Líneas de `MainWindow.xaml` | 1.680 | 1.527 | 1.583 (UI-3a dejó 1.534; UI-3b-1 suma la franja de módulos y el estilo de botón) | ≤ 350 (UI-3b paso 2) |
 | Literales hex en vistas | 328 | **0 en todos los `.xaml` fuera de `Themes/`** | 0 | 0 (solo en `Tokens.xaml`) ✔ |
 | Literales `FontFamily` en vistas | 14 | **0** (todos vía `Sys.Font.Clock`) | 0 | 0 ✔ |
 | Estilos/plantillas duplicados | ~45 en línea + 8 locales | 36 en línea + 1 local (`LibraryManagementWindow`) | igual | 100% en `Controls.xaml` (UI-3b/UI-4) |
-| Pestañas de la suite | 8 dentro de la consola | 8 | 8 (solo cambió cómo se ajustan sus botones) | 0 (6 ventanas + 3 diálogos) |
+| Pestañas de la suite | 8 dentro de la consola | 8 | 8, pero **4 dominios ya tienen ventana propia** (Programación, DSP+PFL, Streaming+Grabación, Reportes) | 0 (6 ventanas + 3 diálogos) |
 | Enlaces efectivos del tema | 7 en toda la app | 234 `DynamicResource` solo en la consola; 4 ventanas sin un solo hex | 234 | todas las superficies ✔ |
 | Propiedades de reenvío en `MainViewModel` | 69 contadas | 66 | 66 | 0 (UI-3b) |
 | Contraste del texto más usado | 3,4:1 (footer, calculado sobre `#0F111A`) | **5,4:1** | 5,4:1 | ≥ 4,5:1 ✔; críticos ≥ 7:1 |
 | Atajos F1–F12 válidos con | solo la consola (12 `KeyBinding` copiados) | **cualquier ventana** (`StudioKeys.CartWall`, 1 declaración) ✔ | idem | cualquier ventana |
-| Ventanas de módulo abiertas a la vez | 1 (modal: bloquea la consola) | N no modales, una por módulo ✔ | idem | idem |
+| Ventanas de módulo abiertas a la vez | 1 (modal: bloquea la consola) | N no modales, una por módulo ✔ | 6 registradas en `ModuleNavigator` y verificadas abiertas (Biblioteca y DSP siguen sin poderse probar sin tus credenciales) | idem |
+| **Acceso a un módulo sin sesión** | botón apagado o pestaña vacía | LIBRERÍA pide acceso | **la puerta está en `Open()`**: DSP/Usuarios/Biblioteca no construyen siquiera la ventana sin administrador, y el resto abre y deja ver el estado | idem, re-evaluado al abrir |
+| **Funciones muertas recuperadas** | — | — | GRABACIÓN: `RecordingFiles` se rellena por fin y ELIMINAR recibe el archivo (antes no tenía `CommandParameter`) | 0 botones que no hagan nada |
 | Estado de un módulo al reabrir | perdido | perdido (la ventana se destruye al cerrar) | perdido | conservado (ocultar, no destruir) → UI-3b |
 | **VU de salida master visible** | **no** (recortado por arriba, D1) | no | **sí**: etiqueta en `1016,210` y dos barras `180x20`, también maximizada | siempre |
 | **Consola dentro del área útil del panel 1600 × 900** | **no**: `80,-20 1440x900`, barra de título fuera (D2) | no | **sí**: `80,0 1440x860`, los 4 bordes dentro (`WindowFitting`) | idem, y por monitor en UI-6 |

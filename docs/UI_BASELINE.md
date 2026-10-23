@@ -13,6 +13,8 @@ Estas dos imágenes son la referencia visual contra la que se compara todo el pl
 
 **Estado tras UI-3a (2026-10-22): D1, D2, D3 y D6 corregidos y medidos — ver §6.** Siguen abiertos D4 (logo ilegible), D5 (pestañas en dos hileras) y D7 (los `HRS*_O` de 2 s que hay que reponer desde tu respaldo).
 
+**Estado tras UI-3b paso 1 (2026-10-22): D5 en camino** — PROGRAMACIÓN, DSP, STREAMING y REPORTES ya tienen su ventana propia y se abren desde la franja de módulos; las pestañas siguen vivas hasta el paso 2 para no perder ninguna función a media fase. Detalle y evidencia en §7.
+
 **D1 · El VU de salida master no se ve.** `MainWindow.xaml:988-1005` mete el medidor en un `StackPanel` con `VerticalAlignment="Bottom"` dentro de una fila `*`. El contenido es más alto que la fila, así que el desbordamiento **recorta por arriba**: en las dos capturas aparecen "DETECTOR SILENCIO" y "VOLUMEN MASTER", pero nunca "NIVEL DE SALIDA MASTER (VU METER)" ni los dos `LedVuMeterControl`. El operador está emitiendo sin ver su nivel de salida. Es el defecto más grave de los cuatro y es puramente de layout.
 
 **D2 · La consola no cabe en la pantalla del fundador.** `Height="900"` con barra de título y taskbar en un panel de 1600 × 900 deja el pie de ventana cortado: en `consola_antes_1440.png` se ven los bordes de la fila de botones asomando bajo la taskbar. La pantalla base real es **1600 × 860 útil**, no 1440 × 900.
@@ -130,4 +132,35 @@ Evidencia completa: [`consola_despues_ui3a.png`](ui-baseline/consola_despues_ui3
 **Dos cosas que esta fase no arregla y anoto para UI-3b:** (1) D4 (el logo "QUASAR RADIO" ilegible) y D5 (las 8 pestañas en dos hileras) siguen igual; D5 desaparece al repartir las pestañas en ventanas de módulo. (2) El `WrapPanel` de las pestañas es un parche de contención: en UI-3b esos botones se van a su ventana de módulo y el parche se borra, no se copia.
 
 **Hallazgo nuevo (H5) · cerrar con aire activo ya no es limpio.** En una de las ejecuciones el cierre por UIA dejó el proceso vivo (`SALIO_SIN_MATARLO=False`) y el script lo mató: es el `OnClosing` de UI-2 haciendo su trabajo — el `MessageBox` de confirmación bloquea el `Close()` y la automatización no tiene quien lo acepte. Con el playout arrancado, la prueba de cierre elegante hay que hacerla a mano o respondiendo al diálogo; el script no puede firmar "cerró solo" en ese caso.
+
+## 7. Después de UI-3b · paso 1: cuatro ventanas de módulo y una franja para abrirlas
+
+El orden de esta fase es deliberado: **primero se crean las ventanas, después se quitan las pestañas**. Mientras las dos cosas coexistan ningún operador pierde una función a media fase.
+
+Cambios entregados (compilación en 0 errores / 0 advertencias):
+
+- **Cuatro ventanas nuevas**, cada una con el XAML de su pestaña movido casi literal y `DataContext` = el `MainViewModel` singleton, así que los enlaces viejos siguen valiendo sin reescribirlos: `ScheduleWindow` (era TANDAS), `DspWindow` (PROCESADOR DSP + AUX PFL, que son el mismo dominio de monitoreo), `StreamingWindow` (STREAMING + GRABACIÓN) y `ReportsWindow` (ESTADÍSTICAS).
+- **`ModuleNavigator`** — el enum pasa a 6 claves (`Library`, `Users`, `Schedule`, `Dsp`, `Streaming`, `Reports`), y `Open()` gana la puerta `RequiresAdmin(key) && !EnsureAdmin()`. El `IsEnabled="{Binding IsAdmin}"` que tenía la pestaña DSP **era la única barrera**: ocultaba los controles pero no impedía llegar al comando. Ahora la ventana ni se construye sin administrador, y `ModuleOpened` avisa a la consola.
+- **`MainViewModel`** inyecta `IModuleNavigator` y expone `OpenModuleCommand` (parámetro de texto → `ModuleKey`) más `IsLibraryOpen` / `IsScheduleOpen` / `IsDspOpen` / `IsStreamingOpen` / `IsReportsOpen` para el indicador de la franja.
+- **Dos funciones muertas que vuelven a vivir** al mover GRABACIÓN: `RecordingFiles` estaba declarado y **nunca se rellenaba**, y el botón "ELIMINAR SELECCIONADO" no llevaba `CommandParameter`, es decir, no borraba nada. Ahora `RefreshRecordingFiles()` lee la carpeta al abrir la ventana y al parar/arrancar la grabación, la lista muestra los WAV y ELIMINAR recibe el archivo seleccionado.
+- **Franja de módulos** en la consola (fila nueva entre la rejilla y el pie) con los cinco accesos; el botón de acento marca la ventana ya abierta. Se retira el 🎵 LIBRERÍA de la cabecera porque duplicaba la entrada.
+- **Maquetación corregida de paso** (eran defectos de la pestaña, no del traslado): `DockPanel LastChildFill="False"` en las filas etiqueta/valor — sin eso "Duración: 00:00" se pegaba a "Cada hora a los :15 min"—, `HorizontalContentAlignment="Stretch"` en la lista de tandas para que las tarjetas ocupen la fila, y los cuatro botones de reportes pasan de `WrapPanel` con ancho fijo (parche de UI-3a para la pestaña estrecha) a `UniformGrid Columns="4"`.
+
+Verificación en vivo con `scripts/ui/verificar_modulos.ps1` (lanza desde `bin/Debug/net10.0-windows`, aborta si ya hay una instancia, 5 ejecuciones, `RESTANTES=0` y `SALIO_SIN_MATARLO=True` en todas):
+
+| Comprobación | Resultado |
+|---|---|
+| Franja pintada con sus cinco botones | botones encontrados en `283,766` (PROGRAMACIÓN), `450,778` (DSP), `489,766` (STREAMING), `600,766` (REPORTES); `FRANJA_botones_faltantes=` vacío |
+| Abrir STREAMING | ventana `Streaming y Grabación - Quasar Radio` en `260,80 1080x700` ([`modulos_streaming_ui3b.png`](ui-baseline/modulos_streaming_ui3b.png)) |
+| Abrir PROGRAMACIÓN | `Programación - Quasar Radio` en `390,110 820x640`, con las 2 tandas y sus botones ([`modulos_programacion_ui3b.png`](ui-baseline/modulos_programacion_ui3b.png)) |
+| Abrir REPORTES | `Reportes y estadísticas - Quasar Radio` en `350,120 900x620`, 4 métricas + 4 botones enteros ([`modulos_reportes_ui3b.png`](ui-baseline/modulos_reportes_ui3b.png)) |
+| Puerta de administrador en DSP | `DSP_pide_acceso=True`, `DSP_sin_ventana=True`, y al cancelar el diálogo `DSP_cancelado_sin_ventana=True` ([`modulos_dsp_pide_acceso_ui3b.png`](ui-baseline/modulos_dsp_pide_acceso_ui3b.png)). No se introduce ninguna credencial |
+| Indicador de "abierto" en la franja | borde de acento solo en el botón del módulo abierto ([STREAMING](ui-baseline/franja_modulo_abierto_streaming_ui3b.png) · [REPORTES](ui-baseline/franja_modulo_abierto_reportes_ui3b.png)) |
+| Cerrar un módulo | `CIERRE_*: desaparecio=True` y `CONSOLA_VIVA_DESPUES_DE_CERRAR_*=True` en los tres |
+| Geometría recordada | `layout.json` queda con las tres claves y su rectángulo exacto tras cerrar |
+| Consola tras añadir la fila nueva | `D2_*` los cuatro `True` y `D1` VU master + 4 `LedVuMeterControl` dentro de la ventana, también maximizada ([`consola_con_franja_ui3b.png`](ui-baseline/consola_con_franja_ui3b.png)) |
+
+**Hallazgo nuevo (H6) · la verificación por ratón real no es fiable si alguien está usando el equipo.** Con `SetCursorPos` + `mouse_event` hubo dos ejecuciones en las que los clics caían al vacío (el puntero se movía en los 120 ms de espera) y el log de la app no registraba ni "Modulo abierto" ni error: parecía un botón roto y era el entorno. Dos cambios en el script: los módulos se abren con `InvokePattern` de UIA (no depende del puntero) y las capturas se hacen con `PrintWindow` + `PW_RENDERFULLCONTENT` en vez de `CopyFromScreen`, porque con otra ventana delante la evidencia había salido… una página de YouTube. La puerta de DSP sigue probándose con clic real, porque su `ShowDialog` modal bloquea el `Invoke`.
+
+**Pendiente para el paso 2 y para tenerle delante:** abrir Biblioteca y DSP de verdad (hacen falta sus credenciales), comprobar F1–F12 con el foco en una de estas ventanas, y ver cómo se comportan las cuatro ventanas nuevas con los otros tres temas. El contenido de DSP y STREAMING se trasladó con las cajas de texto de ancho fijo que ya tenía la pestaña: `streaming.quasar-radio.co` y la ruta de FFmpeg se siguen recortando, y la contraseña Icecast se muestra en claro — eso se rediseña en UI-4, no en el traslado.
 
