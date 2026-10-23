@@ -23,6 +23,7 @@ namespace quasar_radio
         private readonly AuxPlayerEngine _auxPlayerEngine;
         private readonly DispatcherTimer _clockTimer;
         private readonly AudioDatabaseService _databaseService;
+        private readonly IModuleNavigator _navigator;
 
         // Sub-ViewModels
         public ThemeViewModel ThemeViewModel { get; }
@@ -312,6 +313,56 @@ namespace quasar_radio
             _ => "#888888"
         };
 
+        // ---------------------------------------------------------------- modulos (UI-3b)
+
+        /// <summary>
+        /// La consola ya no es un TabControl: cada modulo es una ventana y esta franja
+        /// marca cual esta abierta. El navigator es la unica fuente de verdad; aqui solo
+        /// se traduce a propiedades de enlace.
+        /// </summary>
+        public bool IsLibraryOpen => _navigator.IsOpen(ModuleKey.Library);
+        public bool IsScheduleOpen => _navigator.IsOpen(ModuleKey.Schedule);
+        public bool IsDspOpen => _navigator.IsOpen(ModuleKey.Dsp);
+        public bool IsStreamingOpen => _navigator.IsOpen(ModuleKey.Streaming);
+        public bool IsReportsOpen => _navigator.IsOpen(ModuleKey.Reports);
+
+        /// <summary>Abre un modulo por nombre: CommandParameter="Dsp", "Streaming", ...</summary>
+        public ICommand OpenModuleCommand { get; private set; } = null!;
+
+        public void OpenModule(string? keyName)
+        {
+            if (string.IsNullOrWhiteSpace(keyName)) return;
+
+            if (!Enum.TryParse<ModuleKey>(keyName, ignoreCase: true, out var key))
+            {
+                _logger.Warning("Modulo desconocido: {Key}", keyName);
+                return;
+            }
+
+            _navigator.Open(key);
+        }
+
+        private void RaiseModuleOpenStates()
+        {
+            OnPropertyChanged(nameof(IsLibraryOpen));
+            OnPropertyChanged(nameof(IsScheduleOpen));
+            OnPropertyChanged(nameof(IsDspOpen));
+            OnPropertyChanged(nameof(IsStreamingOpen));
+            OnPropertyChanged(nameof(IsReportsOpen));
+        }
+
+        /// <summary>
+        /// Vuelve a listar los WAV de la carpeta de grabaciones. La pestaña GRABACIÓN de la
+        /// consola vieja nunca llamaba a esto, asi que su listado estaba siempre vacio y el
+        /// boton de borrar no recibia parametro.
+        /// </summary>
+        public void RefreshRecordingFiles()
+        {
+            RecordingFiles.Clear();
+            foreach (var path in _recordingService.GetRecordingFiles())
+                RecordingFiles.Add(Path.GetFileName(path));
+        }
+
         // Comandos globales (que no están en sub-ViewModels)
         public ICommand ToggleMicCommand { get; private set; } = null!;
         public ICommand AnnounceTimeCommand { get; private set; } = null!;
@@ -319,6 +370,7 @@ namespace quasar_radio
         public ICommand AdjustSilenceThresholdCommand { get; private set; } = null!;
         public ICommand ToggleRecordingCommand { get; private set; } = null!;
         public ICommand OpenRecordingFolderCommand { get; private set; } = null!;
+        public ICommand RefreshRecordingFilesCommand { get; private set; } = null!;
         public ICommand DeleteRecordingCommand { get; private set; } = null!;
         public ICommand GenerateStatisticsReportCommand { get; private set; } = null!;
         public ICommand ClearStatisticsCommand { get; private set; } = null!;
@@ -345,7 +397,8 @@ namespace quasar_radio
             AudioPlayerViewModel audioPlayerViewModel,
             StreamingViewModel streamingViewModel,
             CartWallViewModel cartWallViewModel,
-            LibraryViewModel libraryViewModel)
+            LibraryViewModel libraryViewModel,
+            IModuleNavigator navigator)
         {
             NowPlayingService.ExportFailed += OnNowPlayingExportFailed;
 
@@ -360,6 +413,7 @@ namespace quasar_radio
             _recordingService = recordingService;
             _auxPlayerEngine = auxPlayerEngine;
             _databaseService = databaseService;
+            _navigator = navigator ?? throw new ArgumentNullException(nameof(navigator));
 
             // Configurar eventos
             _audioEngine.MeterLevelsChanged += OnEngineMeterLevelsChanged;
@@ -374,6 +428,11 @@ namespace quasar_radio
             StreamingViewModel = streamingViewModel;
             CartWallViewModel = cartWallViewModel;
             LibraryViewModel = libraryViewModel;
+
+            // La franja de modulos de la consola marca la ventana que esta abierta; el
+            // navigator ya es singleton, asi que el estado es el mismo que ve la consola.
+            _navigator.ModuleOpened += (_, _) => RaiseModuleOpenStates();
+            _navigator.ModuleClosed += (_, _) => RaiseModuleOpenStates();
 
             // Configurar timer de reloj
             _clockTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(200) };
@@ -435,6 +494,9 @@ namespace quasar_radio
             PlayAux2Command = new RelayCommand(o => _auxPlayerEngine.Aux2.PlayTrack(o as TrackItem ?? AudioPlayerViewModel.SelectedTrack ?? LibraryViewModel.SelectedDbTrack), o => CanOperate());
 
             OpenTrackEditorCommand = new RelayCommand(o => OpenTrackEditor(o as TrackItem ?? AudioPlayerViewModel.SelectedTrack), o => IsAdmin());
+
+            RefreshRecordingFilesCommand = new RelayCommand(o => RefreshRecordingFiles(), o => CanOperate());
+            OpenModuleCommand = new RelayCommand(o => OpenModule(o as string));
         }
 
         private void OnNowPlayingExportFailed(object? sender, string message)
@@ -639,24 +701,30 @@ namespace quasar_radio
             }
             else
             {
-                if (_recordingService.StartRecording())
-                {
-                    AudioPlayerViewModel.StatusText = "Grabación iniciada - Guardando emisión";
-                }
-                else
-                {
-                    AudioPlayerViewModel.StatusText = _recordingService.LastError ?? "No se pudo iniciar la grabación.";
-                }
+                AudioPlayerViewModel.StatusText = _recordingService.StartRecording()
+                    ? "Grabación iniciada - Guardando emisión"
+                    : _recordingService.LastError ?? "No se pudo iniciar la grabación.";
             }
+
+            // La ventana de Streaming muestra el listado: que refleje el archivo recien
+            // abierto o cerrado sin tener que pulsar ACTUALIZAR.
+            RefreshRecordingFiles();
         }
 
         private void DeleteRecording(object? parameter)
         {
-            if (parameter is string filePath)
+            if (parameter is string fileNameOrPath && !string.IsNullOrWhiteSpace(fileNameOrPath))
             {
-                AudioPlayerViewModel.StatusText = _recordingService.DeleteRecording(filePath)
+                // RecordingFiles lista nombres, no rutas: la carpeta la aporta el servicio.
+                var path = Path.IsPathRooted(fileNameOrPath)
+                    ? fileNameOrPath
+                    : Path.Combine(_recordingService.RecordingFolder, fileNameOrPath);
+
+                AudioPlayerViewModel.StatusText = _recordingService.DeleteRecording(path)
                     ? "Grabación eliminada."
                     : _recordingService.LastError ?? "No se pudo eliminar la grabación.";
+
+                RefreshRecordingFiles();
             }
         }
 

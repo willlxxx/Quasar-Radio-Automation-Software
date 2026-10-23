@@ -1,0 +1,84 @@
+<Window x:Class="quasar_radio.ReportsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:quasar_radio"
+        Title="Reportes y estadísticas - Quasar Radio"
+        Width="900" Height="620" MinWidth="700" MinHeight="440"
+        Background="{DynamicResource Brush.Surface.Base}" Foreground="{DynamicResource Brush.Text.Default}">
+
+    <!-- Antes era la pestaña ESTADISTICAS de la consola. Es analisis, no operacion: por eso
+         sale de la ventana que esta al aire. -->
+
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- CABECERA -->
+        <Border Grid.Row="0" Background="{DynamicResource Brush.Surface.Card}" CornerRadius="8" Padding="12,8" Margin="0,0,0,12" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
+            <TextBlock Text="REPORTES Y ESTADÍSTICAS" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.High}"/>
+        </Border>
+
+        <!-- RESUMEN GENERAL -->
+        <Border Grid.Row="1" Background="{DynamicResource Brush.Surface.Card}" CornerRadius="8" Padding="10" Margin="0,0,0,12" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                    <TextBlock Text="TRACKS EN SESIÓN" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent.Success}" Margin="0,0,0,4"/>
+                    <TextBlock Text="{Binding StatisticsService.SessionTrackCount}" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.High}" FontFamily="{StaticResource Sys.Font.Clock}"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Margin="0,0,8,0">
+                    <TextBlock Text="TIEMPO TOTAL" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent.Success}" Margin="0,0,0,4"/>
+                    <TextBlock Text="{Binding StatisticsService.TotalSessionPlayTime, StringFormat='{}{0:hh\\:mm\\:ss}'}" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.High}" FontFamily="{StaticResource Sys.Font.Clock}"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="2" Margin="0,0,8,0">
+                    <TextBlock Text="TRACKS ÚNICOS" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent.Success}" Margin="0,0,0,4"/>
+                    <TextBlock Text="{Binding StatisticsService.TotalUniqueTracks}" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.High}" FontFamily="{StaticResource Sys.Font.Clock}"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="3">
+                    <TextBlock Text="REGISTROS TOTALES" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent.Success}" Margin="0,0,0,4"/>
+                    <TextBlock Text="{Binding StatisticsService.TotalPlaybackRecords}" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.High}" FontFamily="{StaticResource Sys.Font.Clock}"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- CONTROLES -->
+        <Border Grid.Row="2" Background="{DynamicResource Brush.Surface.Card}" CornerRadius="8" Padding="10" Margin="0,0,0,12" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
+            <!-- Cuatro botones a ancho repartido: en la pestana vieja eran un WrapPanel con
+                 Width fijo porque el panel de la consola era estrecho; aqui la ventana manda. -->
+            <UniformGrid Columns="4">
+                <Button Command="{Binding GenerateStatisticsReportCommand}" Style="{StaticResource StudioButtonStyle}" Content="📊 GENERAR REPORTE" Height="30" FontSize="11" Margin="0,0,4,0" Background="{DynamicResource Brush.Accent.Info}" BorderBrush="{DynamicResource Brush.Accent}"/>
+                <Button Command="{Binding SaveStatisticsCommand}" Style="{StaticResource StudioButtonStyle}" Content="💾 GUARDAR" Height="30" FontSize="11" Margin="0,0,4,0"/>
+                <Button Command="{Binding LoadStatisticsCommand}" Style="{StaticResource StudioButtonStyle}" Content="📂 CARGAR" Height="30" FontSize="11" Margin="0,0,4,0"/>
+                <Button Command="{Binding ClearStatisticsCommand}" Style="{StaticResource StudioButtonStyle}" Content="🗑️ LIMPIAR" Height="30" FontSize="11" Background="{DynamicResource Brush.Accent.OrangeDeep}" BorderBrush="{DynamicResource Brush.Accent.Orange}"/>
+            </UniformGrid>
+        </Border>
+
+        <!-- QUÉ REGISTRA EL SISTEMA -->
+        <Border Grid.Row="3" VerticalAlignment="Top" Background="{DynamicResource Brush.Surface.Card}" CornerRadius="8" Padding="10" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
+            <StackPanel>
+                <TextBlock Text="SISTEMA DE ESTADÍSTICAS" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent.Success}" Margin="0,0,0,6"/>
+                <TextBlock Text="El sistema registra automáticamente cada reproducción con información detallada:" FontSize="10" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,0,0,4"/>
+                <TextBlock Text="• Tracks más populares por número de reproducciones" FontSize="10" Foreground="{DynamicResource Brush.Accent.Success}" Margin="0,0,0,2"/>
+                <TextBlock Text="• Tiempo total de reproducción por track" FontSize="10" Foreground="{DynamicResource Brush.Accent.Success}" Margin="0,0,0,2"/>
+                <TextBlock Text="• Estadísticas por hora del día" FontSize="10" Foreground="{DynamicResource Brush.Accent.Success}" Margin="0,0,0,2"/>
+                <TextBlock Text="• Estadísticas por género musical" FontSize="10" Foreground="{DynamicResource Brush.Accent.Success}" Margin="0,0,0,2"/>
+                <TextBlock Text="• Historial de reproducciones diario" FontSize="10" Foreground="{DynamicResource Brush.Accent.Success}" Margin="0,0,0,2"/>
+                <TextBlock Text="• Reportes exportables en formato texto" FontSize="10" Foreground="{DynamicResource Brush.Accent.Success}" Margin="0,0,0,6"/>
+                <TextBlock Text="Los datos se guardan en formato JSON para persistencia entre sesiones." FontSize="10" Foreground="{DynamicResource Brush.Accent.Warn}"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

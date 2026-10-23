@@ -64,6 +64,10 @@ public partial class App : Application
         // Las ventanas de modulo son transient: una vez cerradas WPF no permite
         // volver a mostrarlas, asi que el navigator pide una nueva en cada Open.
         services.AddTransient<LibraryManagementWindow>();
+        services.AddTransient<ScheduleWindow>();
+        services.AddTransient<DspWindow>();
+        services.AddTransient<StreamingWindow>();
+        services.AddTransient<ReportsWindow>();
 
         // Unico MainViewModel vivo: MainWindow es singleton, asi que este tambien.
         services.AddSingleton<MainViewModel>();

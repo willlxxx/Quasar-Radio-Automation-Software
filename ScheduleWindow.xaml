@@ -1,0 +1,74 @@
+<Window x:Class="quasar_radio.ScheduleWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:quasar_radio"
+        Title="Programación - Quasar Radio"
+        Width="820" Height="640" MinWidth="620" MinHeight="420"
+        Background="{DynamicResource Brush.Surface.Base}" Foreground="{DynamicResource Brush.Text.Default}">
+
+    <!-- Antes era la pestana TANDAS. UI-4 le anade aqui la rejilla horaria (CustomTimeEngine)
+         y las reglas de rotacion; por ahora se muda el contenido tal cual para no perder
+         ninguna funcion al quitar las pestanas de la consola. -->
+
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- CABECERA -->
+        <Border Grid.Row="0" Background="{DynamicResource Brush.Surface.Card}" CornerRadius="8" Padding="12,8" Margin="0,0,0,12" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
+            <DockPanel LastChildFill="False">
+                <StackPanel DockPanel.Dock="Left">
+                    <TextBlock Text="PROGRAMACIÓN" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.High}"/>
+                    <TextBlock Text="Pautas y tandas de cuñas comerciales" FontSize="10" Foreground="{DynamicResource Brush.Text.Secondary}"/>
+                </StackPanel>
+                <TextBlock DockPanel.Dock="Right" VerticalAlignment="Center" FontSize="11" FontWeight="Bold"
+                           Foreground="{DynamicResource Brush.Accent.Orange}"
+                           Text="{Binding CommercialBlocks.Count, StringFormat='{}{0} tandas'}"/>
+            </DockPanel>
+        </Border>
+
+        <Border Grid.Row="1" Background="{DynamicResource Brush.Surface.Card}" CornerRadius="8" Padding="8" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
+            <ListBox ItemsSource="{Binding CommercialBlocks}" Background="{DynamicResource Brush.Surface.Deep}" BorderBrush="{DynamicResource Brush.Border.Subtle}"
+                     HorizontalContentAlignment="Stretch"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Border Background="{DynamicResource Brush.Surface.Card}" CornerRadius="5" Padding="8" Margin="0,3" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <DockPanel Grid.Row="0" LastChildFill="False">
+                                    <TextBlock Text="{Binding Name}" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.High}" FontSize="13" DockPanel.Dock="Left"/>
+                                    <Button Content="📢 LANZAR AHORA"
+                                            Command="{Binding DataContext.TriggerCommercialBlockNowCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                            CommandParameter="{Binding}"
+                                            Style="{StaticResource CommercialButtonStyle}"
+                                            Padding="6,3" FontSize="9" DockPanel.Dock="Right" HorizontalAlignment="Right"/>
+                                </DockPanel>
+
+                                <DockPanel Grid.Row="1" Margin="0,3" LastChildFill="False">
+                                    <TextBlock Text="{Binding ScheduleText}" Foreground="{DynamicResource Brush.Accent.Warn}" FontSize="10" FontFamily="{StaticResource Sys.Font.Clock}" DockPanel.Dock="Left"/>
+                                    <TextBlock Text="{Binding TotalDurationFormatted, StringFormat='Duración: {0}'}" Foreground="{DynamicResource Brush.Text.Secondary}" FontSize="10" DockPanel.Dock="Right"/>
+                                </DockPanel>
+
+                                <DockPanel Grid.Row="2" Margin="0,3,0,0" LastChildFill="False">
+                                    <TextBlock Text="{Binding Spots.Count, StringFormat='Cuñas: {0}'}" Foreground="{DynamicResource Brush.Accent.Success}" FontSize="10" DockPanel.Dock="Left"/>
+                                    <Button Content="+ Agregar Spot"
+                                            Command="{Binding DataContext.AddSpotToBlockCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                            CommandParameter="{Binding}"
+                                            Style="{StaticResource StudioButtonStyle}" Padding="5,2" FontSize="9" DockPanel.Dock="Right"/>
+                                </DockPanel>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Border>
+    </Grid>
+</Window>

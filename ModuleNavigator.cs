@@ -12,13 +12,17 @@ namespace quasar_radio
 {
     /// <summary>
     /// Ventanas que la consola puede tener abiertas al mismo tiempo.
-    /// Se añaden aqui (una linea de <see cref="Create"/>) a medida que UI-4 y UI-5
-    /// van creando Biblioteca, Programacion, DSP, Streaming, Configuracion y Reportes.
+    /// Se añaden aqui (una linea de <see cref="ModuleNavigator.Create"/>) a medida que
+    /// UI-4 va trayendose el contenido de las antiguas pestañas de la consola.
     /// </summary>
     public enum ModuleKey
     {
         Library,
         Users,
+        Schedule,
+        Dsp,
+        Streaming,
+        Reports,
     }
 
     /// <summary>
@@ -45,6 +49,10 @@ namespace quasar_radio
         /// </summary>
         bool EnsureAdmin();
 
+        /// <summary>Modulos que solo un administrador puede abrir (DSP y usuarios).</summary>
+        bool RequiresAdmin(ModuleKey key);
+
+        event EventHandler<ModuleKey>? ModuleOpened;
         event EventHandler<ModuleKey>? ModuleClosed;
     }
 
@@ -62,9 +70,22 @@ namespace quasar_radio
             _services = services ?? throw new ArgumentNullException(nameof(services));
         }
 
+        public event EventHandler<ModuleKey>? ModuleOpened;
         public event EventHandler<ModuleKey>? ModuleClosed;
 
         public bool IsOpen(ModuleKey key) => _open.ContainsKey(key);
+
+        /// <summary>
+        /// Los modulos que tocan la señal o los permisos son de administrador. La puerta
+        /// esta en <see cref="Open"/> para que ningun boton de la consola la pueda olvidar.
+        /// </summary>
+        public bool RequiresAdmin(ModuleKey key) => key switch
+        {
+            ModuleKey.Dsp => true,
+            ModuleKey.Users => true,
+            ModuleKey.Library => true,
+            _ => false,
+        };
 
         public void Toggle(ModuleKey key) => Open(key);
 
@@ -81,6 +102,14 @@ namespace quasar_radio
             {
                 if (existing.WindowState == WindowState.Minimized) existing.WindowState = WindowState.Normal;
                 existing.Activate();
+                return;
+            }
+
+            // Asegurado aqui y no en cada llamada: EnsureAdmin es idempotente, asi que un
+            // llamador que ya pidio acceso no vuelve a ver el dialogo.
+            if (RequiresAdmin(key) && !EnsureAdmin())
+            {
+                _log.Information("Apertura cancelada de {Key}: hace falta administrador", key);
                 return;
             }
 
@@ -106,6 +135,7 @@ namespace quasar_radio
             window.Show();
             window.Activate();
             _open[key] = window;
+            ModuleOpened?.Invoke(this, key);
             _log.Information("Modulo abierto: {Key}", key);
         }
 
@@ -134,6 +164,10 @@ namespace quasar_radio
         {
             ModuleKey.Library => _services.GetRequiredService<LibraryManagementWindow>(),
             ModuleKey.Users => new UserManagementWindow(App.Auth),
+            ModuleKey.Schedule => _services.GetRequiredService<ScheduleWindow>(),
+            ModuleKey.Dsp => _services.GetRequiredService<DspWindow>(),
+            ModuleKey.Streaming => _services.GetRequiredService<StreamingWindow>(),
+            ModuleKey.Reports => _services.GetRequiredService<ReportsWindow>(),
             _ => throw new ArgumentOutOfRangeException(nameof(key), key, "Modulo sin ventana registrada"),
         };
 

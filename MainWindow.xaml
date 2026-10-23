@@ -16,6 +16,19 @@
             <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
             <Setter Property="ToolTip" Value="{Binding Text, RelativeSource={RelativeSource Self}}"/>
         </Style>
+
+        <!-- Boton de la franja de modulos (UI-3b). Cada boton pone en Tag su propiedad
+             IsXxxOpen: el acento marca la ventana que ya esta abierta, para no abrir dos. -->
+        <Style x:Key="ModuleStripButtonStyle" TargetType="Button" BasedOn="{StaticResource StudioButtonStyle}">
+            <Setter Property="Margin" Value="0,0,8,0"/>
+            <Setter Property="Padding" Value="10,4"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Self}}" Value="True">
+                    <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent}"/>
+                    <Setter Property="BorderThickness" Value="2"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
     </Window.Resources>
 
     <Grid Margin="12">
@@ -23,6 +36,7 @@
             <RowDefinition Height="Auto"/> <!-- Header / Studio Bar -->
             <RowDefinition Height="Auto" MinHeight="210"/> <!-- Dashboard / Dual Deck A & B Panel: Auto para que el VU master no se recorte (D1) -->
             <RowDefinition Height="*"/>    <!-- Rejilla de Emisión & Tabs -->
+            <RowDefinition Height="Auto"/> <!-- Franja de modulos (UI-3b) -->
             <RowDefinition Height="Auto"/> <!-- Status Footer Bar -->
         </Grid.RowDefinitions>
 
@@ -145,10 +159,8 @@
                     <TextBlock Text="🕒 HORA" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent}"/>
                 </Button>
 
-                <!-- BOTÓN GESTIÓN DE LIBRERÍA -->
-                <Button Grid.Column="4" Command="{Binding DataContext.LibraryViewModel.OpenLibraryManagementCommand, RelativeSource={RelativeSource AncestorType=Window}}" Style="{StaticResource StudioButtonStyle}" Margin="0,0,10,0" Padding="8,4" Background="{DynamicResource Brush.Accent.Info}" BorderBrush="{DynamicResource Brush.Accent}">
-                    <TextBlock Text="🎵 LIBRERÍA" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.High}"/>
-                </Button>
+                <!-- 🎵 LIBRERÍA vivia aqui: desde UI-3b la biblioteca se abre desde la
+                     franja de modulos de abajo, con el resto de ventanas. -->
 
                 <!-- CUENTA REGRESIVA PRÓXIMA TANDA -->
                 <Border Grid.Column="5" Background="{DynamicResource Brush.Surface.WarnBadge}" CornerRadius="6" Padding="10,4" Margin="0,0,10,0" BorderBrush="{DynamicResource Brush.Accent.WarnStrong}" BorderThickness="1">
@@ -1510,8 +1522,45 @@
             </TabControl>
         </Grid>
 
+        <!-- ================= FRANJA DE MODULOS (UI-3b) =================
+             Lo que eran las pestañas de la suite: cada una es ahora su propia ventana,
+             abierta por IModuleNavigator. El borde de acento avisa de la que ya está
+             abierta para no duplicarla. -->
+        <Border Grid.Row="3" Background="{DynamicResource Brush.Surface.Panel}" CornerRadius="5" Padding="10,6" Margin="0,8,0,0" BorderBrush="{DynamicResource Brush.Border.Subtle}" BorderThickness="1">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="MÓDULOS" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.Muted}" VerticalAlignment="Center" Margin="0,0,12,0"/>
+
+                    <Button Style="{StaticResource ModuleStripButtonStyle}" Command="{Binding OpenModuleCommand}" CommandParameter="Library" Tag="{Binding IsLibraryOpen}" ToolTip="Biblioteca de medios (admin)">
+                        <TextBlock Text="🎵 BIBLIOTECA" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.High}"/>
+                    </Button>
+                    <Button Style="{StaticResource ModuleStripButtonStyle}" Command="{Binding OpenModuleCommand}" CommandParameter="Schedule" Tag="{Binding IsScheduleOpen}" ToolTip="Tandas y programación horaria">
+                        <TextBlock Text="🗓 PROGRAMACIÓN" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.High}"/>
+                    </Button>
+                    <Button Style="{StaticResource ModuleStripButtonStyle}" Command="{Binding OpenModuleCommand}" CommandParameter="Dsp" Tag="{Binding IsDspOpen}" ToolTip="Procesador DSP y AUX PFL (admin)">
+                        <TextBlock Text="🎛 DSP" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.High}"/>
+                    </Button>
+                    <Button Style="{StaticResource ModuleStripButtonStyle}" Command="{Binding OpenModuleCommand}" CommandParameter="Streaming" Tag="{Binding IsStreamingOpen}" ToolTip="Streaming Icecast y grabación">
+                        <TextBlock Text="📡 STREAMING" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.High}"/>
+                    </Button>
+                    <Button Style="{StaticResource ModuleStripButtonStyle}" Command="{Binding OpenModuleCommand}" CommandParameter="Reports" Tag="{Binding IsReportsOpen}" ToolTip="Estadísticas y reportes de emisión">
+                        <TextBlock Text="📊 REPORTES" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.High}"/>
+                    </Button>
+                </StackPanel>
+
+                <TextBlock Grid.Column="1" Text="Cada módulo abre su propia ventana · cerrar un módulo no cierra la emisora"
+                           FontSize="9" Foreground="{DynamicResource Brush.Text.Faint}" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="12,0,0,0"
+                           TextTrimming="CharacterEllipsis"/>
+            </Grid>
+        </Border>
+
         <!-- ================= STATUS FOOTER BAR ================= -->
-        <Border Grid.Row="3" Background="{DynamicResource Brush.Surface.Panel}" CornerRadius="4" Padding="10,5" Margin="0,8,0,0" BorderBrush="{DynamicResource Brush.Border.Subtle}" BorderThickness="1">
+        <Border Grid.Row="4" Background="{DynamicResource Brush.Surface.Panel}" CornerRadius="4" Padding="10,5" Margin="0,8,0,0" BorderBrush="{DynamicResource Brush.Border.Subtle}" BorderThickness="1">
             <!-- El DockPanel con LastChildFill por defecto hacia que el bloque de la derecha
                  ocupara lo que dejaba el estado y lo pegara al "Invitado" (D3). -->
             <Grid>
