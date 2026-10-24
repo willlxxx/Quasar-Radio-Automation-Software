@@ -27,6 +27,10 @@ public partial class App : Application
         var services = new ServiceCollection();
 
         // Singleton services (lifetime de aplicación)
+        // UI-7: el nivel de SALIDA. Los dos decks, la botonera y el micro son cuatro WaveOut
+        // independientes que no se ven entre si, y la consola necesitaba un sitio comun donde
+        // cada uno deje su nivel post-fader para pintar el VU master y vigilar el silencio.
+        services.AddSingleton<MasterBus>();
         services.AddSingleton<AudioEngine>();
         services.AddSingleton(sp => sp.GetRequiredService<AudioEngine>().DspProcessor);
         services.AddSingleton<CartwallEngine>();

@@ -15,6 +15,7 @@ namespace quasar_radio
         private readonly ILogger _logger = Log.ForContext<AudioPlayerViewModel>();
         private readonly AudioEngine _audioEngine;
         private readonly PlaybackAttributionService _attribution;
+        private readonly AuxPlayerEngine? _auxEngine;
         private readonly DispatcherTimer _playbackTimer;
         private const int SpectrumBarCount = 18;
 
@@ -216,10 +217,27 @@ namespace quasar_radio
         public ICommand DeckBPauseCommand { get; }
         public ICommand DeckBCueCommand { get; }
 
-        public AudioPlayerViewModel(AudioEngine audioEngine, PlaybackAttributionService attribution)
+        /// <summary>
+        /// UI-7 paso B: los dos botones que sustituyen a la franja de barras decorativas que habia
+        /// bajo el VU de cada deck. <c>CommandParameter</c> es "A" o "B".
+        /// </summary>
+        public ICommand ToggleDeckRepeatCommand { get; }
+        public ICommand PreListenDeckCommand { get; }
+
+        public bool DeckA_Repeat => _audioEngine.DeckA_Repeat;
+        public bool DeckB_Repeat => _audioEngine.DeckB_Repeat;
+
+        /// <summary>Que deck tiene la pre-escucha puesta ("A", "B" o ninguna).</summary>
+        public string PreListeningDeck { get; private set; } = string.Empty;
+
+        public bool DeckA_PreListening => PreListeningDeck == "A";
+        public bool DeckB_PreListening => PreListeningDeck == "B";
+
+        public AudioPlayerViewModel(AudioEngine audioEngine, PlaybackAttributionService attribution, AuxPlayerEngine? auxEngine = null)
         {
             _audioEngine = audioEngine ?? throw new ArgumentNullException(nameof(audioEngine));
             _attribution = attribution ?? throw new ArgumentNullException(nameof(attribution));
+            _auxEngine = auxEngine;
             _audioEngine.GetNextTrackProvider = GetNextTrackForEngine;
             _audioEngine.TrackChanged += OnEngineTrackChanged;
             _audioEngine.PositionChanged += OnEnginePositionChanged;
@@ -251,7 +269,77 @@ namespace quasar_radio
             DeckBPlayCommand = new RelayCommand(o => PlayDeck("B", SelectedTrack ?? CurrentTrack ?? Playlist.FirstOrDefault()), o => CanOperate() && (SelectedTrack != null || CurrentTrack != null || Playlist.Count > 0));
             DeckBPauseCommand = new RelayCommand(o => PauseDeck("B"), o => CanOperate());
             DeckBCueCommand = new RelayCommand(o => CueDeck("B"), o => CanOperate());
+
+            // UI-7 paso B. Los dos botones nuevos viven en la franja que deja libre la antigua
+            // barra de barras decorativas, y su estado (REPETIR encendido, PFL puesto) se pinta
+            // por enlace a DeckA_Repeat / PreListeningDeck, no por codigo detras del boton.
+            ToggleDeckRepeatCommand = new RelayCommand(o => ToggleDeckRepeat(o), o => CanOperate());
+            PreListenDeckCommand = new RelayCommand(o => TogglePreListen(o), o => CanOperate());
         }
+
+        /// <summary>
+        /// Pone o quita el REPETIR del deck que viene como parametro ("A" o "B"). Al apagarlo con
+        /// la pista ya lanzada, el deck termina esta vez y se comporta como antes de UI-7.
+        /// </summary>
+        private void ToggleDeckRepeat(object? parameter)
+        {
+            var deck = NormalizeDeck(parameter);
+            var on = _audioEngine.ToggleDeckRepeat(deck);
+            OnPropertyChanged(nameof(DeckA_Repeat));
+            OnPropertyChanged(nameof(DeckB_Repeat));
+            StatusText = $"Deck {deck}: {(on ? "repitiendo la pista actual" : "rotacion normal")}.";
+            _logger.Information("Boton REPETIR del deck {Deck}: {On}", deck, on);
+        }
+
+        /// <summary>
+        /// Pre-escucha (PFL) del deck: lo que tiene cargado suena en el AUX del canal, NUNCA en la
+        /// salida de emision. Volver a pulsar el mismo deck lo apaga.
+        ///
+        /// El deck precargado esta a volumen 0 en el aire hasta su cruce, asi que sin esto el
+        /// operador no tiene forma de saber que esta a punto de sonar.
+        /// </summary>
+        private void TogglePreListen(object? parameter)
+        {
+            var deck = NormalizeDeck(parameter);
+            if (_auxEngine == null)
+            {
+                StatusText = "La pre-escucha no esta disponible: no hay motor AUX.";
+                return;
+            }
+
+            var aux = deck == "B" ? _auxEngine.Aux2 : _auxEngine.Aux1;
+
+            if (PreListeningDeck == deck)
+            {
+                aux.Stop();
+                PreListeningDeck = string.Empty;
+                OnPropertyChanged(nameof(DeckA_PreListening));
+                OnPropertyChanged(nameof(DeckB_PreListening));
+                StatusText = $"Pre-escucha del deck {deck} apagada.";
+                _logger.Information("PFL del deck {Deck} apagado", deck);
+                return;
+            }
+
+            var track = deck == "B" ? _audioEngine.DeckB_Track : _audioEngine.DeckA_Track;
+            if (track == null)
+            {
+                StatusText = $"El deck {deck} no tiene ninguna pista cargada que pre-escuchar.";
+                return;
+            }
+
+            var ok = aux.PlayTrack(track);
+            PreListeningDeck = ok ? deck : string.Empty;
+            OnPropertyChanged(nameof(DeckA_PreListening));
+            OnPropertyChanged(nameof(DeckB_PreListening));
+            StatusText = ok
+                ? $"Pre-escucha deck {deck}: {track.Title} (por el monitor, no sale al aire)."
+                : $"La pre-escucha del deck {deck} no pudo abrir {System.IO.Path.GetFileName(track.FilePath)}.";
+            _logger.Information("PFL deck {Deck}: {Title} ({Ok})", deck, track.Title, ok);
+        }
+
+        private static string NormalizeDeck(object? parameter) =>
+            string.Equals(parameter as string, "B", StringComparison.OrdinalIgnoreCase) ? "B" : "A";
+
 
         private void OnPlaybackTimerTick(object? sender, EventArgs e)
         {
@@ -334,7 +422,7 @@ namespace quasar_radio
 
                 UpdateNextTrackAndStatuses();
                 UpdateStatusText();
-                OnPropertyChanged(nameof(IsPlaying));
+                RaisePlayingChanged();
             });
         }
 
@@ -365,7 +453,7 @@ namespace quasar_radio
                 CurrentPosition = TimeSpan.Zero;
                 CurrentDuration = TimeSpan.Zero;
                 UpdateStatusText();
-                OnPropertyChanged(nameof(IsPlaying));
+                RaisePlayingChanged();
             });
         }
 
@@ -416,7 +504,7 @@ namespace quasar_radio
                 CurrentPosition = TimeSpan.Zero;
                 CurrentDuration = TimeSpan.Zero;
                 UpdateStatusText();
-                OnPropertyChanged(nameof(IsPlaying));
+                RaisePlayingChanged();
                 _logger.Information("Emisión detenida correctamente");
             }
             catch (Exception ex)
@@ -430,7 +518,7 @@ namespace quasar_radio
         {
             _audioEngine.Pause();
             UpdateStatusText();
-            OnPropertyChanged(nameof(IsPlaying));
+            RaisePlayingChanged();
         }
 
         private void PlayDeck(string deckName, TrackItem? track)
@@ -467,7 +555,7 @@ namespace quasar_radio
         {
             _audioEngine.PauseDeck(deckName);
             UpdateStatusText();
-            OnPropertyChanged(nameof(IsPlaying));
+            RaisePlayingChanged();
         }
 
         private void CueDeck(string deckName)
@@ -721,6 +809,29 @@ namespace quasar_radio
             {
                 StatusText = $"ESTADO: DETENIDO [{AutoModeText}]";
             }
+        }
+
+        /// <summary>
+        /// Avisa de que el aire cambio de estado y re-evalua los mandos. Hace falta el segundo
+        /// aviso porque WPF solo vuelve a preguntar CanExecute cuando hay entrada del raton o el
+        /// teclado (RelayCommand.CanExecuteChanged esta enganchado a CommandManager.RequerySuggested);
+        /// el motor arranca y termina solo, sin que nadie toque la consola. Medido en vivo el
+        /// 2026-10-23: con la pista ya en el aire, el boton PARAR llevo mas de 8 segundos apagado
+        /// hasta que algo movio la interfaz. Un mando de corte que se queda gris mientras suena
+        /// es justo el tipo de engano que esta fase viene a eliminar.
+        /// </summary>
+        private void RaisePlayingChanged()
+        {
+            OnPropertyChanged(nameof(IsPlaying));
+
+            var dispatcher = Application.Current?.Dispatcher;
+            if (dispatcher != null && !dispatcher.CheckAccess())
+            {
+                dispatcher.BeginInvoke(() => CommandManager.InvalidateRequerySuggested());
+                return;
+            }
+
+            CommandManager.InvalidateRequerySuggested();
         }
     }
 }

@@ -21,9 +21,25 @@ namespace quasar_radio
             public TrackItem? CurrentTrack { get; set; }
             public BroadcastSampleProvider? SpectrumProvider { get; set; }
             public LevelMeterSampleProvider? LevelMeter { get; set; }
+
+            /// <summary>
+            /// Medidor despues del volumen: lo que este deck entrega de verdad a la tarjeta.
+            /// El VU del deck pinta el nivel previo al fader (para que el operador vea la pista
+            /// aunque tenga su canal bajado); este va al <see cref="MasterBus"/>.
+            /// </summary>
+            public MasterLevelTap? PostFaderTap { get; set; }
             public float TargetVolume { get; set; } = 1.0f;
             public float CurrentVolume { get; set; } = 1.0f;
             public bool IsFading { get; set; }
+
+            /// <summary>
+            /// UI-7 paso B: el boton REPETIR de cada deck. Con esto el deck que esta en el aire
+            /// vuelve a su CUE al terminar la pista en lugar de cruzar a la siguiente o cerrar el
+            /// aire. Es por deck, no por pista, porque lo que repite un operador en cabina es el
+            /// canal que tiene sonando (un tema que enlaza con una locucion, una base musical), no
+            /// un titulo del disco.
+            /// </summary>
+            public bool Repeat { get; set; }
 
             public Deck(string name)
             {
@@ -60,6 +76,7 @@ namespace quasar_radio
                 VolumeProvider = null;
                 SpectrumProvider = null;
                 LevelMeter = null;
+                PostFaderTap = null;
                 CurrentTrack = null;
             }
         }
@@ -71,6 +88,14 @@ namespace quasar_radio
         private readonly DispatcherTimer _playbackTimer;
         private readonly DispatcherTimer _fadeTimer;
         public AudioDspProcessor DspProcessor { get; } = new AudioDspProcessor();
+
+        /// <summary>
+        /// El bus donde los decks, la botonera y el micro dejan su nivel post-fader. Es singleton
+        /// en DI: la consola lo lee una vez cada 100 ms para pintar el VU de salida y para el
+        /// detector de silencio. Sin inyeccion (pruebas, o el motor suelto) sigue funcionando con
+        /// uno propio que nadie consulta.
+        /// </summary>
+        public MasterBus Bus { get; }
 
         private bool _isDucked;
         public bool IsDucked
@@ -134,6 +159,64 @@ namespace quasar_radio
         public float DeckB_VuLevel { get; private set; }
         public float[] DeckB_Spectrum => _deckB.SpectrumProvider?.Spectrum ?? Array.Empty<float>();
 
+        /// <summary>
+        /// REPETIR por deck (UI-7 paso B). Es estado del canal, no de la pista: el operador repite
+        /// lo que tiene sonando ahora, no un titulo del disco.
+        /// </summary>
+        public bool DeckA_Repeat
+        {
+            get => _deckA.Repeat;
+            set
+            {
+                if (_deckA.Repeat == value) return;
+                _deckA.Repeat = value;
+                _logger.Information("Deck A {State}", value ? "en REPETIR" : "sale de REPETIR");
+            }
+        }
+
+        public bool DeckB_Repeat
+        {
+            get => _deckB.Repeat;
+            set
+            {
+                if (_deckB.Repeat == value) return;
+                _deckB.Repeat = value;
+                _logger.Information("Deck B {State}", value ? "en REPETIR" : "sale de REPETIR");
+            }
+        }
+
+        /// <summary>Vuelve el estado que queda despues de pulsar el boton (para el enlace).</summary>
+        public bool ToggleDeckRepeat(string? deckName)
+        {
+            if (string.Equals(deckName, "B", StringComparison.OrdinalIgnoreCase))
+            {
+                DeckB_Repeat = !DeckB_Repeat;
+                return DeckB_Repeat;
+            }
+
+            DeckA_Repeat = !DeckA_Repeat;
+            return DeckA_Repeat;
+        }
+
+        /// <summary>
+        /// Vuelve a atras la pista que esta en el aire y dice si de verdad la encontro. Con
+        /// REPETIR activo el tick llama aqui al llegar al final, en lugar de cruzar o cerrar.
+        /// </summary>
+        public bool RestartActiveDeck()
+        {
+            var deck = _activeDeck;
+            var file = deck.AudioFile;
+            var track = deck.CurrentTrack;
+            if (file == null || track == null) return false;
+
+            var cue = track.CueIn > TimeSpan.Zero && track.CueIn < file.TotalTime ? track.CueIn : TimeSpan.Zero;
+            file.CurrentTime = cue;
+            _crossfadeTriggered = false;
+            PositionChanged?.Invoke(this, cue);
+            _logger.Information("REPETIR {DeckName}: {Title} vuelve a {Cue}", deck.Name, track.Title, cue);
+            return true;
+        }
+
         public TrackItem? CurrentTrack => _activeDeck?.CurrentTrack;
         public string ActiveDeckName => _activeDeck?.Name ?? "DECK A";
 
@@ -143,10 +226,10 @@ namespace quasar_radio
         public event EventHandler<TrackItem?>? TrackChanged;
         public event EventHandler<TimeSpan>? PositionChanged;
         public event EventHandler? PlaybackFinished;
-        public event EventHandler<(float Left, float Right)>? MeterLevelsChanged;
 
-        public AudioEngine()
+        public AudioEngine(MasterBus? bus = null)
         {
+            Bus = bus ?? new MasterBus();
             _activeDeck = _deckA;
 
             _playbackTimer = new DispatcherTimer
@@ -302,7 +385,16 @@ namespace quasar_radio
                 deck.VolumeProvider = new VolumeSampleProvider(levelMeter);
                 deck.SetVolume(startVolumeRatio * MasterVolume);
 
-                waveOut.Init(deck.VolumeProvider.ToWaveProvider());
+                // UI-7: la toma va DESPUES del volumen, no antes. Es lo que permite que el VU de
+                // salida baje con el master y que el detector mida el aire real.
+                var postTap = new MasterLevelTap(deck.VolumeProvider)
+                {
+                    SourceId = deck.Name,
+                    Bus = Bus
+                };
+                deck.PostFaderTap = postTap;
+
+                waveOut.Init(postTap.ToWaveProvider());
 
                 if (track.CueIn > TimeSpan.Zero && track.CueIn < audioReader.TotalTime)
                 {
@@ -348,7 +440,16 @@ namespace quasar_radio
                 idleDeck.VolumeProvider = new VolumeSampleProvider(processedSamples);
                 idleDeck.SetVolume(0.0f);
 
-                waveOut.Init(idleDeck.VolumeProvider.ToWaveProvider());
+                // El deck en espera esta callado (volumen 0) hasta el cruce: su toma existe desde
+                // el primer bloque para que en cuanto suba en el crossfade el VU master ya le vea.
+                var preloadTap = new MasterLevelTap(idleDeck.VolumeProvider)
+                {
+                    SourceId = idleDeck.Name,
+                    Bus = Bus
+                };
+                idleDeck.PostFaderTap = preloadTap;
+
+                waveOut.Init(preloadTap.ToWaveProvider());
                 if (track.CueIn > TimeSpan.Zero && track.CueIn < audioReader.TotalTime)
                 {
                     audioReader.CurrentTime = track.CueIn;
@@ -405,7 +506,6 @@ namespace quasar_radio
             {
                 DeckA_VuLevel = 0f;
                 DeckB_VuLevel = 0f;
-                MeterLevelsChanged?.Invoke(this, (0f, 0f));
                 return;
             }
 
@@ -413,6 +513,10 @@ namespace quasar_radio
             TimeSpan total = _activeDeck.AudioFile.TotalTime;
             PositionChanged?.Invoke(this, pos);
 
+            // UI-7: el nivel de salida ya no sale de aqui. Estos dos valores siguen siendo el
+            // nivel PREVIO al fader de cada deck (lo que pinta su medidor de canal, que tiene que
+            // moverse aunque el master este abajo); lo que sale por la tarjeta lo mide el
+            // MasterLevelTap de cada cadena en el hilo de audio.
             var deckALevel = _deckA.SpectrumProvider?.CurrentLevel ?? 0f;
             var deckBLevel = _deckB.SpectrumProvider?.CurrentLevel ?? 0f;
 
@@ -421,7 +525,6 @@ namespace quasar_radio
 
             DeckA_VuLevel = deckAVisual;
             DeckB_VuLevel = deckBVisual;
-            MeterLevelsChanged?.Invoke(this, (deckALevel, deckBLevel));
 
             TimeSpan remaining = total - pos;
 
@@ -430,7 +533,18 @@ namespace quasar_radio
             bool reachedCueOut = current != null && current.CueOut > TimeSpan.Zero && pos >= current.CueOut;
             bool remainingUnderCrossfade = remaining.TotalSeconds <= CrossfadeSeconds && remaining.TotalSeconds > 0;
 
-            if ((reachedCueOut || remainingUnderCrossfade) && !_crossfadeTriggered)
+            // UI-7 paso B: con REPETIR en el deck en el aire no se cruza a la siguiente, se vuelve
+            // al principio de la pista. El cruce se salta tambien el CueOut: un tema que se repite
+            // se oye entero.
+            var repeatActive = _activeDeck.Repeat;
+
+            if (repeatActive && (reachedCueOut || remaining.TotalSeconds <= 0.25))
+            {
+                RestartActiveDeck();
+                return;
+            }
+
+            if ((reachedCueOut || remainingUnderCrossfade) && !_crossfadeTriggered && !repeatActive)
             {
                 if (IsAutoMode)
                 {
@@ -441,6 +555,11 @@ namespace quasar_radio
             // Fin absoluto de la pista
             if (pos >= total || remaining.TotalMilliseconds <= 100)
             {
+                if (repeatActive && RestartActiveDeck())
+                {
+                    return;
+                }
+
                 // UI-4 paso B: aqui estaba el agujero. En AUTO se llamaba a TriggerCrossfadeToNext
                 // y, si la cola no tenía siguiente, el metodo volvia sin hacer nada: _crossfadeTriggered
                 // seguia en false, la rama del else nunca se ejecutaba y el motor se quedaba con
@@ -529,6 +648,18 @@ namespace quasar_radio
             _deckB.StopAndDispose();
             IsPlaying = false;
             _crossfadeTriggered = false;
+
+            // UI-7: el temporizador de medicion se para arriba, asi que nadie vuelve a cero los
+            // niveles previos al fader. Sin esto el medidor del deck se queda CLAVADO en el ultimo
+            // valor de la emision (medido en vivo el 2026-10-23: PARAR y el VU del deck seguia a
+            // 76), que es justo la clase de engaño por la que se pidio esta fase.
+            DeckA_VuLevel = 0f;
+            DeckB_VuLevel = 0f;
+
+            // Para no esperar los 250 ms de la ventana del bus: al PARAR, el VU de salida tiene
+            // que quedarse en cero en el mismo instante.
+            Bus.Forget(_deckA.Name);
+            Bus.Forget(_deckB.Name);
         }
 
         public void Dispose()

@@ -240,6 +240,17 @@ try {
   L ("ARRANQUE_arbol_uia_completo=" + $listo + " en_ms=" + [int]$espera.ElapsedMilliseconds +
      " botones=" + $n + " (tras los 10 s de cortesía)")
 
+  # Que ventana es la que se esta midiendo. $main es la ULTIMA cuyo titulo trae "Quasar": si el
+  # programa tiene abierta otra ventana con ese texto (un modulo, un aviso), la eleccion cambia
+  # de una corrida a otra y D1/E1/E3 se leen sobre un arbol que no es la consola. Se vuelcan
+  # todas las candidatas con su conteo de botones para que el informe lo diga sin adivinar.
+  foreach ($w in (Wins $proc.Id)) {
+    if ($w.Current.Name -like '*Quasar*') {
+      $nb = @($w.FindAll([System.Windows.Automation.TreeScope]::Descendants, $btnCond)).Count
+      L ('   VENTANA hwnd=' + [int]$w.Current.NativeWindowHandle + ' botones=' + $nb + ' titulo=' + $w.Current.Name)
+    }
+  }
+
   if ($Maximize) {
     # UIA no expone SetState a traves de PowerShell; se usa el ShowWindow de Win32.
     if (-not ('U32' -as [type])) {
@@ -255,13 +266,25 @@ public static class U32 {
     Start-Sleep -Seconds 3
     $t2 = ([QsrWin]::Top($proc.Id) | Where-Object { $_.Visible -and $_.Title -like '*Quasar*' } | Select-Object -First 1)
     L ("MAXIMIZADA rect=" + $t2.Rect)
-    CapWindow $t2 ("$($Tag)_consola_max")
+    # La captura tambien se aplaza: PrintWindow mata el arbol de UIA de la ventana (ver nota
+    # junto a $cropMaster) y aqui despues todavia se miden D1, E1 y E3.
+    $capMaxWin = $t2
   }
 
   # Tras maximizar, la geometria leida antes ya no vale: se vuelve a tomar ventana y rect.
   $t = ([QsrWin]::Top($proc.Id) | Where-Object { $_.Visible -and $_.Title -like '*Quasar*' } | Select-Object -First 1)
   $mr = RectOf $main
-  CapWindow $t ("$($Tag)_consola")
+
+  # Las capturas van TODAS al final, despues de medir. Motivo, medido con una sonda aparte el
+  # 2026-10-23: el PrintWindow de la consola deja el arbol de UIA de esa ventana sin contenido
+  # para el resto de la corrida (los 62 botones pasan a 9, y esos 9 son Minimizar/Maximizar/
+  # Cerrar de las tres ventanas del proceso; ya no aparece nada ni por AutomationId, ni re-
+  # resolviendo el HWND, y no se recupera ni esperando ocho segundos). La ventana sigue pintada
+  # -la misma captura lo demuestra- y el programa responde, pero desde ese momento UIA no ve su
+  # contenido, asi que cualquier D1/E1/E3 que se mida despues sale "NO APARECE EN EL ARBOL".
+  # Antes de la primera captura se guarda el rectangulo de cada recorte y al final se pintan.
+  $cropMaster = $null
+  $cropSfx = $null
 
   # ---------- D1: el VU master y el volumen master deben estar pintados dentro de la ventana
   foreach ($pat in @('NIVEL DE SALIDA', 'VOLUMEN MASTER', 'DETECTOR SILENCIO')) {
@@ -288,7 +311,7 @@ public static class U32 {
     L ("  LED class=" + $c.Current.ClassName + " rect=" + $r.X + "," + $r.Y + " " + $r.W + "x" + $r.H + " visible=" + $c.Current.IsOffscreen)
   }
 
-  # recorte del panel master para la evidencia visual
+  # recorte del panel master para la evidencia visual (se pinta al final, ver nota de arriba)
   $lbl = Find-Text2 $main 'NIVEL DE SALIDA' 2
   if ($null -ne $lbl) {
     $r = RectOf $lbl
@@ -296,7 +319,7 @@ public static class U32 {
     $y = [Math]::Max($mr.Y, $r.Y - 74)
     $w = [Math]::Min($mr.W, $r.X + 420) - $x
     $h = [Math]::Min($mr.H, $r.Y + 150) - $y
-    CapWindowCrop $t $x $y $w $h ("$($Tag)_master")
+    $cropMaster = @($x, $y, $w, $h)
   }
 
   # ---------- E1/E2 (UI-3b paso 3): franja SFX siempre visible y cero pestanas
@@ -318,10 +341,10 @@ public static class U32 {
       $pr = RectOf $p
       L ("  pad rect=" + $pr.X + "," + $pr.Y + " " + $pr.W + "x" + $pr.H)
     }
-    # recorte de la franja para la evidencia visual
+    # recorte de la franja para la evidencia visual (se pinta al final)
     $x = [Math]::Max($mr.X, $r.X - 14)
     $y = [Math]::Max($mr.Y, $r.Y - 10)
-    CapWindowCrop $t $x $y ([Math]::Min($mr.W - 20, $mr.X + $mr.W - $x - 20)) ([Math]::Min($mr.H, $r.Y + 140) - $y) ("$($Tag)_franja_sfx")
+    $cropSfx = @($x, $y, ([Math]::Min($mr.W - 20, $mr.X + $mr.W - $x - 20)), ([Math]::Min($mr.H, $r.Y + 140) - $y))
   }
   $tic = New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ControlTypeProperty, [System.Windows.Automation.ControlType]::TabItem)
   L ("E2_pestanas_de_suite=" + (@($main.FindAll([System.Windows.Automation.TreeScope]::Descendants, $tic)).Count))
@@ -381,6 +404,12 @@ public static class U32 {
     $r = RectOf $deck
     L ("DECK_fila_hasta_volumen=" + ($r.Y + $r.H - $mr.Y))
   }
+
+  # ---------- las capturas, al final de todo lo que se mide por UIA (ver la nota de $cropMaster)
+  CapWindow $t ("$($Tag)_consola")
+  if ($null -ne $cropMaster) { CapWindowCrop $t $cropMaster[0] $cropMaster[1] $cropMaster[2] $cropMaster[3] ("$($Tag)_master") }
+  if ($null -ne $cropSfx) { CapWindowCrop $t $cropSfx[0] $cropSfx[1] $cropSfx[2] $cropSfx[3] ("$($Tag)_franja_sfx") }
+  if ($null -ne $capMaxWin) { CapWindow $capMaxWin ("$($Tag)_consola_max") }
 }
 catch { L ('ERROR: ' + $_.Exception.Message) }
 finally {

@@ -120,7 +120,14 @@ function Get-Estado($win) {
   if ($null -eq $e) { return '(sin texto de estado)' }
   return $e.Current.Name
 }
-function Invoke-El($e) { [void]$e.GetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern).Invoke() }
+# Invoke sobre un boton apagado lanza el criptico "No se permite la operación en un elemento que
+# no se puede habilitar" de UIA, que no dice que boton era ni en que paso estabamos, y la corrida
+# se corta sin evidencia. Se comprueba aqui: si el mando llega apagado, el fallo tiene nombre.
+function Invoke-El($e) {
+  if ($null -eq $e) { throw 'Invoke-El: no hay elemento que invocar (ausente del arbol UIA)' }
+  if (-not $e.Current.IsEnabled) { throw ('Invoke-El: el boton [' + (Txt $e) + '] esta apagado y aun se pidio pulsarlo') }
+  [void]$e.GetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern).Invoke()
+}
 function Set-Value($e, $v) { [void]$e.GetCurrentPattern([System.Windows.Automation.ValuePattern]::Pattern).SetValue($v) }
 function Set-Range($e, $v) { [void]$e.GetCurrentPattern([System.Windows.Automation.RangeValuePattern]::Pattern).SetValue($v) }
 function Txt($e) { if ($null -eq $e) { return '(ausente)' } return $e.Current.Name }

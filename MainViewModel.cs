@@ -22,6 +22,13 @@ namespace quasar_radio
         private readonly RecordingService _recordingService;
         private readonly AuxPlayerEngine _auxPlayerEngine;
         private readonly DispatcherTimer _clockTimer;
+
+        /// <summary>
+        /// Pinta los medidores de salida y pasa el nivel al detector. 100 ms: el ojo humano aun
+        /// ve la barra moverse y el detector de silencio necesita dos segundos de muestras para
+        /// poder decir algo con criterio.
+        /// </summary>
+        private readonly DispatcherTimer _meterTimer;
         private readonly AudioDatabaseService _databaseService;
         private readonly IModuleNavigator _navigator;
         private readonly WeeklyScheduleService _weeklySchedule;
@@ -277,6 +284,29 @@ namespace quasar_radio
             }
         }
 
+        private string _masterLevelText = "SALIDA  L -- · R --";
+
+        /// <summary>
+        /// El mismo nivel de los dos medidores de salida, en numero. Sirve al operador para ver el
+        /// valor concreto y a la verificacion de interfaz para medir el VU desde fuera: un medidor
+        /// pintado no demuestra nada, y esta pantalla ya tuvo un VU de salida que no se movia por
+        /// culpa de un enlace roto que solo se ve en cifras.
+        /// </summary>
+        public string MasterLevelText
+        {
+            get => _masterLevelText;
+            private set
+            {
+                if (_masterLevelText == value) return;
+                _masterLevelText = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>Lineal 0..1 a dBFS con techo en la escala del medidor (-60 dB = barra vacia).</summary>
+        private static string LevelToDb(float level) =>
+            level <= 0.001f ? "--" : (20d * Math.Log10(Math.Max(level, 0.001d))).ToString("0.0") + " dB";
+
         // Detección de silencio
         private double _silenceDetectorLevel;
         public double SilenceDetectorLevel
@@ -307,24 +337,50 @@ namespace quasar_radio
 
         public string SilenceDetectionStatusText => IsSilenceDetectionEnabled ? "SILENCIO: ACTIVO" : "SILENCIO: INACTIVO";
 
-        private string _silenceStatus = "MONITOREANDO";
+        private string _silenceStatus = "SIN AIRE";
+
+        /// <summary>
+        /// El estado del detector, en las unicas cuatro frases que puede tener. Lo mueve la senal
+        /// (ver <see cref="OnMeterTimerTick"/>), no un temporizador: antes el aviso se apagaba solo
+        /// a los dos segundos aunque el aire siguiera mudo, y no habia forma de saber cuanto tiempo
+        /// llevaba sin sonar nada.
+        /// </summary>
         public string SilenceStatus
         {
             get => _silenceStatus;
             set
             {
+                if (_silenceStatus == value) return;
                 _silenceStatus = value;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(SilenceStatusColor));
+                OnPropertyChanged(nameof(SilenceAlertActive));
             }
         }
 
         public string SilenceStatusColor => SilenceStatus switch
         {
             "SILENCIO DETECTADO" => "#FF1744",
-            "MONITOREANDO" => "#00E676",
+            "VIGILANDO" => "#00E676",
             _ => "#888888"
         };
+
+        /// <summary>Hay un aviso de aire mudo en pie. Pinta el pie de la consola en rojo.</summary>
+        public bool SilenceAlertActive => SilenceStatus == "SILENCIO DETECTADO";
+
+        private string _silenceSecondsText = string.Empty;
+
+        /// <summary>Cuanto lleva el aire mudo, en el pie ("3,4 s"). Vacio si no hay aviso.</summary>
+        public string SilenceSecondsText
+        {
+            get => _silenceSecondsText;
+            set
+            {
+                if (_silenceSecondsText == value) return;
+                _silenceSecondsText = value;
+                OnPropertyChanged();
+            }
+        }
 
         // ---------------------------------------------------------------- modulos (UI-3b)
 
@@ -434,10 +490,10 @@ namespace quasar_radio
             _weeklySchedule.SlotDue += OnScheduleSlotDue;
 
             // Configurar eventos
-            _audioEngine.MeterLevelsChanged += OnEngineMeterLevelsChanged;
             _commercialScheduler.BlockTriggered += OnCommercialBlockTriggered;
             _micEngine.MicStateChanged += (s, active) => IsMicActive = active;
             _silenceDetector.SilenceDetected += OnSilenceDetected;
+            _silenceDetector.SilenceCleared += OnSilenceCleared;
 
             // Sub-ViewModels: singleton en DI, para que las ventanas de modulo
             // (UI-2) compartan el mismo estado que la consola.
@@ -446,6 +502,18 @@ namespace quasar_radio
             StreamingViewModel = streamingViewModel;
             CartWallViewModel = cartWallViewModel;
             LibraryViewModel = libraryViewModel;
+
+            // UI-7: la consola se enlaza a los REENVIOS de MainViewModel (StatusText,
+            // VolumePercentageText, AutoModeText, CartwallVolumePercentageText, CurrentNowPlayingText),
+            // pero quien cambia es el sub-ViewModel, y ese aviso moria aqui: el pie de la consola se
+            // quedaba con la frase que habia al abrirla. Medido en vivo el 2026-10-23: el deck
+            // llevaba 20 s en el aire y el pie seguia diciendo "Cargadas 1 canciones desde carpeta.",
+            // con lo que ni el aviso de silencio, ni la confirmacion de la pre-escucha ni el "AL AIRE"
+            // llegaban nunca al operador. Los reenvios se llaman igual que los originales, asi que el
+            // puente reavisa por el mismo nombre.
+            AudioPlayerViewModel.PropertyChanged += ForwardSubViewModelProperty;
+            CartWallViewModel.PropertyChanged += ForwardSubViewModelProperty;
+            StreamingViewModel.PropertyChanged += ForwardSubViewModelProperty;
 
             // La franja de modulos de la consola marca la ventana que esta abierta; el
             // navigator ya es singleton, asi que el estado es el mismo que ve la consola.
@@ -456,6 +524,13 @@ namespace quasar_radio
             _clockTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(200) };
             _clockTimer.Tick += OnClockTimerTick;
             _clockTimer.Start();
+
+            // UI-7: el timer de medicion va aparte del reloj porque el reloj no puede ocuparse
+            // del aire (cuenta atras de tandas, pausa de grabacion) y porque este tiene que correr
+            // aunque no haya ninguna pista cargada: es lo unico que dice si hay senal saliendo.
+            _meterTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(100) };
+            _meterTimer.Tick += OnMeterTimerTick;
+            _meterTimer.Start();
 
             // Configurar comandos
             ConfigureCommands();
@@ -478,6 +553,26 @@ namespace quasar_radio
                 Application.Current?.Dispatcher.BeginInvoke(RefreshAuthorizationState);
 
             _logger.Information("MainViewModel inicializado con DI");
+        }
+
+        /// <summary>
+        /// Reavisa desde la consola cuando cambia una propiedad de un sub-ViewModel al que la
+        /// consola va enlazada por reenvio. Es la unica forma de que el pie de la ventana refleje
+        /// lo que dice el motor: ver el comentario del puente en el constructor.
+        /// </summary>
+        private void ForwardSubViewModelProperty(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            var name = e.PropertyName;
+            if (string.IsNullOrEmpty(name)) return;
+
+            var dispatcher = Application.Current?.Dispatcher;
+            if (dispatcher != null && !dispatcher.CheckAccess())
+            {
+                dispatcher.BeginInvoke(() => OnPropertyChanged(name));
+                return;
+            }
+
+            OnPropertyChanged(name);
         }
 
         private void ConfigureCommands()
@@ -559,15 +654,62 @@ namespace quasar_radio
             }
         }
 
-        private void OnEngineMeterLevelsChanged(object? sender, (float Left, float Right) levels)
+        /// <summary>
+        /// El unico punto que pinta los medidores de salida. Lee el <see cref="MasterBus"/> —los
+        /// dos decks, la botonera y el micro, siempre despues de su volumen— y no el nivel previo
+        /// al fader del deck activo, que era como estaba antes de UI-7: con el master abajo el VU
+        /// seguia pintando tope y con un efecto de la botonera en el aire no se movia.
+        ///
+        /// Va en su propio temporizador de 100 ms y no en el del reloj (200 ms) porque el reloj
+        /// comparte tarea con la cuenta atras de tandas. Tampoco esta en el timer del motor: ese
+        /// se para cuando no hay ninguna pista cargada, y justo entonces hace falta ver el nivel
+        /// de un pad o del micro y que el detector sepa que no hay aire.
+        /// </summary>
+        private void OnMeterTimerTick(object? sender, EventArgs e)
         {
-            Application.Current.Dispatcher.Invoke(() =>
+            var live = _audioEngine.Bus.Sample(out var left, out var right);
+            var leftPercent = Math.Clamp(left * 100.0, 0.0, 100.0);
+            var rightPercent = Math.Clamp(right * 100.0, 0.0, 100.0);
+
+            VuLeftLevel = leftPercent;
+            VuRightLevel = rightPercent;
+            MasterLevelText = "SALIDA  L " + LevelToDb(left) + " · R " + LevelToDb(right);
+
+            // El detector solo vigila habiendo algo en marcha. Con la consola parada el nivel que
+            // sale por la tarjeta es cero por definicion, y eso no es aire pinchado: es la emisora
+            // sin emitir. Antes de UI-7 no se diferenciaba y el aviso saltaba con el programa
+            // vacio.
+            if (!IsSilenceDetectionEnabled)
             {
-                VuLeftLevel = Math.Clamp(levels.Left * 100.0, 0.0, 100.0);
-                VuRightLevel = Math.Clamp(levels.Right * 100.0, 0.0, 100.0);
-                _silenceDetector.ProcessLevel(levels.Left, levels.Right);
-                SilenceDetectorLevel = _silenceDetector.CurrentLevel;
-            });
+                SilenceDetectorLevel = 0;
+                SilenceSecondsText = string.Empty;
+                _silenceDetector.Reset();
+                SilenceStatus = "DETECTOR APAGADO";
+                return;
+            }
+
+            if (!live && !IsAirActive())
+            {
+                SilenceDetectorLevel = 0;
+                SilenceSecondsText = string.Empty;
+                _silenceDetector.Reset();
+                SilenceStatus = "SIN AIRE";
+                return;
+            }
+
+            SilenceDetectorLevel = Math.Max(left, right);
+            _silenceDetector.ProcessLevel(left, right);
+
+            if (_silenceDetector.AlertActive)
+            {
+                SilenceStatus = "SILENCIO DETECTADO";
+                SilenceSecondsText = _silenceDetector.CurrentSilenceDuration.TotalSeconds.ToString("0.0") + " s";
+            }
+            else
+            {
+                SilenceStatus = "VIGILANDO";
+                SilenceSecondsText = string.Empty;
+            }
         }
 
         private void OnSilenceDetected(object? sender, EventArgs e)
@@ -575,10 +717,12 @@ namespace quasar_radio
             Application.Current.Dispatcher.Invoke(() =>
             {
                 SilenceStatus = "SILENCIO DETECTADO";
-                AudioPlayerViewModel.StatusText = "Silencio prolongado detectado - Auto-advance activado";
+                _logger.Warning("Silencio prolongado en la salida: {Seconds} s sin nivel por la tarjeta",
+                    _silenceDetector.CurrentSilenceDuration.TotalSeconds.ToString("0.0"));
 
                 if (AudioPlayerViewModel.IsAutoMode && AudioPlayerViewModel.IsPlaying && AudioPlayerViewModel.NextTrack != null)
                 {
+                    AudioPlayerViewModel.StatusText = "Silencio prolongado detectado - Auto-advance activado";
                     _audioEngine.TriggerCrossfadeToNext();
                 }
                 else if (!AudioPlayerViewModel.IsAutoMode && AudioPlayerViewModel.NextTrack != null)
@@ -586,13 +730,20 @@ namespace quasar_radio
                     AudioPlayerViewModel.StatusText = "Silencio detectado (Modo Manual - No auto-advance)";
                 }
 
-                var timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(2) };
-                timer.Tick += (s, args) =>
-                {
-                    SilenceStatus = "MONITOREANDO";
-                    timer.Stop();
-                };
-                timer.Start();
+                // El aviso se queda en pie. Lo apaga el nivel cuando vuelve
+                // (<see cref="OnSilenceCleared"/>), no un temporizador: un aviso de aire mudo que
+                // se apaga solo a los dos segundos mientras sigue sonando nada es peor que no
+                // tener aviso.
+            });
+        }
+
+        private void OnSilenceCleared(object? sender, EventArgs e)
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                SilenceSecondsText = string.Empty;
+                SilenceStatus = "VIGILANDO";
+                _logger.Information("Aire recuperado tras el silencio detectado");
             });
         }
 

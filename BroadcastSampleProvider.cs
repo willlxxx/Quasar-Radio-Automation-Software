@@ -280,3 +280,84 @@ public sealed class BroadcastSampleProvider : ISampleProvider
     private static float TimeCoefficient(float milliseconds, int sampleRate) =>
         1f - MathF.Exp(-1f / (milliseconds * 0.001f * sampleRate));
 }
+
+/// <summary>
+/// Toma de nivel <b>post-fader</b>: va siempre despues del <c>VolumeSampleProvider</c> de una
+/// cadena, asi que lo que mide es el audio que de verdad llega a la tarjeta, con el volumen del
+/// canal, el master y el ducking ya aplicados. Es la diferencia entre un VU que pinta lo que el
+/// operador escucha y uno que pinta aunque tenga el master abajo.
+///
+/// No transforma la señal: pasa los muestras tal cual. El coste por muestra es un <c>Math.Abs</c>
+/// y un maximo por canal, y solo se lee una vez por bloque.
+/// </summary>
+public sealed class MasterLevelTap : ISampleProvider
+{
+    private readonly ISampleProvider _source;
+    private readonly int _channels;
+    private readonly float[] _blockPeak;
+    private float _left;
+    private float _right;
+
+    public MasterLevelTap(ISampleProvider source)
+    {
+        _source = source;
+        WaveFormat = source.WaveFormat;
+        _channels = Math.Max(1, source.WaveFormat.Channels);
+        _blockPeak = new float[_channels];
+    }
+
+    public WaveFormat WaveFormat { get; }
+
+    /// <summary>Identificador con el que esta cadena se registra en el <see cref="MasterBus"/>.</summary>
+    public string? SourceId { get; set; }
+
+    public MasterBus? Bus { get; set; }
+
+    /// <summary>Nivel del canal izquierdo en lineal 0..1 (en mono es el propio canal).</summary>
+    public float LeftLevel => _left;
+
+    /// <summary>Nivel del canal derecho en lineal 0..1 (en mono repite el izquierdo).</summary>
+    public float RightLevel => _right;
+
+    public int Read(Span<float> buffer)
+    {
+        var samplesRead = _source.Read(buffer);
+        if (samplesRead == 0)
+        {
+            _left = 0f;
+            _right = 0f;
+            Bus?.Forget(SourceId ?? string.Empty);
+            return 0;
+        }
+
+        Array.Clear(_blockPeak, 0, _blockPeak.Length);
+        var frames = samplesRead / _channels;
+        for (var frame = 0; frame < frames; frame++)
+        {
+            var offset = frame * _channels;
+            for (var channel = 0; channel < _channels && offset + channel < samplesRead; channel++)
+            {
+                var absolute = MathF.Abs(buffer[offset + channel]);
+                if (absolute > _blockPeak[channel])
+                {
+                    _blockPeak[channel] = absolute;
+                }
+            }
+        }
+
+        var leftPeak = _blockPeak[0];
+        var rightPeak = _channels > 1 ? _blockPeak[1] : leftPeak;
+
+        // Ataque rapido para que el LED no se quede atras del transitorio, y caida suave para
+        // que la barra no parpadee entre bloque y bloque de WaveOut.
+        _left = leftPeak > _left ? _left + (leftPeak - _left) * 0.7f : _left * 0.72f;
+        _right = rightPeak > _right ? _right + (rightPeak - _right) * 0.7f : _right * 0.72f;
+
+        if (Bus != null && !string.IsNullOrEmpty(SourceId))
+        {
+            Bus.PushLevel(SourceId!, _left, _right);
+        }
+
+        return samplesRead;
+    }
+}

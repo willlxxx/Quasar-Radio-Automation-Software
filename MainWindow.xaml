@@ -244,233 +244,51 @@
                     </Border>
 
                     <Border Grid.Row="2" Background="{DynamicResource Brush.Surface.Inset}" CornerRadius="4" Padding="4,4" Margin="0,0,0,4" BorderBrush="{DynamicResource Brush.Border.Highlight}" BorderThickness="1.2">
-                        <local:LedVuMeterControl Value="{Binding DeckA_VuLevel, Mode=OneWay}" SegmentCount="18" Height="20" Width="220"/>
+                        <local:LedVuMeterControl x:Name="DeckAVu" AutomationProperties.Name="VU deck A" Value="{Binding DeckA_VuLevel, Mode=OneWay}" SegmentCount="18" Height="20" Width="220"/>
                     </Border>
 
                     <ProgressBar Grid.Row="3" Value="{Binding DeckA_Progress, Mode=OneWay}" Height="10" Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Accent.Success}" BorderThickness="0" Margin="0,4"/>
 
                     <StackPanel Grid.Row="4" Margin="0,2,0,0">
-                        <Border Background="{DynamicResource Brush.Surface.Deep}" CornerRadius="4" Padding="3,2" Margin="0,0,0,2">
-                            <Grid Height="24">
-                                <ItemsControl ItemsSource="{Binding DeckA_Spectrum}">
-                                    <ItemsControl.ItemsPanel>
-                                        <ItemsPanelTemplate>
-                                            <UniformGrid Columns="18"/>
-                                        </ItemsPanelTemplate>
-                                    </ItemsControl.ItemsPanel>
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate>
-                                            <Grid Height="24" Margin="1,0">
-                                                <Border Background="{DynamicResource Brush.DeckA.Legend}" CornerRadius="2"/>
-                                                <Border Height="{Binding}" Background="{DynamicResource Brush.Accent}" VerticalAlignment="Bottom" CornerRadius="2"/>
-                                            </Grid>
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
-                            <UniformGrid Columns="18" Height="26" Visibility="Collapsed">
-                                <Rectangle Fill="{DynamicResource Brush.Accent}" Width="4" RadiusX="2" RadiusY="2" Opacity="0.25" Margin="0,0,1,0">
-                                    <Rectangle.Style>
-                                        <Style TargetType="Rectangle">
-                                            <Setter Property="Height" Value="8"/>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding DeckA_IsActive}" Value="True">
-                                                    <DataTrigger.EnterActions>
-                                                        <BeginStoryboard>
-                                                            <Storyboard RepeatBehavior="Forever">
-                                                                <DoubleAnimation Storyboard.TargetProperty="Height" From="6" To="22" Duration="0:0:0.28" AutoReverse="True"/>
-                                                            </Storyboard>
-                                                        </BeginStoryboard>
-                                                    </DataTrigger.EnterActions>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Rectangle.Style>
-                                </Rectangle>
-                                <Rectangle Fill="{DynamicResource Brush.Accent}" Width="4" RadiusX="2" RadiusY="2" Opacity="0.35" Margin="0,0,1,0">
-                                    <Rectangle.Style>
-                                        <Style TargetType="Rectangle">
-                                            <Setter Property="Height" Value="10"/>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding DeckA_IsActive}" Value="True">
-                                                    <DataTrigger.EnterActions>
-                                                        <BeginStoryboard>
-                                                            <Storyboard RepeatBehavior="Forever">
-                                                                <DoubleAnimation Storyboard.TargetProperty="Height" From="8" To="18" Duration="0:0:0.32" AutoReverse="True"/>
-                                                            </Storyboard>
-                                                        </BeginStoryboard>
-                                                    </DataTrigger.EnterActions>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Rectangle.Style>
-                                </Rectangle>
-                                <Rectangle Fill="{DynamicResource Brush.Accent}" Width="4" RadiusX="2" RadiusY="2" Opacity="0.45" Margin="0,0,1,0">
-                                    <Rectangle.Style>
-                                        <Style TargetType="Rectangle">
-                                            <Setter Property="Height" Value="12"/>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding DeckA_IsActive}" Value="True">
-                                                    <DataTrigger.EnterActions>
-                                                        <BeginStoryboard>
-                                                            <Storyboard RepeatBehavior="Forever">
-                                                                <DoubleAnimation Storyboard.TargetProperty="Height" From="10" To="24" Duration="0:0:0.25" AutoReverse="True"/>
-                                                            </Storyboard>
-                                                        </BeginStoryboard>
-                                                    </DataTrigger.EnterActions>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Rectangle.Style>
-                                </Rectangle>
-                                <Rectangle Fill="{DynamicResource Brush.Accent}" Width="4" RadiusX="2" RadiusY="2" Opacity="0.6" Margin="0,0,1,0">
-                                    <Rectangle.Style>
-                                        <Style TargetType="Rectangle">
-                                            <Setter Property="Height" Value="14"/>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding DeckA_IsActive}" Value="True">
-                                                    <DataTrigger.EnterActions>
-                                                        <BeginStoryboard>
-                                                            <Storyboard RepeatBehavior="Forever">
-                                                                <DoubleAnimation Storyboard.TargetProperty="Height" From="12" To="26" Duration="0:0:0.23" AutoReverse="True"/>
-                                                            </Storyboard>
-                                                        </BeginStoryboard>
-                                                    </DataTrigger.EnterActions>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Rectangle.Style>
-                                </Rectangle>
-                                <Rectangle Fill="{DynamicResource Brush.Accent}" Width="4" RadiusX="2" RadiusY="2" Opacity="0.8" Margin="0,0,1,0">
-                                    <Rectangle.Style>
-                                        <Style TargetType="Rectangle">
-                                            <Setter Property="Height" Value="16"/>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding DeckA_IsActive}" Value="True">
-                                                    <DataTrigger.EnterActions>
-                                                        <BeginStoryboard>
-                                                            <Storyboard RepeatBehavior="Forever">
-                                                                <DoubleAnimation Storyboard.TargetProperty="Height" From="14" To="28" Duration="0:0:0.2" AutoReverse="True"/>
-                                                            </Storyboard>
-                                                        </BeginStoryboard>
-                                                    </DataTrigger.EnterActions>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Rectangle.Style>
-                                </Rectangle>
-                                <Rectangle Fill="{DynamicResource Brush.Accent}" Width="4" RadiusX="2" RadiusY="2" Opacity="1" Margin="0,0,1,0">
-                                    <Rectangle.Style>
-                                        <Style TargetType="Rectangle">
-                                            <Setter Property="Height" Value="18"/>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding DeckA_IsActive}" Value="True">
-                                                    <DataTrigger.EnterActions>
-                                                        <BeginStoryboard>
-                                                            <Storyboard RepeatBehavior="Forever">
-                                                                <DoubleAnimation Storyboard.TargetProperty="Height" From="16" To="30" Duration="0:0:0.18" AutoReverse="True"/>
-                                                            </Storyboard>
-                                                        </BeginStoryboard>
-                                                    </DataTrigger.EnterActions>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Rectangle.Style>
-                                </Rectangle>
-                                <Rectangle Fill="{DynamicResource Brush.Accent}" Width="4" RadiusX="2" RadiusY="2" Opacity="0.8" Margin="0,0,1,0">
-                                    <Rectangle.Style>
-                                        <Style TargetType="Rectangle">
-                                            <Setter Property="Height" Value="16"/>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding DeckA_IsActive}" Value="True">
-                                                    <DataTrigger.EnterActions>
-                                                        <BeginStoryboard>
-                                                            <Storyboard RepeatBehavior="Forever">
-                                                                <DoubleAnimation Storyboard.TargetProperty="Height" From="14" To="26" Duration="0:0:0.2" AutoReverse="True"/>
-                                                            </Storyboard>
-                                                        </BeginStoryboard>
-                                                    </DataTrigger.EnterActions>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Rectangle.Style>
-                                </Rectangle>
-                                <Rectangle Fill="{DynamicResource Brush.Accent}" Width="4" RadiusX="2" RadiusY="2" Opacity="0.6" Margin="0,0,1,0">
-                                    <Rectangle.Style>
-                                        <Style TargetType="Rectangle">
-                                            <Setter Property="Height" Value="14"/>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding DeckA_IsActive}" Value="True">
-                                                    <DataTrigger.EnterActions>
-                                                        <BeginStoryboard>
-                                                            <Storyboard RepeatBehavior="Forever">
-                                                                <DoubleAnimation Storyboard.TargetProperty="Height" From="12" To="24" Duration="0:0:0.23" AutoReverse="True"/>
-                                                            </Storyboard>
-                                                        </BeginStoryboard>
-                                                    </DataTrigger.EnterActions>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Rectangle.Style>
-                                </Rectangle>
-                                <Rectangle Fill="{DynamicResource Brush.Accent}" Width="4" RadiusX="2" RadiusY="2" Opacity="0.45" Margin="0,0,1,0">
-                                    <Rectangle.Style>
-                                        <Style TargetType="Rectangle">
-                                            <Setter Property="Height" Value="12"/>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding DeckA_IsActive}" Value="True">
-                                                    <DataTrigger.EnterActions>
-                                                        <BeginStoryboard>
-                                                            <Storyboard RepeatBehavior="Forever">
-                                                                <DoubleAnimation Storyboard.TargetProperty="Height" From="10" To="22" Duration="0:0:0.25" AutoReverse="True"/>
-                                                            </Storyboard>
-                                                        </BeginStoryboard>
-                                                    </DataTrigger.EnterActions>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Rectangle.Style>
-                                </Rectangle>
-                                <Rectangle Fill="{DynamicResource Brush.Accent}" Width="4" RadiusX="2" RadiusY="2" Opacity="0.35" Margin="0,0,1,0">
-                                    <Rectangle.Style>
-                                        <Style TargetType="Rectangle">
-                                            <Setter Property="Height" Value="10"/>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding DeckA_IsActive}" Value="True">
-                                                    <DataTrigger.EnterActions>
-                                                        <BeginStoryboard>
-                                                            <Storyboard RepeatBehavior="Forever">
-                                                                <DoubleAnimation Storyboard.TargetProperty="Height" From="8" To="18" Duration="0:0:0.32" AutoReverse="True"/>
-                                                            </Storyboard>
-                                                        </BeginStoryboard>
-                                                    </DataTrigger.EnterActions>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Rectangle.Style>
-                                </Rectangle>
-                                <Rectangle Fill="{DynamicResource Brush.Accent}" Width="4" RadiusX="2" RadiusY="2" Opacity="0.25" Margin="0,0,1,0">
-                                    <Rectangle.Style>
-                                        <Style TargetType="Rectangle">
-                                            <Setter Property="Height" Value="8"/>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding DeckA_IsActive}" Value="True">
-                                                    <DataTrigger.EnterActions>
-                                                        <BeginStoryboard>
-                                                            <Storyboard RepeatBehavior="Forever">
-                                                                <DoubleAnimation Storyboard.TargetProperty="Height" From="6" To="18" Duration="0:0:0.35" AutoReverse="True"/>
-                                                            </Storyboard>
-                                                        </BeginStoryboard>
-                                                    </DataTrigger.EnterActions>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Rectangle.Style>
-                                </Rectangle>
-                            </UniformGrid>
-                            </Grid>
-                        </Border>
-
-                        <ProgressBar Value="{Binding DeckA_VuLevel, Mode=OneWay}" Maximum="100" Height="7" Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Accent}" BorderThickness="0" Margin="0,0,0,6" Visibility="Collapsed"/>
+                        <!-- UI-7 paso B: esta franja era el espectro de 18 barras del deck y
+                             una hilera de rectangulos animados con storyboards dentro del propio
+                             XAML. El fundador la describio como "otra especie de vumetros sin
+                             funcion" y pidio cambiarla por botones. Aqui quedan los dos que no
+                             estaban en la consola: repetir la pista del deck y pre-escucharlo por
+                             el monitor. El espectro sigue existiendo donde se ajusta, en la
+                             ventana de DSP. -->
+                        <UniformGrid Columns="2" Height="26" Margin="0,0,0,2">
+                            <Button x:Name="DeckARepeatButton" Command="{Binding ToggleDeckRepeatCommand}" CommandParameter="A"
+                                    Margin="0,0,2,0" Padding="4,2" FontSize="10" FontWeight="Bold"
+                                    AutomationProperties.Name="Repetir la pista del deck A">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource StudioButtonStyle}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding DeckA_Repeat}" Value="True">
+                                                <Setter Property="Background" Value="{DynamicResource Brush.Accent}"/>
+                                                <Setter Property="Foreground" Value="{DynamicResource Brush.Text.OnAccent}"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                                <TextBlock Text="&#10227; REPETIR"/>
+                            </Button>
+                            <Button x:Name="DeckAPreListenButton" Command="{Binding PreListenDeckCommand}" CommandParameter="A"
+                                    Margin="2,0,0,0" Padding="4,2" FontSize="10" FontWeight="Bold"
+                                    AutomationProperties.Name="Pre-escucha por el monitor lo que el deck A tiene cargado, sin sacarlo al aire">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource StudioButtonStyle}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding DeckA_PreListening}" Value="True">
+                                                <Setter Property="Background" Value="{DynamicResource Brush.Accent.Info}"/>
+                                                <Setter Property="Foreground" Value="{DynamicResource Brush.Text.OnAccent}"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                                <TextBlock Text="&#127911; PRE-ESCUCHA"/>
+                            </Button>
+                        </UniformGrid>
 
                         <UniformGrid Columns="3" Height="28">
                             <Button Command="{Binding DeckAPlayCommand}" Style="{StaticResource PlayButtonStyle}" Margin="0,0,2,0">
@@ -554,233 +372,51 @@
                     </Border>
 
                     <Border Grid.Row="2" Background="{DynamicResource Brush.Surface.Inset}" CornerRadius="4" Padding="4,4" Margin="0,0,0,4" BorderBrush="{DynamicResource Brush.Border.Highlight}" BorderThickness="1.2">
-                        <local:LedVuMeterControl Value="{Binding DeckB_VuLevel, Mode=OneWay}" SegmentCount="18" Height="20" Width="220"/>
+                        <local:LedVuMeterControl x:Name="DeckBVu" AutomationProperties.Name="VU deck B" Value="{Binding DeckB_VuLevel, Mode=OneWay}" SegmentCount="18" Height="20" Width="220"/>
                     </Border>
 
                     <ProgressBar Grid.Row="3" Value="{Binding DeckB_Progress, Mode=OneWay}" Height="10" Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.DeckB.Progress}" BorderThickness="0" Margin="0,4"/>
 
                     <StackPanel Grid.Row="4" Margin="0,2,0,0">
-                        <Border Background="{DynamicResource Brush.Surface.Deep}" CornerRadius="4" Padding="3,2" Margin="0,0,0,2">
-                            <Grid Height="24">
-                                <ItemsControl ItemsSource="{Binding DeckB_Spectrum}">
-                                    <ItemsControl.ItemsPanel>
-                                        <ItemsPanelTemplate>
-                                            <UniformGrid Columns="18"/>
-                                        </ItemsPanelTemplate>
-                                    </ItemsControl.ItemsPanel>
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate>
-                                            <Grid Height="24" Margin="1,0">
-                                                <Border Background="{DynamicResource Brush.DeckB.Legend}" CornerRadius="2"/>
-                                                <Border Height="{Binding}" Background="{DynamicResource Brush.Accent.Purple}" VerticalAlignment="Bottom" CornerRadius="2"/>
-                                            </Grid>
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
-                            <UniformGrid Columns="18" Height="26" Visibility="Collapsed">
-                                <Rectangle Fill="{DynamicResource Brush.Accent.Purple}" Width="4" RadiusX="2" RadiusY="2" Opacity="0.25" Margin="0,0,1,0">
-                                    <Rectangle.Style>
-                                        <Style TargetType="Rectangle">
-                                            <Setter Property="Height" Value="8"/>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding DeckB_IsActive}" Value="True">
-                                                    <DataTrigger.EnterActions>
-                                                        <BeginStoryboard>
-                                                            <Storyboard RepeatBehavior="Forever">
-                                                                <DoubleAnimation Storyboard.TargetProperty="Height" From="6" To="22" Duration="0:0:0.28" AutoReverse="True"/>
-                                                            </Storyboard>
-                                                        </BeginStoryboard>
-                                                    </DataTrigger.EnterActions>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Rectangle.Style>
-                                </Rectangle>
-                                <Rectangle Fill="{DynamicResource Brush.Accent.Purple}" Width="4" RadiusX="2" RadiusY="2" Opacity="0.35" Margin="0,0,1,0">
-                                    <Rectangle.Style>
-                                        <Style TargetType="Rectangle">
-                                            <Setter Property="Height" Value="10"/>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding DeckB_IsActive}" Value="True">
-                                                    <DataTrigger.EnterActions>
-                                                        <BeginStoryboard>
-                                                            <Storyboard RepeatBehavior="Forever">
-                                                                <DoubleAnimation Storyboard.TargetProperty="Height" From="8" To="20" Duration="0:0:0.31" AutoReverse="True"/>
-                                                            </Storyboard>
-                                                        </BeginStoryboard>
-                                                    </DataTrigger.EnterActions>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Rectangle.Style>
-                                </Rectangle>
-                                <Rectangle Fill="{DynamicResource Brush.Accent.Purple}" Width="4" RadiusX="2" RadiusY="2" Opacity="0.45" Margin="0,0,1,0">
-                                    <Rectangle.Style>
-                                        <Style TargetType="Rectangle">
-                                            <Setter Property="Height" Value="12"/>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding DeckB_IsActive}" Value="True">
-                                                    <DataTrigger.EnterActions>
-                                                        <BeginStoryboard>
-                                                            <Storyboard RepeatBehavior="Forever">
-                                                                <DoubleAnimation Storyboard.TargetProperty="Height" From="10" To="24" Duration="0:0:0.24" AutoReverse="True"/>
-                                                            </Storyboard>
-                                                        </BeginStoryboard>
-                                                    </DataTrigger.EnterActions>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Rectangle.Style>
-                                </Rectangle>
-                                <Rectangle Fill="{DynamicResource Brush.Accent.Purple}" Width="4" RadiusX="2" RadiusY="2" Opacity="0.6" Margin="0,0,1,0">
-                                    <Rectangle.Style>
-                                        <Style TargetType="Rectangle">
-                                            <Setter Property="Height" Value="14"/>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding DeckB_IsActive}" Value="True">
-                                                    <DataTrigger.EnterActions>
-                                                        <BeginStoryboard>
-                                                            <Storyboard RepeatBehavior="Forever">
-                                                                <DoubleAnimation Storyboard.TargetProperty="Height" From="12" To="28" Duration="0:0:0.22" AutoReverse="True"/>
-                                                            </Storyboard>
-                                                        </BeginStoryboard>
-                                                    </DataTrigger.EnterActions>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Rectangle.Style>
-                                </Rectangle>
-                                <Rectangle Fill="{DynamicResource Brush.Accent.Purple}" Width="4" RadiusX="2" RadiusY="2" Opacity="0.8" Margin="0,0,1,0">
-                                    <Rectangle.Style>
-                                        <Style TargetType="Rectangle">
-                                            <Setter Property="Height" Value="16"/>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding DeckB_IsActive}" Value="True">
-                                                    <DataTrigger.EnterActions>
-                                                        <BeginStoryboard>
-                                                            <Storyboard RepeatBehavior="Forever">
-                                                                <DoubleAnimation Storyboard.TargetProperty="Height" From="14" To="30" Duration="0:0:0.19" AutoReverse="True"/>
-                                                            </Storyboard>
-                                                        </BeginStoryboard>
-                                                    </DataTrigger.EnterActions>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Rectangle.Style>
-                                </Rectangle>
-                                <Rectangle Fill="{DynamicResource Brush.Accent.Purple}" Width="4" RadiusX="2" RadiusY="2" Opacity="1" Margin="0,0,1,0">
-                                    <Rectangle.Style>
-                                        <Style TargetType="Rectangle">
-                                            <Setter Property="Height" Value="18"/>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding DeckB_IsActive}" Value="True">
-                                                    <DataTrigger.EnterActions>
-                                                        <BeginStoryboard>
-                                                            <Storyboard RepeatBehavior="Forever">
-                                                                <DoubleAnimation Storyboard.TargetProperty="Height" From="16" To="32" Duration="0:0:0.17" AutoReverse="True"/>
-                                                            </Storyboard>
-                                                        </BeginStoryboard>
-                                                    </DataTrigger.EnterActions>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Rectangle.Style>
-                                </Rectangle>
-                                <Rectangle Fill="{DynamicResource Brush.Accent.Purple}" Width="4" RadiusX="2" RadiusY="2" Opacity="0.8" Margin="0,0,1,0">
-                                    <Rectangle.Style>
-                                        <Style TargetType="Rectangle">
-                                            <Setter Property="Height" Value="16"/>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding DeckB_IsActive}" Value="True">
-                                                    <DataTrigger.EnterActions>
-                                                        <BeginStoryboard>
-                                                            <Storyboard RepeatBehavior="Forever">
-                                                                <DoubleAnimation Storyboard.TargetProperty="Height" From="14" To="28" Duration="0:0:0.19" AutoReverse="True"/>
-                                                            </Storyboard>
-                                                        </BeginStoryboard>
-                                                    </DataTrigger.EnterActions>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Rectangle.Style>
-                                </Rectangle>
-                                <Rectangle Fill="{DynamicResource Brush.Accent.Purple}" Width="4" RadiusX="2" RadiusY="2" Opacity="0.6" Margin="0,0,1,0">
-                                    <Rectangle.Style>
-                                        <Style TargetType="Rectangle">
-                                            <Setter Property="Height" Value="14"/>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding DeckB_IsActive}" Value="True">
-                                                    <DataTrigger.EnterActions>
-                                                        <BeginStoryboard>
-                                                            <Storyboard RepeatBehavior="Forever">
-                                                                <DoubleAnimation Storyboard.TargetProperty="Height" From="12" To="26" Duration="0:0:0.22" AutoReverse="True"/>
-                                                            </Storyboard>
-                                                        </BeginStoryboard>
-                                                    </DataTrigger.EnterActions>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Rectangle.Style>
-                                </Rectangle>
-                                <Rectangle Fill="{DynamicResource Brush.Accent.Purple}" Width="4" RadiusX="2" RadiusY="2" Opacity="0.45" Margin="0,0,1,0">
-                                    <Rectangle.Style>
-                                        <Style TargetType="Rectangle">
-                                            <Setter Property="Height" Value="12"/>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding DeckB_IsActive}" Value="True">
-                                                    <DataTrigger.EnterActions>
-                                                        <BeginStoryboard>
-                                                            <Storyboard RepeatBehavior="Forever">
-                                                                <DoubleAnimation Storyboard.TargetProperty="Height" From="10" To="24" Duration="0:0:0.24" AutoReverse="True"/>
-                                                            </Storyboard>
-                                                        </BeginStoryboard>
-                                                    </DataTrigger.EnterActions>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Rectangle.Style>
-                                </Rectangle>
-                                <Rectangle Fill="{DynamicResource Brush.Accent.Purple}" Width="4" RadiusX="2" RadiusY="2" Opacity="0.35" Margin="0,0,1,0">
-                                    <Rectangle.Style>
-                                        <Style TargetType="Rectangle">
-                                            <Setter Property="Height" Value="10"/>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding DeckB_IsActive}" Value="True">
-                                                    <DataTrigger.EnterActions>
-                                                        <BeginStoryboard>
-                                                            <Storyboard RepeatBehavior="Forever">
-                                                                <DoubleAnimation Storyboard.TargetProperty="Height" From="8" To="20" Duration="0:0:0.31" AutoReverse="True"/>
-                                                            </Storyboard>
-                                                        </BeginStoryboard>
-                                                    </DataTrigger.EnterActions>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Rectangle.Style>
-                                </Rectangle>
-                                <Rectangle Fill="{DynamicResource Brush.Accent.Purple}" Width="4" RadiusX="2" RadiusY="2" Opacity="0.25" Margin="0,0,1,0">
-                                    <Rectangle.Style>
-                                        <Style TargetType="Rectangle">
-                                            <Setter Property="Height" Value="8"/>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding DeckB_IsActive}" Value="True">
-                                                    <DataTrigger.EnterActions>
-                                                        <BeginStoryboard>
-                                                            <Storyboard RepeatBehavior="Forever">
-                                                                <DoubleAnimation Storyboard.TargetProperty="Height" From="6" To="18" Duration="0:0:0.35" AutoReverse="True"/>
-                                                            </Storyboard>
-                                                        </BeginStoryboard>
-                                                    </DataTrigger.EnterActions>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Rectangle.Style>
-                                </Rectangle>
-                            </UniformGrid>
-                            </Grid>
-                        </Border>
-
-                        <ProgressBar Value="{Binding DeckB_VuLevel, Mode=OneWay}" Maximum="100" Height="7" Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Accent.Purple}" BorderThickness="0" Margin="0,0,0,6" Visibility="Collapsed"/>
+                        <!-- UI-7 paso B: esta franja era el espectro de 18 barras del deck y
+                             una hilera de rectangulos animados con storyboards dentro del propio
+                             XAML. El fundador la describio como "otra especie de vumetros sin
+                             funcion" y pidio cambiarla por botones. Aqui quedan los dos que no
+                             estaban en la consola: repetir la pista del deck y pre-escucharlo por
+                             el monitor. El espectro sigue existiendo donde se ajusta, en la
+                             ventana de DSP. -->
+                        <UniformGrid Columns="2" Height="26" Margin="0,0,0,2">
+                            <Button x:Name="DeckBRepeatButton" Command="{Binding ToggleDeckRepeatCommand}" CommandParameter="B"
+                                    Margin="0,0,2,0" Padding="4,2" FontSize="10" FontWeight="Bold"
+                                    AutomationProperties.Name="Repetir la pista del deck B">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource StudioButtonStyle}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding DeckB_Repeat}" Value="True">
+                                                <Setter Property="Background" Value="{DynamicResource Brush.Accent.Purple}"/>
+                                                <Setter Property="Foreground" Value="{DynamicResource Brush.Text.OnAccent}"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                                <TextBlock Text="&#10227; REPETIR"/>
+                            </Button>
+                            <Button x:Name="DeckBPreListenButton" Command="{Binding PreListenDeckCommand}" CommandParameter="B"
+                                    Margin="2,0,0,0" Padding="4,2" FontSize="10" FontWeight="Bold"
+                                    AutomationProperties.Name="Pre-escucha por el monitor lo que el deck B tiene cargado, sin sacarlo al aire">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource StudioButtonStyle}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding DeckB_PreListening}" Value="True">
+                                                <Setter Property="Background" Value="{DynamicResource Brush.Accent.Info}"/>
+                                                <Setter Property="Foreground" Value="{DynamicResource Brush.Text.OnAccent}"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                                <TextBlock Text="&#127911; PRE-ESCUCHA"/>
+                            </Button>
+                        </UniformGrid>
 
                         <UniformGrid Columns="3" Height="28">
                             <Button Command="{Binding DeckBPlayCommand}" Style="{StaticResource PlayButtonStyle}" Margin="0,0,2,0">
@@ -797,8 +433,17 @@
                 </Grid>
             </Border>
 
-            <!-- PANEL DE CONTROL MASTER & VUMÉTROS -->
-            <Border Grid.Column="2" Background="{DynamicResource Brush.Surface.Card}" CornerRadius="8" Padding="12" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
+            <!-- PANEL DE CONTROL MASTER & VUMÉTROS
+
+                 UI-7: este panel vuelve a colgar del MainViewModel. Desde UI-4 vive dentro del
+                 Grid de los decks, cuyo DataContext es AudioPlayerViewModel, y ahi no resolvia
+                 NINGUNA de sus quince enlaces: VuLeftLevel/VuRightLevel (el VU de salida, que por
+                 eso "no hacia nada"), todo el bloque del detector de silencio, el boton MIC y el
+                 boton SILENCIO. WPF ignora en silencio un binding roto, asi que la pantalla
+                 parecia pintada pero no habia nada detras. Los mandos maestros (PLAY/PAUSA/PARAR/
+                 CROSSFADE) si existian en los dos ViewModels, por eso esos botones funcionaban. -->
+            <Border Grid.Column="2" Background="{DynamicResource Brush.Surface.Card}" CornerRadius="8" Padding="12" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1"
+                    DataContext="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -824,20 +469,35 @@
                     </UniformGrid>
 
                     <UniformGrid Grid.Row="1" Columns="3" Height="36" Margin="0,6,0,0">
-                        <Button Command="{Binding ToggleMicCommand}" Style="{StaticResource MicButtonStyle}" Margin="0,0,2,0">
+                        <Button x:Name="MicAirButton" Command="{Binding ToggleMicCommand}" Style="{StaticResource MicButtonStyle}" Margin="0,0,2,0"
+                                AutomationProperties.Name="Poner o quitar el micro en el aire">
                             <TextBlock Text="🎤 MIC AL AIRE" FontWeight="Bold" FontSize="11" Foreground="{DynamicResource Brush.Text.High}"/>
                         </Button>
                         <Button Command="{Binding NextCommand}" Style="{StaticResource NextButtonStyle}" Margin="2,0,2,0">
                             <TextBlock Text="⏭ CROSSFADE" FontWeight="Bold" FontSize="11"/>
                         </Button>
-                        <Button Command="{Binding ToggleSilenceDetectionCommand}" Style="{StaticResource StudioButtonStyle}" Margin="2,0,0,0" Background="{DynamicResource Brush.Button.Mute.Surface}" BorderBrush="{DynamicResource Brush.Button.Mute.Border}">
+                        <Button x:Name="SilenceToggleButton" Command="{Binding ToggleSilenceDetectionCommand}" Style="{StaticResource StudioButtonStyle}" Margin="2,0,0,0" Background="{DynamicResource Brush.Button.Mute.Surface}" BorderBrush="{DynamicResource Brush.Button.Mute.Border}"
+                                AutomationProperties.Name="Activar o apagar el detector de silencio">
                             <TextBlock Text="🔇 SILENCIO" FontWeight="Bold" FontSize="11"/>
                         </Button>
                     </UniformGrid>
 
                     <StackPanel Grid.Row="2" Margin="0,8,0,0">
                         <!-- VUMÉTROS ESTÉREO BROADCAST -->
-                        <TextBlock Text="NIVEL DE SALIDA MASTER (VU METER)" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,0,0,2"/>
+                        <DockPanel Margin="0,0,0,2">
+                            <TextBlock Text="NIVEL DE SALIDA MASTER (VU METER)" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.Secondary}" DockPanel.Dock="Left"/>
+                            <!-- UI-7: el nivel en cifras. Lo lee el operador y con el numero puede
+                                 comprobar la verificacion de interfaz: un medidor pintado no
+                                 demuestra nada, un numero si.
+                                 Va en HelpText y no en AutomationProperties.Name porque el Nombre de
+                                 un TextBlock es LO QUE SE LEE por accesibilidad y por UIA: si aqui se
+                                 pone una etiqueta fija, la pantalla del valor queda invisible desde
+                                 fuera (medido el 2026-10-23: la herramienta leia "Nivel de salida
+                                 master en cifras" en lugar del nivel). -->
+                            <TextBlock x:Name="MasterLevelReadout" AutomationProperties.HelpText="Nivel de salida master en cifras"
+                                       Text="{Binding MasterLevelText, Mode=OneWay}" FontSize="10" FontWeight="Bold"
+                                       Foreground="{DynamicResource Brush.Accent.Info}" DockPanel.Dock="Right" HorizontalAlignment="Right"/>
+                        </DockPanel>
                         <Grid Margin="0,2">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
@@ -848,21 +508,32 @@
 
                             <TextBlock Grid.Column="0" Text="L " FontSize="10" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.Secondary}" VerticalAlignment="Center"/>
                             <Border Grid.Column="1" Background="{DynamicResource Brush.Surface.Inset}" CornerRadius="4" Padding="4,4" Margin="0,0,8,0" BorderBrush="{DynamicResource Brush.Border.Highlight}" BorderThickness="1.2">
-                                <local:LedVuMeterControl Value="{Binding VuLeftLevel, Mode=OneWay}" SegmentCount="18" Height="20" Width="180"/>
+                                <local:LedVuMeterControl x:Name="MasterLeftVu" AutomationProperties.Name="VU master izquierdo" Value="{Binding VuLeftLevel, Mode=OneWay}" SegmentCount="18" Height="20" Width="180"/>
                             </Border>
 
                             <TextBlock Grid.Column="2" Text="R " FontSize="10" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.Secondary}" VerticalAlignment="Center"/>
                             <Border Grid.Column="3" Background="{DynamicResource Brush.Surface.Inset}" CornerRadius="4" Padding="4,4" BorderBrush="{DynamicResource Brush.Border.Highlight}" BorderThickness="1.2">
-                                <local:LedVuMeterControl Value="{Binding VuRightLevel, Mode=OneWay}" SegmentCount="18" Height="20" Width="180"/>
+                                <local:LedVuMeterControl x:Name="MasterRightVu" AutomationProperties.Name="VU master derecho" Value="{Binding VuRightLevel, Mode=OneWay}" SegmentCount="18" Height="20" Width="180"/>
                             </Border>
                         </Grid>
 
-                        <!-- INDICADOR DE DETECCIÓN DE SILENCIO -->
+                        <!-- INDICADOR DE DETECCIÓN DE SILENCIO
+
+                             UI-7: el texto enlazado es SilenceStatus (el estado real del aire:
+                             VIGILANDO / SILENCIO DETECTADO / SIN AIRE / DETECTOR APAGADO), no
+                             SilenceDetectionStatusText. El segundo solo dice si el detector esta
+                             encendido, y era lo unico que se podia leer: con el aire mudo segui
+                             mostrando "SILENCIO: ACTIVO". -->
                         <Border Background="{DynamicResource Brush.Surface.Deep}" CornerRadius="4" Padding="8,4" Margin="0,6,0,0" BorderBrush="{DynamicResource Brush.Border.Default}" BorderThickness="1">
                             <DockPanel>
                                 <TextBlock Text="🔇 DETECTOR SILENCIO" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.Secondary}" DockPanel.Dock="Left" Margin="0,0,8,0"/>
-                                <TextBlock Text="{Binding SilenceDetectionStatusText}" FontSize="10" FontWeight="Bold" Foreground="{Binding SilenceStatusColor}" DockPanel.Dock="Right"/>
-                                <ProgressBar Value="{Binding SilenceDetectorLevel, Mode=OneWay}" Maximum="1" Height="4" Background="{DynamicResource Brush.Surface.Track}" Foreground="{Binding SilenceLevelColor}" DockPanel.Dock="Right" Width="60" Margin="0,0,8,0"/>
+                                <TextBlock x:Name="SilenceStateText" AutomationProperties.HelpText="Estado del detector de silencio"
+                                           Text="{Binding SilenceStatus, Mode=OneWay}" FontSize="10" FontWeight="Bold"
+                                           Foreground="{Binding SilenceStatusColor}" DockPanel.Dock="Right"/>
+                                <ProgressBar x:Name="SilenceLevelBar" AutomationProperties.HelpText="Nivel de salida medido por el detector"
+                                             Value="{Binding SilenceDetectorLevel, Mode=OneWay}" Maximum="1" Height="4"
+                                             Background="{DynamicResource Brush.Surface.Track}" Foreground="{Binding SilenceLevelColor}"
+                                             DockPanel.Dock="Right" Width="60" Margin="0,0,8,0"/>
                             </DockPanel>
                         </Border>
 
@@ -1122,6 +793,8 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
                 <!-- x:Name (AutomationId) en el estado de la consola: la Biblioteca es ventana hija,
@@ -1131,11 +804,22 @@
                            TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="0,0,12,0"/>
                 <!-- El aviso de la ultima pauta que se cumplio. Va aparte del estado porque el
                      estado se lo come el propio arranque de emision que la pauta dispara. -->
-                <TextBlock x:Name="ConsolePautaText" Grid.Column="1" Text="{Binding LastPautaText}"
+                <!-- UI-7: el aviso de silencio, FIJO en el pie y con los segundos que lleva el
+                     aire mudo. Antes no estaba enlazado a ninguna pantalla: el detector escribia
+                     SilenceStatus y nadie lo leia, y ademas se apagaba solo a los dos segundos
+                     aunque siguiera sin sonar nada. -->
+                <TextBlock x:Name="SilenceAlertText" Grid.Column="1"
+                           Text="{Binding SilenceStatus, StringFormat={}🔇 {0}, Mode=OneWay}"
+                           Foreground="{Binding SilenceStatusColor}" FontSize="11" FontWeight="Bold"
+                           VerticalAlignment="Center" Margin="0,0,6,0"/>
+                <TextBlock x:Name="SilenceAlertSeconds" Grid.Column="2" Text="{Binding SilenceSecondsText, Mode=OneWay}"
+                           Foreground="{DynamicResource Brush.Accent.Danger}" FontSize="11" FontWeight="Bold"
+                           VerticalAlignment="Center" Margin="0,0,10,0"/>
+                <TextBlock x:Name="ConsolePautaText" Grid.Column="3" Text="{Binding LastPautaText}"
                            Visibility="{Binding HasPauta, Converter={StaticResource BoolToVis}}"
                            Foreground="{DynamicResource Brush.Accent.Orange}" FontSize="11" FontWeight="SemiBold"
                            VerticalAlignment="Center" Margin="0,0,12,0"/>
-                <StackPanel Grid.Column="2" Orientation="Horizontal">
+                <StackPanel Grid.Column="4" Orientation="Horizontal">
                     <TextBlock x:Name="CurrentUserText" Foreground="{DynamicResource Brush.Text.Muted}" FontSize="10" VerticalAlignment="Center" Margin="0,0,12,0"/>
                     <Button x:Name="IdentifyButton" Content="IDENTIFICARSE" Click="OnIdentifyClick" Background="{DynamicResource Brush.Surface.FooterButton}" Foreground="{DynamicResource Brush.Text.High}" BorderThickness="0" Padding="8,3" Margin="0,0,6,0"
                             AutomationProperties.Name="Identificarse con una cuenta del sistema"/>

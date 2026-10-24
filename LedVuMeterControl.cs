@@ -53,6 +53,56 @@ namespace quasar_radio
             set => SetValue(OrientationProperty, value);
         }
 
+        /// <summary>
+        /// El medidor expone su nivel por UIA (patrones Value y RangeValue). Hace falta porque un
+        /// UserControl normal no deleva nada legible desde fuera: los VU de la consola no se
+        /// podian verificar mas que con una captura de pantalla, y una captura no demuestra que la
+        /// barra se mueva con el nivel —de hecho tapo el primer bug de UI-7, que el binding del
+        /// master apuntaba a un ViewModel equivocado y la barra pintaba siempre a cero.
+        /// </summary>
+        protected override System.Windows.Automation.Peers.AutomationPeer OnCreateAutomationPeer()
+            => new LedVuMeterAutomationPeer(this);
+
+        private sealed class LedVuMeterAutomationPeer : System.Windows.Automation.Peers.FrameworkElementAutomationPeer,
+            System.Windows.Automation.Provider.IValueProvider, System.Windows.Automation.Provider.IRangeValueProvider
+        {
+            private readonly LedVuMeterControl _meter;
+
+            public LedVuMeterAutomationPeer(LedVuMeterControl meter) : base(meter)
+            {
+                _meter = meter;
+            }
+
+            public override object GetPattern(System.Windows.Automation.Peers.PatternInterface patternInterface)
+            {
+                if (patternInterface == System.Windows.Automation.Peers.PatternInterface.Value ||
+                    patternInterface == System.Windows.Automation.Peers.PatternInterface.RangeValue)
+                {
+                    return this;
+                }
+
+                return base.GetPattern(patternInterface);
+            }
+
+            protected override string GetClassNameCore() => "LedVuMeter";
+
+            // IValueProvider
+            bool System.Windows.Automation.Provider.IValueProvider.IsReadOnly => true;
+            string System.Windows.Automation.Provider.IValueProvider.Value => _meter.Value.ToString("0.0");
+            void System.Windows.Automation.Provider.IValueProvider.SetValue(string value)
+                => throw new System.Windows.Automation.ElementNotEnabledException("Un VU no se escribe: mide.");
+
+            // IRangeValueProvider
+            double System.Windows.Automation.Provider.IRangeValueProvider.Value => _meter.Value;
+            double System.Windows.Automation.Provider.IRangeValueProvider.Minimum => 0d;
+            double System.Windows.Automation.Provider.IRangeValueProvider.Maximum => 100d;
+            double System.Windows.Automation.Provider.IRangeValueProvider.SmallChange => 1d;
+            double System.Windows.Automation.Provider.IRangeValueProvider.LargeChange => 10d;
+            bool System.Windows.Automation.Provider.IRangeValueProvider.IsReadOnly => true;
+            void System.Windows.Automation.Provider.IRangeValueProvider.SetValue(double value)
+                => throw new System.Windows.Automation.ElementNotEnabledException("Un VU no se escribe: mide.");
+        }
+
         private static void OnValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (d is LedVuMeterControl meter)

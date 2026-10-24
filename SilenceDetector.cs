@@ -7,7 +7,7 @@ namespace quasar_radio
     public class SilenceDetector
     {
         private readonly Queue<float> _levelHistory = new Queue<float>();
-        private readonly int _historySize = 50; // Muestras para mantener historial
+        private readonly int _historySize = 12; // ~1,2 s a un nivel por cada tick de 100 ms
         private int _silenceFrameCount = 0;
         private DateTime _silenceStartTime = DateTime.MinValue;
         
@@ -16,6 +16,14 @@ namespace quasar_radio
         private bool _isSilenceDetectionEnabled = true;
         
         public event EventHandler? SilenceDetected;
+
+        /// <summary>
+        /// Se dispara cuando el nivel vuelve por encima del umbral despues de un aviso. Antes de
+        /// UI-7 no existia: el aviso se apagaba con un temporizador de 2 segundos aunque el aire
+        /// siguiera mudo, o seguia encendido aunque ya estuviera sonando. Ahora el estado lo manda
+        /// la senal, no el reloj.
+        /// </summary>
+        public event EventHandler? SilenceCleared;
         
         public float SilenceThreshold
         {
@@ -37,6 +45,9 @@ namespace quasar_radio
         
         public float CurrentLevel { get; private set; }
         public bool IsInSilence { get; private set; }
+
+        /// <summary>Hay un aviso de silencio en pie. Dura hasta que la senal vuelve.</summary>
+        public bool AlertActive { get; private set; }
         public TimeSpan CurrentSilenceDuration { get; private set; }
         
         public void ProcessLevel(float leftLevel, float rightLevel)
@@ -77,16 +88,21 @@ namespace quasar_radio
                     _silenceFrameCount++;
                     CurrentSilenceDuration = DateTime.Now - _silenceStartTime;
                     
-                    // Verificar si alcanzamos la duración mínima de silencio
-                    if (CurrentSilenceDuration >= _minSilenceDuration)
+                    // Un solo aviso por episodio: se queda en pie hasta que vuelva el nivel.
+                    if (!AlertActive && CurrentSilenceDuration >= _minSilenceDuration)
                     {
+                        AlertActive = true;
                         SilenceDetected?.Invoke(this, EventArgs.Empty);
-                        Reset(); // Resetear para evitar disparos múltiples
                     }
                 }
             }
             else
             {
+                if (AlertActive)
+                {
+                    AlertActive = false;
+                    SilenceCleared?.Invoke(this, EventArgs.Empty);
+                }
                 // No hay silencio, resetear
                 Reset();
             }
@@ -107,6 +123,7 @@ namespace quasar_radio
         public void Reset()
         {
             IsInSilence = false;
+            AlertActive = false;
             _silenceFrameCount = 0;
             _silenceStartTime = DateTime.MinValue;
             CurrentSilenceDuration = TimeSpan.Zero;

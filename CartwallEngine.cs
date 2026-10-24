@@ -14,13 +14,16 @@ namespace quasar_radio
         {
             public WaveStream AudioFile { get; }
             public VolumeSampleProvider VolumeProvider { get; }
+            public MasterLevelTap LevelTap { get; }
             public WaveOut WaveOut { get; }
             public CartPadItem Pad { get; }
 
-            public ActivePadPlayer(WaveStream audioFile, VolumeSampleProvider volumeProvider, WaveOut waveOut, CartPadItem pad)
+            public ActivePadPlayer(WaveStream audioFile, VolumeSampleProvider volumeProvider,
+                MasterLevelTap levelTap, WaveOut waveOut, CartPadItem pad)
             {
                 AudioFile = audioFile;
                 VolumeProvider = volumeProvider;
+                LevelTap = levelTap;
                 WaveOut = waveOut;
                 Pad = pad;
             }
@@ -34,17 +37,20 @@ namespace quasar_radio
                 catch { }
                 WaveOut.Dispose();
                 AudioFile.Dispose();
+                LevelTap.Bus?.Forget(LevelTap.SourceId ?? string.Empty);
                 Pad.IsPlaying = false;
             }
         }
 
         private readonly ConcurrentDictionary<int, ActivePadPlayer> _activePlayers = new ConcurrentDictionary<int, ActivePadPlayer>();
         private readonly AudioDspProcessor _dspProcessor;
+        private readonly MasterBus _bus;
         public event EventHandler<string>? PlaybackFailed;
 
-        public CartwallEngine(AudioDspProcessor? dspProcessor = null)
+        public CartwallEngine(AudioDspProcessor? dspProcessor = null, MasterBus? bus = null)
         {
             _dspProcessor = dspProcessor ?? new AudioDspProcessor();
+            _bus = bus ?? new MasterBus();
         }
 
         private float _cartwallVolume = 1.0f;
@@ -84,9 +90,17 @@ namespace quasar_radio
                 };
                 var waveOut = new WaveOut();
 
-                waveOut.Init(volumeProvider.ToWaveProvider());
+                // UI-7: un pad que suena ES aire. Sin esta toma el VU de salida se quedaba quieto
+                // mientras la botonera estaba en el aire, y el detector de silencio no la veia.
+                var levelTap = new MasterLevelTap(volumeProvider)
+                {
+                    SourceId = $"PAD {pad.PadId}",
+                    Bus = _bus
+                };
 
-                var player = new ActivePadPlayer(audioFile, volumeProvider, waveOut, pad);
+                waveOut.Init(levelTap.ToWaveProvider());
+
+                var player = new ActivePadPlayer(audioFile, volumeProvider, levelTap, waveOut, pad);
 
                 waveOut.PlaybackStopped += (s, e) =>
                 {

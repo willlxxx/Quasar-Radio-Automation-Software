@@ -7,9 +7,13 @@ namespace quasar_radio
 {
     public class MicEngine : IDisposable
     {
+        /// <summary>Como se llama el micro en el <see cref="MasterBus"/> de la consola.</summary>
+        public const string MicroSourceId = "MICRO";
+
         private WaveIn? _waveIn;
         private BufferedWaveProvider? _waveProvider;
         private WaveOut? _waveOut;
+        private MasterLevelTap? _levelTap;
         private readonly AudioEngine _audioEngine;
 
         public bool IsMicActive { get; private set; }
@@ -55,7 +59,17 @@ namespace quasar_radio
 
                 _waveOut = new WaveOut();
                 var micSamples = new BroadcastSampleProvider(_waveProvider.ToSampleProvider(), _audioEngine.DspProcessor);
-                _waveOut.Init(micSamples.ToWaveProvider());
+
+                // UI-7: el micro tambien sale por la tarjeta, asi que tambien pinta el VU de
+                // salida y tambien lo vigila el detector de silencio. Sin esta toma, hablar con el
+                // micro en vivo dejaba la consola en "sin nivel".
+                var micTap = new MasterLevelTap(micSamples)
+                {
+                    SourceId = MicroSourceId,
+                    Bus = _audioEngine.Bus
+                };
+                _levelTap = micTap;
+                _waveOut.Init(micTap.ToWaveProvider());
 
                 _waveIn.DataAvailable += (s, e) =>
                 {
@@ -99,6 +113,8 @@ namespace quasar_radio
             }
 
             _waveProvider = null;
+            _levelTap = null;
+            _audioEngine.Bus.Forget(MicroSourceId);
             MicStateChanged?.Invoke(this, false);
         }
 
