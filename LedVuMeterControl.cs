@@ -32,6 +32,13 @@ namespace quasar_radio
             };
 
             Content = _segmentsGrid;
+
+            // UI-9: el medidor pintaba con RGB fijo en este archivo, asi que el tema no mandaba
+            // sobre el VU y en claro los LED apagados habrian sido cuatro trozos de carbon. La
+            // paleta ahora se resuelve contra el diccionario activo (Brush.Vu.* de Tokens) y el
+            // control se repinta cuando el ThemeService cambia el hueco del tema.
+            ThemeService.ThemeChanged += (_, _) => UpdateSegments();
+
             UpdateSegments();
         }
 
@@ -121,6 +128,7 @@ namespace quasar_radio
 
         private void UpdateSegments()
         {
+            var palette = VuPalette.Load();
             var activeSegments = (int)Math.Round((Math.Clamp(Value, 0d, 100d) / 100d) * SegmentCount);
             var segmentList = new List<Border>();
 
@@ -132,7 +140,7 @@ namespace quasar_radio
             {
                 var segmentLevel = ((index + 1) / (double)SegmentCount) * 100d;
                 var isActive = index < activeSegments;
-                var fill = GetSegmentBrush(segmentLevel, isActive);
+                var fill = GetSegmentBrush(palette, segmentLevel, isActive);
                 var segment = new Border
                 {
                     Background = fill,
@@ -141,7 +149,7 @@ namespace quasar_radio
                         ? new Thickness(1.2, 0, 1.2, 0)
                         : new Thickness(0, 1.2, 0, 1.2),
                     Opacity = isActive ? 1.0 : 0.18,
-                    BorderBrush = new SolidColorBrush(Color.FromRgb(41, 49, 60)),
+                    BorderBrush = palette.Border,
                     BorderThickness = new Thickness(0.7),
                     MinWidth = Orientation == Orientation.Horizontal ? 8 : 16,
                     MinHeight = Orientation == Orientation.Horizontal ? 18 : 8,
@@ -151,8 +159,8 @@ namespace quasar_radio
                     {
                         Color = ((SolidColorBrush)fill).Color,
                         ShadowDepth = 0,
-                        BlurRadius = 9,
-                        Opacity = 0.7
+                        BlurRadius = palette.GlowBlur,
+                        Opacity = palette.GlowOpacity
                     } : null
                 };
 
@@ -166,24 +174,67 @@ namespace quasar_radio
             }
         }
 
-        private static Brush GetSegmentBrush(double relativeLevel, bool isActive)
+        /// <summary>
+        /// Los cinco colores y el resplandor del LED, leidos del diccionario del tema activo.
+        /// Cada valor tiene su default en Tokens.xaml; si aun no hay aplicacion (el control se
+        /// construye durante el parseo de la ventana) se cae al RGB historico, que es exactamente
+        /// lo que el medidor pintaba antes de UI-9: asi el control no depende del orden de arranque.
+        /// </summary>
+        private sealed class VuPalette
+        {
+            public required SolidColorBrush Low { get; init; }
+            public required SolidColorBrush Mid { get; init; }
+            public required SolidColorBrush High { get; init; }
+            public required SolidColorBrush Off { get; init; }
+            public required SolidColorBrush Border { get; init; }
+            public double GlowOpacity { get; init; } = 0.7;
+            public double GlowBlur { get; init; } = 9;
+
+            public static VuPalette Load()
+            {
+                var app = Application.Current;
+                return new VuPalette
+                {
+                    Low = BrushOf(app, "Brush.Vu.Low", Color.FromRgb(34, 197, 94)),
+                    Mid = BrushOf(app, "Brush.Vu.Mid", Color.FromRgb(250, 204, 21)),
+                    High = BrushOf(app, "Brush.Vu.High", Color.FromRgb(239, 68, 68)),
+                    Off = BrushOf(app, "Brush.Vu.Off", Color.FromRgb(34, 41, 52)),
+                    Border = BrushOf(app, "Brush.Vu.Border", Color.FromRgb(41, 49, 60)),
+                    GlowOpacity = DoubleOf(app, "Sys.Vu.GlowOpacity", 0.7),
+                    GlowBlur = DoubleOf(app, "Sys.Vu.GlowBlur", 9),
+                };
+            }
+
+            private static SolidColorBrush BrushOf(Application? app, string key, Color fallback)
+            {
+                if (app?.TryFindResource(key) is SolidColorBrush brush) return brush;
+                var fresh = new SolidColorBrush(fallback);
+                fresh.Freeze();
+                return fresh;
+            }
+
+            private static double DoubleOf(Application? app, string key, double fallback)
+                => app?.TryFindResource(key) is double value ? value : fallback;
+        }
+
+        private static Brush GetSegmentBrush(VuPalette palette, double relativeLevel, bool isActive)
         {
             if (!isActive)
             {
-                return new SolidColorBrush(Color.FromRgb(34, 41, 52));
+                return palette.Off;
             }
 
             if (relativeLevel < 60d)
             {
-                return new SolidColorBrush(Color.FromRgb(34, 197, 94));
+                return palette.Low;
             }
 
             if (relativeLevel < 90d)
             {
-                return new SolidColorBrush(Color.FromRgb(250, 204, 21));
+                return palette.Mid;
             }
 
-            return new SolidColorBrush(Color.FromRgb(239, 68, 68));
+            return palette.High;
         }
     }
 }

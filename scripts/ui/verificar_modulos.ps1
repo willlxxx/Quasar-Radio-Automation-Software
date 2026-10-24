@@ -148,7 +148,7 @@ try {
   # ---------- la franja de modulos existe y tiene sus cinco botones
   $mods = [ordered]@{
     Streaming = @{ pattern = 'STREAMING';   title = 'Streaming y';  probe = 'Salida del enlace' }
-    Schedule  = @{ pattern = 'PROGRAMAC';   title = 'Programac';    probe = 'Pautas y' }
+    Schedule  = @{ pattern = 'PROGRAMAC';   title = 'Programac';    probe = 'Rejilla horaria' }
     Reports   = @{ pattern = 'REPORTES';    title = 'Reportes';     probe = 'TRACKS EN SES' }
   }
   if ($Solo -ne '') {

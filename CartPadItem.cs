@@ -84,7 +84,26 @@ namespace quasar_radio
         public string ColorHex
         {
             get => _colorHex;
-            set { _colorHex = value; OnPropertyChanged(); }
+            set { _colorHex = value; OnPropertyChanged(); OnPropertyChanged(nameof(PadTextHex)); }
+        }
+
+        /// <summary>
+        /// La tinta de la pastilla F1..F12, elegida por luminancia del color de identidad del pad.
+        /// UI-9: el foreground era <c>Brush.Text.OnAccent</c>, y ese token significa "negro sobre
+        /// acento claro" en los temas oscuros y "blanco sobre acento oscuro" en el claro. Doce
+        /// colores de pad son identidad de cabina y no cambian con la piel, asi que un amarillo
+        /// #FFEA00 habria quedado con letra blanca encima en el tema claro. Con esto la pastilla
+        /// se lee en cualquier tema con cualquier pad montado.
+        /// </summary>
+        public string PadTextHex => IsLightColor(_colorHex) ? "#000000" : "#FFFFFF";
+
+        private static bool IsLightColor(string hex)
+        {
+            if (string.IsNullOrEmpty(hex) || hex.Length < 7 || hex[0] != '#') return true;
+            if (!int.TryParse(hex.AsSpan(1, 6), System.Globalization.NumberStyles.HexNumber, null, out var rgb)) return true;
+            double r = ((rgb >> 16) & 0xFF) / 255d, g = ((rgb >> 8) & 0xFF) / 255d, b = (rgb & 0xFF) / 255d;
+            static double Chan(double c) => c <= 0.03928 ? c / 12.92 : System.Math.Pow((c + 0.055) / 1.055, 2.4);
+            return 0.2126 * Chan(r) + 0.7152 * Chan(g) + 0.0722 * Chan(b) > 0.18;
         }
 
         private bool _isPlaying;

@@ -16,5 +16,16 @@ namespace quasar_radio
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
         }
+
+        /// <summary>
+        /// Re-lanza propiedades al cambiar el tema. UI-9: varios ViewModels exponen colores de
+        /// estado como <c>string</c> ("#FF1744") y la vista los pinta tal cual; al resolverlos
+        /// contra el token del tema activo hace falta avisar de que el valor viejo ya no es el
+        /// del tema, o la aguja de silencio seguiría roja sobre blanco tras cambiar de piel.
+        /// </summary>
+        public void RaiseForTheme(params string[] propertyNames)
+        {
+            foreach (var name in propertyNames) OnPropertyChanged(name);
+        }
     }
 }

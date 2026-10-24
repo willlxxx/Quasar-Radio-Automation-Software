@@ -1,0 +1,136 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <!-- ======================================================================
+         TEMA · Studio Light  (el claro de UI-9)
+         Blanco azulado para cabina de dia. No es el oscuro invertido: cada
+         acento esta oscurecido hasta pasar de 4,5:1 SOBRE las superficies
+         claras, porque en los temas oscuros el neon se leia por luminancia y
+         aqui se tendria que leer por tinte. Los valores que deciden legibilidad
+         (texto sobre base, acento sobre base y sobre pista, LED sobre hueco)
+         estan medidos por scripts/ui/verificar_temas.ps1, no a ojo.
+         Solo redefinen los brushes marcados [TEMA] en Tokens.xaml; el morado
+         del boton MUTE se hereda tal cual, que sobre fondo propio ya se lee.
+         ====================================================================== -->
+
+    <!-- Superficies -->
+    <SolidColorBrush x:Key="Brush.Surface.Base" Color="#F4F6F9" />
+    <SolidColorBrush x:Key="Brush.Surface.Deep" Color="#E9EDF3" />
+    <SolidColorBrush x:Key="Brush.Surface.Inset" Color="#DFE5EC" />
+    <SolidColorBrush x:Key="Brush.Surface.Panel" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="Brush.Surface.Card" Color="#F8FAFC" />
+    <SolidColorBrush x:Key="Brush.Surface.Raised" Color="#E6EBF2" />
+    <SolidColorBrush x:Key="Brush.Surface.Header" Color="#E2E8F0" />
+    <SolidColorBrush x:Key="Brush.Surface.Hover" Color="#D3DCE8" />
+    <SolidColorBrush x:Key="Brush.Surface.Pressed" Color="#C9D3E0" />
+    <SolidColorBrush x:Key="Brush.Surface.Track" Color="#E3E8EF" />
+    <SolidColorBrush x:Key="Brush.Surface.GlowBorder" Color="#CBD5E1" />
+    <SolidColorBrush x:Key="Brush.Surface.PanelAlt" Color="#F1F5F9" />
+    <SolidColorBrush x:Key="Brush.Surface.CardAlt" Color="#EDF2F7" />
+    <SolidColorBrush x:Key="Brush.Surface.RaisedAlt" Color="#E2E8F0" />
+    <SolidColorBrush x:Key="Brush.Surface.BaseAlt" Color="#EEF2F7" />
+    <SolidColorBrush x:Key="Brush.Surface.FooterButton" Color="#D6DEE8" />
+    <SolidColorBrush x:Key="Brush.Surface.DangerSoft" Color="#F6C6C6" />
+    <SolidColorBrush x:Key="Brush.Surface.WarnBadge" Color="#FFF3C4" />
+    <SolidColorBrush x:Key="Brush.Surface.Placeholder" Color="#B3BCC8" />
+
+    <!-- Bordes -->
+    <SolidColorBrush x:Key="Brush.Border.Default" Color="#C6CEDA" />
+    <SolidColorBrush x:Key="Brush.Border.Strong" Color="#9AA7B8" />
+    <SolidColorBrush x:Key="Brush.Border.Subtle" Color="#D4DBE5" />
+    <SolidColorBrush x:Key="Brush.Border.Highlight" Color="#7C93B2" />
+    <SolidColorBrush x:Key="Brush.Border.Header" Color="#B7C2D0" />
+    <SolidColorBrush x:Key="Brush.Border.Alt" Color="#A8B4C4" />
+
+    <!-- Texto -->
+    <SolidColorBrush x:Key="Brush.Text.High" Color="#0B1220" />
+    <SolidColorBrush x:Key="Brush.Text.Default" Color="#1B2430" />
+    <SolidColorBrush x:Key="Brush.Text.Secondary" Color="#4A5768" />
+    <SolidColorBrush x:Key="Brush.Text.Muted" Color="#3E4A5A" />
+    <SolidColorBrush x:Key="Brush.Text.Faint" Color="#5A6878" />
+    <SolidColorBrush x:Key="Brush.Text.MutedAlt" Color="#5A6675" />
+    <SolidColorBrush x:Key="Brush.Text.Alt" Color="#37424F" />
+    <SolidColorBrush x:Key="Brush.Text.AltHigh" Color="#0F172A" />
+    <!-- Sobre un acento oscuro (el cian corporativo va a #0E7490) la tinta tiene
+         que ser blanca: en los temas oscuros el acento es claro y pide negro. -->
+    <SolidColorBrush x:Key="Brush.Text.OnAccent" Color="#FFFFFF" />
+
+    <!-- Acentos: los mismos papeles, un punto de tinte mas bajos. Los que se
+         usan como TEXTO (Accent, Success, Warn, Danger, Info, Cue, Purple)
+         pasan de 4,5:1 sobre Base; los que solo colorean superficie (Play,
+         Stop, DangerSoft) pueden ir mas sueltos. -->
+    <SolidColorBrush x:Key="Brush.Accent" Color="#0E7490" />
+    <SolidColorBrush x:Key="Brush.Accent.Success" Color="#0D7335" />
+    <SolidColorBrush x:Key="Brush.Accent.Play" Color="#0B6E34" />
+    <SolidColorBrush x:Key="Brush.Accent.Warn" Color="#A64E07" />
+    <SolidColorBrush x:Key="Brush.Accent.WarnStrong" Color="#9A3412" />
+    <SolidColorBrush x:Key="Brush.Accent.Orange" Color="#C2410C" />
+    <SolidColorBrush x:Key="Brush.Accent.OrangeDeep" Color="#8A3A0B" />
+    <SolidColorBrush x:Key="Brush.Accent.Danger" Color="#C62828" />
+    <SolidColorBrush x:Key="Brush.Accent.DangerSoft" Color="#D98A8A" />
+    <SolidColorBrush x:Key="Brush.Accent.Stop" Color="#B91C1C" />
+    <SolidColorBrush x:Key="Brush.Accent.Pink" Color="#BE185D" />
+    <SolidColorBrush x:Key="Brush.Accent.Info" Color="#0369A1" />
+    <SolidColorBrush x:Key="Brush.Accent.Cue" Color="#1D4ED8" />
+    <SolidColorBrush x:Key="Brush.Accent.CueStrong" Color="#2563EB" />
+    <SolidColorBrush x:Key="Brush.Accent.Purple" Color="#7E22CE" />
+    <SolidColorBrush x:Key="Brush.Accent.Teal" Color="#0F766E" />
+    <SolidColorBrush x:Key="Brush.Accent.Coral" Color="#C2544A" />
+    <SolidColorBrush x:Key="Brush.Selection.Deep" Color="#9CC7EA" />
+
+    <!-- Estados pintados en codigo: ver el bloque [TEMA] de Tokens.xaml. La pastilla
+         "EMITIDO" pasa de gris carbon a gris perla y el boton de micro vivo de neon
+         a rojo palido, porque su texto es Brush.Text.High (casi negro en claro) y
+         sobre #FF1744 ese texto daria 3,1:1. -->
+    <SolidColorBrush x:Key="Brush.Button.Mic.Live" Color="#F6C6C6" />
+    <SolidColorBrush x:Key="Brush.Button.Mic.Idle" Color="#E6EBF2" />
+    <SolidColorBrush x:Key="Brush.Badge.Playing" Color="#E05252" />
+    <SolidColorBrush x:Key="Brush.Badge.Next" Color="#58C47A" />
+    <SolidColorBrush x:Key="Brush.Badge.Played" Color="#C4CDD8" />
+    <SolidColorBrush x:Key="Brush.Badge.Pending" Color="#D4DBE5" />
+
+    <!-- Resplandores: en claro son un halo tintado, no un neon. Con opacidades
+         altas el borde de los decks pareciera sucio sobre el blanco. -->
+    <Color x:Key="Color.Glow.A">#0E7490</Color>
+    <Color x:Key="Color.Glow.B">#7E22CE</Color>
+    <Color x:Key="Color.Glow.Card.A">#2C8FB0</Color>
+    <Color x:Key="Color.Glow.Card.B">#9061CE</Color>
+
+    <!-- Identidad de deck: A azul, B violeta, en versiones claras del mismo
+         tinte. La carta del deck es casi blanca y el marco lleva el color. -->
+    <SolidColorBrush x:Key="Brush.DeckA.Surface" Color="#EAF4FA" />
+    <SolidColorBrush x:Key="Brush.DeckA.Border" Color="#1E7FA8" />
+    <SolidColorBrush x:Key="Brush.DeckA.Hover" Color="#DCEBF5" />
+    <SolidColorBrush x:Key="Brush.DeckA.Glow" Color="#35A7D0" />
+    <SolidColorBrush x:Key="Brush.DeckA.Legend" Color="#D6E8F2" />
+    <SolidColorBrush x:Key="Brush.DeckA.Title" Color="#0B2B3C" />
+    <SolidColorBrush x:Key="Brush.DeckA.Chip.Surface" Color="#DCE7F0" />
+    <SolidColorBrush x:Key="Brush.DeckA.Chip.Border" Color="#B9CFDF" />
+    <SolidColorBrush x:Key="Brush.DeckA.Chip.ActiveSurface" Color="#2F9CC9" />
+    <SolidColorBrush x:Key="Brush.DeckA.Chip.ActiveBorder" Color="#146E96" />
+
+    <SolidColorBrush x:Key="Brush.DeckB.Surface" Color="#F1EAF9" />
+    <SolidColorBrush x:Key="Brush.DeckB.Border" Color="#8B5FBF" />
+    <SolidColorBrush x:Key="Brush.DeckB.Hover" Color="#E7DCF4" />
+    <SolidColorBrush x:Key="Brush.DeckB.Glow" Color="#A06FD4" />
+    <SolidColorBrush x:Key="Brush.DeckB.Legend" Color="#E1D5F0" />
+    <SolidColorBrush x:Key="Brush.DeckB.Title" Color="#2A1440" />
+    <SolidColorBrush x:Key="Brush.DeckB.Progress" Color="#6D3BC8" />
+    <SolidColorBrush x:Key="Brush.DeckB.Chip.Surface" Color="#E4D9F5" />
+    <SolidColorBrush x:Key="Brush.DeckB.Chip.Border" Color="#C3B0DE" />
+    <SolidColorBrush x:Key="Brush.DeckB.Chip.ActiveSurface" Color="#8A5FD0" />
+    <SolidColorBrush x:Key="Brush.DeckB.Chip.ActiveBorder" Color="#5B2E9E" />
+
+    <!-- Medidor LED: apagado gris sobre hueco claro, y los tres niveles bajan
+         de tono para que el verde/amarillo/rojo se distingan sin neón. El
+         resplandor del segmento activo se queda en 0,22 de opacidad. -->
+    <SolidColorBrush x:Key="Brush.Vu.Low" Color="#15803D" />
+    <SolidColorBrush x:Key="Brush.Vu.Mid" Color="#A8480A" />
+    <SolidColorBrush x:Key="Brush.Vu.High" Color="#C62828" />
+    <SolidColorBrush x:Key="Brush.Vu.Off" Color="#AEB8C4" />
+    <SolidColorBrush x:Key="Brush.Vu.Border" Color="#8A94A2" />
+    <sys:Double x:Key="Sys.Vu.GlowOpacity">0.22</sys:Double>
+    <sys:Double x:Key="Sys.Vu.GlowBlur">5</sys:Double>
+
+</ResourceDictionary>

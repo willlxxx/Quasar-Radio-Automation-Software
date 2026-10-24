@@ -174,11 +174,19 @@ namespace quasar_radio
 
         public string StatusColor => Status switch
         {
-            TrackStatus.Playing => "#FF3333", // Rojo vivo
-            TrackStatus.Next => "#00CC66",    // Verde emisión
-            TrackStatus.Played => "#555555",   // Gris apagado
-            _ => "#888888"                    // Gris neutro
+            // UI-9: antes eran cuatro literales fijos y la pastilla se leia igual de mal en
+            // cualquier tema. Ahora cada estado pide su token y el tema pone el color; el
+            // ThemeRefresh re-lanza esta propiedad al cambiar de piel (ver constructor).
+            TrackStatus.Playing => ThemeHex.Of("Brush.Badge.Playing", "#FF3333"),
+            TrackStatus.Next => ThemeHex.Of("Brush.Badge.Next", "#00CC66"),
+            TrackStatus.Played => ThemeHex.Of("Brush.Badge.Played", "#555555"),
+            _ => ThemeHex.Of("Brush.Badge.Pending", "#888888")
         };
+
+        public TrackItem()
+        {
+            ThemeRefresh.Bind(this, nameof(StatusColor));
+        }
 
         private DateTime? _estimatedPlayTime;
         public DateTime? EstimatedPlayTime

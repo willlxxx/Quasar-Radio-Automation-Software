@@ -770,7 +770,9 @@
                                         </Grid.RowDefinitions>
 
                                         <Border Grid.Column="0" Grid.RowSpan="2" Background="{Binding ColorHex}" CornerRadius="3" Padding="4,1" VerticalAlignment="Center">
-                                            <TextBlock Text="{Binding ShortcutText}" FontSize="9" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.OnAccent}"/>
+                                            <!-- UI-9: la tinta la decide la luminancia del color de identidad del pad (PadTextHex), no el tema:
+                                                 los doce colores del pad son identidad de cabina y no se redefinen por piel. -->
+                                            <TextBlock Text="{Binding ShortcutText}" FontSize="9" FontWeight="Bold" Foreground="{Binding PadTextHex}"/>
                                         </Border>
                                         <TextBlock Grid.Column="1" Grid.Row="0" Text="{Binding Title}" FontSize="10" FontWeight="SemiBold" Foreground="{DynamicResource Brush.Text.High}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="6,2,0,0"/>
                                         <!-- UI-8: volumen y ducking del pad a la vista. Estan en la

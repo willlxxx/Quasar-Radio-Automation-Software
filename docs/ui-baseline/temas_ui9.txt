@@ -1,0 +1,90 @@
+﻿TEMA-LISTA=Studio Dark Neon | Cyan Broadcast | Charcoal Pro | Deep Navy FM | Studio Light
+T0_fichero_claro_existe=True
+T0_texto_base [Studio Dark Neon] Text.Default/Surface.Base=14,98 · Text.High/Surface.Base=18,83 · Text.Secondary/Surface.Base=6,49 · Text.Faint/Surface.Base=5,42 · Text.Default/Surface.Header=12,99 · Text.Default/Surface.Card=13,71 · Text.High/Surface.Raised=15,69
+T0_texto_base [Cyan Broadcast] Text.Default/Surface.Base=13,16 · Text.High/Surface.Base=16,55 · Text.Secondary/Surface.Base=8,56 · Text.Faint/Surface.Base=6,15 · Text.Default/Surface.Header=10,56 · Text.Default/Surface.Card=11,83 · Text.High/Surface.Raised=12,58
+T0_texto_base [Charcoal Pro] Text.Default/Surface.Base=13,97 · Text.High/Surface.Base=17,01 · Text.Secondary/Surface.Base=7,47 · Text.Faint/Surface.Base=5,42 · Text.Default/Surface.Header=11,60 · Text.Default/Surface.Card=12,21 · Text.High/Surface.Raised=13,01
+T0_texto_base [Deep Navy FM] Text.Default/Surface.Base=13,38 · Text.High/Surface.Base=16,57 · Text.Secondary/Surface.Base=8,01 · Text.Faint/Surface.Base=5,95 · Text.Default/Surface.Header=10,62 · Text.Default/Surface.Card=11,65 · Text.High/Surface.Raised=11,98
+T0_texto_base [Studio Light] Text.Default/Surface.Base=14,46 · Text.High/Surface.Base=17,29 · Text.Secondary/Surface.Base=6,80 · Text.Faint/Surface.Base=5,26 · Text.Default/Surface.Header=12,70 · Text.Default/Surface.Card=14,96 · Text.High/Surface.Raised=15,63
+T0_contraste_texto_base_los_cinco_temas=True | fallos=0
+T0_contraste_pares_del_claro=True | Accent/Surface.Base=4,95 · Accent.Success/Surface.Base=5,51 · Accent.Danger/Surface.Base=5,19 · Accent.Warn/Surface.Base=5,22 · Accent.Info/Surface.Base=5,48 · Accent.Orange/Surface.Base=4,78 · Accent.Purple/Surface.Base=6,45 · Accent.Danger/Surface.Track=4,57 · Accent.Success/Surface.Track=4,84 · Text.OnAccent/Accent=5,36 · Text.High/Button.Mic.Live=12,31 · Text.High/Button.Mic.Idle=15,63 · Text.High/Badge.Playing=4,90 · Text.High/Badge.Next=8,55 · Text.High/Badge.Played=11,65 · Text.High/Badge.Pending=13,43 · DeckA.Title/DeckA.Surface=13,21 · DeckB.Title/DeckB.Surface=14,05 · Text.Default/Surface.Panel=15,65 · Text.Alt/Surface.PanelAlt=9,33
+T0_vu_claro [Low] sobre Inset = 3,95 ok=True
+T0_vu_claro [Mid] sobre Inset = 4,60 ok=True
+T0_vu_claro [High] sobre Inset = 4,43 ok=True
+T0_vu_claro_3a1=True
+T0_pad_pastillas_4a5=True | #FF1744→#000000=5,5 #FF9100→#000000=9,3 #FFEA00→#000000=17,0 #00E676→#000000=12,6 #00B0FF→#000000=8,7 #651FFF→#FFFFFF=6,6 #F50057→#000000=5,0 #00E5FF→#000000=13,7 #76FF03→#000000=16,1 #FF3D00→#000000=5,9 #3D5AFE→#FFFFFF=5,1 #D500F9→#000000=5,2
+T0_hex_en_las_vistas=0 (esperado 0)
+T0_hex_sueltos_en_codigo=30 (los de reserva de ThemeHex y la paleta de pad estan justificados) :: AudioPlayerViewModel.cs, CartPadItem.cs, CartWallViewModel.cs, IcecastStreamingService.cs, MainViewModel.cs, RecordingService.cs, StreamingService.cs, ThemeAwareColors.cs, TrackItem.cs, ViewModelBase.cs
+APPEARANCE_ANTES={"theme":"Studio Dark Neon"}
+LAYOUT_ANTES=(no existe)
+FIXTURES: QSRTEMA Tono - Treinta s.wav (30 s, 240 Hz, amplitud 9000) en C:\Users\CY-KILL\AppData\Local\Temp\qsr_temas_test
+SEED: cart_pads.json en el sandbox (F1 #FFEA00, F2 #651FFF, ambos montados sobre el tono de 30 s)
+ARRANQUE[Studio Dark Neon]: arbol uia en 375 ms | consola=80,0 1440x860
+LUM_UXA [Studio Dark Neon] combo_selecciona=Studio Dark Neon ok=True | centinela_vivo=True | pie=Cargadas 1 canciones desde carpeta.
+CAP tema_Studio_Dark_Neon_ui9 : PrintWindow=True 1440x860 md5=C38FDBE605D7A7CE37979D9930060F9A | luminancia_media=0,062 fraccion_pixel_claro=0,041 muestras=34560
+ARRANQUE[Cyan Broadcast]: arbol uia en 277 ms | consola=80,0 1440x860
+LUM_UXA [Cyan Broadcast] combo_selecciona=Cyan Broadcast ok=True | centinela_vivo=True | pie=Cargadas 1 canciones desde carpeta.
+CAP tema_Cyan_Broadcast_ui9 : PrintWindow=True 1440x860 md5=45DD0BC1FDAD742367F4E2F1A140A88E | luminancia_media=0,067 fraccion_pixel_claro=0,039 muestras=34560
+ARRANQUE[Charcoal Pro]: arbol uia en 291 ms | consola=80,0 1440x860
+LUM_UXA [Charcoal Pro] combo_selecciona=Charcoal Pro ok=True | centinela_vivo=True | pie=Cargadas 1 canciones desde carpeta.
+CAP tema_Charcoal_Pro_ui9 : PrintWindow=True 1440x860 md5=EFEF09C0C92D43978DB38E76380FCD0F | luminancia_media=0,065 fraccion_pixel_claro=0,041 muestras=34560
+ARRANQUE[Deep Navy FM]: arbol uia en 268 ms | consola=80,0 1440x860
+LUM_UXA [Deep Navy FM] combo_selecciona=Deep Navy FM ok=True | centinela_vivo=True | pie=Cargadas 1 canciones desde carpeta.
+CAP tema_Deep_Navy_FM_ui9 : PrintWindow=True 1440x860 md5=C86FAD0EAA80705CF138F7E6EF082D30 | luminancia_media=0,067 fraccion_pixel_claro=0,041 muestras=34560
+ARRANQUE[Studio Light]: arbol uia en 282 ms | consola=80,0 1440x860
+LUM_UXA [Studio Light] combo_selecciona=Studio Light ok=True | centinela_vivo=True | pie=Cargadas 1 canciones desde carpeta.
+CAP tema_Studio_Light_ui9 : PrintWindow=True 1440x860 md5=5789D7421EBF7D28839341B52291F0FE | luminancia_media=0,811 fraccion_pixel_claro=0,886 muestras=34560
+S1_a_S5_el_combo_arranca_en_el_tema_guardado=True
+LUM_OSCURO [Studio Dark Neon] media=0,062 ok<0.35=True
+LUM_OSCURO [Cyan Broadcast] media=0,067 ok<0.35=True
+LUM_OSCURO [Charcoal Pro] media=0,065 ok<0.35=True
+LUM_OSCURO [Deep Navy FM] media=0,067 ok<0.35=True
+LUM_CLARO media=0,811 fraccion_pixel_claro=0,886 ok>0.55=True
+ARRANQUE[caliente]: arbol uia en 295 ms | consola=80,0 1440x860
+S6_combos_en_la_consola=1 | lineas_tema_aplicado_antes=96
+S6_cambio [Studio Dark Neon -> Cyan Broadcast] resultado=OK en_ms=1988
+S6_arbol_vivo [Cyan Broadcast] chip=[2 de 12 con clip] pie=[Cargadas 1 canciones desde carpeta.]
+S6_cambio [Cyan Broadcast -> Charcoal Pro] resultado=OK en_ms=2112
+S6_arbol_vivo [Charcoal Pro] chip=[2 de 12 con clip] pie=[Cargadas 1 canciones desde carpeta.]
+S6_cambio [Charcoal Pro -> Deep Navy FM] resultado=OK en_ms=2258
+S6_arbol_vivo [Deep Navy FM] chip=[2 de 12 con clip] pie=[Cargadas 1 canciones desde carpeta.]
+S6_cambio [Deep Navy FM -> Studio Light] resultado=OK en_ms=2416
+S6_arbol_vivo [Studio Light] chip=[2 de 12 con clip] pie=[Cargadas 1 canciones desde carpeta.]
+S6_cambio [Studio Light -> Studio Dark Neon] resultado=OK en_ms=1785
+S6_arbol_vivo [Studio Dark Neon] chip=[2 de 12 con clip] pie=[Cargadas 1 canciones desde carpeta.]
+S6_cambio [Studio Dark Neon -> Studio Light] resultado=OK en_ms=2446
+S6_arbol_vivo [Studio Light] chip=[2 de 12 con clip] pie=[Cargadas 1 canciones desde carpeta.]
+S6_seis_cambios_en_caliente=True | seleccion_final=Studio Light
+S6_lecturas_vivas_tras_seis_cambios bus=[SIN SEÑAL] duck=[]
+S6_lineas_nuevas_de_tema_aplicado=6 (esperadas >= 6) en_ms=6 | ok=True | ventana_aplicada_desde=01:25:03
+ARRANQUE[claro_persistido]: arbol uia en 334 ms | consola=80,0 1440x860
+S7_el_tema_sobrevive_al_reinicio=True | combo_selecciona=Studio Light
+S7_al_aire_en_ms=136 | nowplaying=QSRTEMA Tono - Treinta s
+S7_vu_del_aire_leye_niveles=True | serie=35,3/38,7/38,8/38,8/38,8/38,8/38,8/35,5
+CAPC vu_maestro_claro_ui9 : 180x20 md5=A84059832921118036C9AC2957D61AC6
+S7_el_vu_pinta_en_claro=True | pixeles_verde_del_tema(#15803D)=568 | pixeles_verde_historico(#22C55E)=0 | pixeles_amarillo(#A8480A)=0
+S7_leds_apagados_en_gris_claro=True | pixeles_off(#AEB8C4)=0
+CAPC pad_F1_claro_ui9 : 222x38 md5=8E7DAB01885A05416B1F516369AD03C2
+S7_identidad_del_pad_sigue_viva_en_claro=True | pixeles_exactos_amarillo_F1=185 | pixeles_saturados_F1=559 (F1 se sembro en #FFEA00; la identidad del pad no depende del tema)
+CAPC pad_F2_claro_ui9 : 221x38 md5=39A495EBADC0E2C27680E31B51B36B57
+S7_pad_violeta_con_tinta_clara=True | pixeles_exactos_F2=180 | pixeles_saturados_F2=521
+CAP consola_claro_aire_ui9 : PrintWindow=True 1440x860 md5=7DECD4FAFC4ACD68D7B8DF379CDC5234 | luminancia_media=0,796 fraccion_pixel_claro=0,860 muestras=34560
+S7_consola_claro_con_aire media=0,796
+ARRANQUE[modulos_claro]: arbol uia en 306 ms | consola=80,0 1440x860
+CAP modulo_Biblioteca_claro_ui9 : PrintWindow=True 1320x820 md5=83CAB934E4C5D9B80833E9040723ACAC | luminancia_media=0,892 fraccion_pixel_claro=0,913
+S8_Biblioteca: arbol_vivo=True (textos=129, sonda=True) | pintura_clara=True | cerrada=True
+CAP modulo_Streaming_claro_ui9 : PrintWindow=True 1080x700 md5=BD14744ACACAFAEAB01B5496A4E1AF90 | luminancia_media=0,863 fraccion_pixel_claro=0,927
+S8_Streaming: arbol_vivo=True (textos=53, sonda=True) | pintura_clara=True | cerrada=True
+CAP modulo_Programacion_claro_ui9 : PrintWindow=True 1180x780 md5=89617E2B2A73C61AF565C3EFA70C9329 | luminancia_media=0,877 fraccion_pixel_claro=0,922
+S8_Programacion: arbol_vivo=True (textos=251, sonda=True) | pintura_clara=True | cerrada=True
+CAP modulo_Reportes_claro_ui9 : PrintWindow=True 900x620 md5=1C139B2B07667398F64C493C902294C5 | luminancia_media=0,856 fraccion_pixel_claro=0,907
+S8_Reportes: arbol_vivo=True (textos=22, sonda=True) | pintura_clara=True | cerrada=True
+CAP modulo_Dsp_claro_ui9 : PrintWindow=True 980x660 md5=F7C2E5B0106ABB48576FAE9D44A41D52 | luminancia_media=0,887 fraccion_pixel_claro=0,921
+S8_Dsp: arbol_vivo=True (textos=46, sonda=True) | pintura_clara=True | cerrada=True
+S8_ventanas_de_modulo_legibles_en_claro=True | abiertas=5/5
+CAP consola_claro_modulos_ui9 : PrintWindow=True 1440x860 md5=E9FF631AA8D8D78715BB469E63E0FE8E | luminancia_media=0,811 fraccion_pixel_claro=0,886 muestras=34560
+S8_consola_tras_cinco_modulos media=0,811
+APPEARANCE_RESTORED={"theme":"Studio Dark Neon"}
+LAYOUT_RESTORED=(ausente: igual que al inicio)
+RESTANTES=0
+BIN_track_metadata_antes=80D7FA9AE494CF6A788A15F64919A4A3 despues=80D7FA9AE494CF6A788A15F64919A4A3 | intacto=True
+BIN_musica=14 -> 14 | sin_fixtures_QSR_en_bin=True

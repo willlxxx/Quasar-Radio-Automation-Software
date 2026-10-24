@@ -33,7 +33,9 @@ namespace quasar_radio
 
         public string RecordingStatusText => IsRecording ? "GRABANDO EN VIVO" : "GRABACIÓN OFF";
         public string RecordingButtonText => IsRecording ? "⏹ DETENER GRABACIÓN" : "⏺ INICIAR GRABACIÓN";
-        public string StatusColor => IsRecording ? "#FF1744" : "#262D3D";
+        public string StatusColor => IsRecording
+            ? ThemeHex.Of("Brush.Accent.Danger", "#FF1744")
+            : ThemeHex.Of("Brush.Border.Default", "#262D3D");
 
         public string RecordingFolder
         {
@@ -79,6 +81,9 @@ namespace quasar_radio
         {
             _durationTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
             _durationTimer.Tick += OnDurationTimerTick;
+
+            // UI-9: el color-cadena del chip de grabacion sigue al tema activo.
+            ThemeRefresh.Bind(this, nameof(StatusColor));
 
             // Crear carpeta de grabaciones si no existe
             if (!Directory.Exists(_recordingFolder))

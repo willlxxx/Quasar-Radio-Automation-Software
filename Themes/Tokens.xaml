@@ -6,9 +6,12 @@
          TOKENS · Capa base del sistema visual de Quasar Radio Pro
          =====================================================================
          Regla: las vistas NO llevan literales de color. Todo color pasa por
-         un DynamicResource de esta familia. Los 4 temas redefinen los brushes
-         marcados como [TEMA]; el resto son valores invariantes (identidad de
-         deck, decorativos) que solo se tocan al reescribir su ventana.
+         un DynamicResource de esta familia. Los 5 temas redefinen los brushes
+         marcados como [TEMA]; el resto son valores invariantes (decorativos)
+         que solo se tocan al reescribir su ventana. Desde UI-9 los dos grupos
+         que eran invariantes —identidad de deck y colores del VU— también son
+         redefinibles: un tema claro no puede heredar LEDs casi negros ni la
+         carta del deck en azul noche.
 
          Nombre = Brush.<Rol>.<Variante>.  Nunca Brush.AzulOscuro3.
          ====================================================================== -->
@@ -103,6 +106,24 @@
     <SolidColorBrush x:Key="Brush.Accent.Coral" Color="#FF7B72" />
     <SolidColorBrush x:Key="Brush.Selection.Deep" Color="#005599" />
 
+    <!-- ================= ESTADOS PINTADOS EN CODIGO [TEMA] =================
+         Colores que antes eran literales sueltos en los ViewModels ("#FF1744"
+         si micro vivo). El ViewModel dice el papel, el tema pone el valor. El
+         tema claro no puede heredarlos: tinta casi negra sobre blanco, o rojo
+         vivo con la tinta clara del tema, y las dos cosas se leen mal.
+         - Mic: el boton se pinta del color del ESTADO (vivo/apagado) y su texto
+           es Brush.Text.High, asi que en claro el "vivo" tiene que ser un rojo
+           pálido con tinta oscura, no el neón histórico.
+         - Badges de la tabla de cola: pastilla de estado con texto High encima.
+         - Los doce colores del pad NO van aqui: son identidad de cabina y el
+           texto de la pastilla se calcula por luminancia en CartPadItem. -->
+    <SolidColorBrush x:Key="Brush.Button.Mic.Live" Color="#FF1744" />
+    <SolidColorBrush x:Key="Brush.Button.Mic.Idle" Color="#1E2330" />
+    <SolidColorBrush x:Key="Brush.Badge.Playing" Color="#FF3333" />
+    <SolidColorBrush x:Key="Brush.Badge.Next" Color="#00CC66" />
+    <SolidColorBrush x:Key="Brush.Badge.Played" Color="#555555" />
+    <SolidColorBrush x:Key="Brush.Badge.Pending" Color="#888888" />
+
     <!-- Colores sueltos [TEMA]: para propiedades que piden Color, no Brush
          (efectos de resplandor de los decks). Cada tema redefina estos dos. -->
     <Color x:Key="Color.Glow.A">#00E5FF</Color>
@@ -110,7 +131,28 @@
     <Color x:Key="Color.Glow.Card.A">#2ED5FF</Color>
     <Color x:Key="Color.Glow.Card.B">#C77BFF</Color>
 
-    <!-- ================= IDENTIDAD DE DECK (invariante al tema) ================= -->
+    <!-- ================= MEDIDOR LED [TEMA] =================
+         Los segmentos del VU los pinta LedVuMeterControl en codigo, no en XAML,
+         asi que antes llevaban su RGB fijo y el tema no mandaba sobre ellos.
+         Desde UI-9 el control lee estas cinco claves del diccionario activo y
+         se repinta con el evento ThemeChanged del ThemeService: en claro los
+         LED apagados son grises sobre hueco claro, y el resplandor se queda en
+         un tercio porque una sombra de neon sobre blanco se ve como un defecto.
+         Los tres activos (Low/Mid/High) se comprueban contra Surface.Inset, que
+         es el hueco donde van montados. -->
+    <SolidColorBrush x:Key="Brush.Vu.Low" Color="#22C55E" />
+    <SolidColorBrush x:Key="Brush.Vu.Mid" Color="#FACC15" />
+    <SolidColorBrush x:Key="Brush.Vu.High" Color="#EF4444" />
+    <SolidColorBrush x:Key="Brush.Vu.Off" Color="#222934" />
+    <SolidColorBrush x:Key="Brush.Vu.Border" Color="#29313C" />
+    <sys:Double x:Key="Sys.Vu.GlowOpacity">0.7</sys:Double>
+    <sys:Double x:Key="Sys.Vu.GlowBlur">9</sys:Double>
+
+    <!-- ================= IDENTIDAD DE DECK [TEMA] =================
+         Azul para A, violeta para B: el operador distingue el deck por el color
+         del marco sin leer la etiqueta. El valor por defecto es el de los temas
+         oscuros; el tema claro lo reescribe entero, porque una carta casi negra
+         sobre consola blanca no es un deck, es un agujero. -->
     <SolidColorBrush x:Key="Brush.DeckA.Surface" Color="#0D1320" />
     <SolidColorBrush x:Key="Brush.DeckA.Border" Color="#53D5FF" />
     <SolidColorBrush x:Key="Brush.DeckA.Hover" Color="#0E1E2F" />

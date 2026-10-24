@@ -78,7 +78,9 @@ namespace quasar_radio
             ? "STREAMING OFF"
             : _isSessionConnected ? "EMITIENDO EN VIVO (ICECAST)" : "CONECTANDO / RECONECTANDO";
         public string StreamingButtonText => IsStreaming ? "⏹ DESCONECTAR STREAM" : "📡 CONECTAR STREAM";
-        public string StatusColor => !IsStreaming ? "#262D3D" : _isSessionConnected ? "#00E5FF" : "#FF9100";
+        public string StatusColor => !IsStreaming
+            ? ThemeHex.Of("Brush.Border.Default", "#262D3D")
+            : _isSessionConnected ? ThemeHex.Of("Brush.Accent", "#00E5FF") : ThemeHex.Of("Brush.Accent.Orange", "#FF9100");
         public string CircuitBreakerState => _circuitBreaker.State.ToString();
         public int ConsecutiveConnectionFailures => _circuitBreaker.ConsecutiveFailures;
 
@@ -205,6 +207,9 @@ namespace quasar_radio
             _bitrate = 128;
             _sampleRate = 44100;
             _channels = 2;
+
+            // UI-9: el color-cadena del chip de estado sigue al tema activo.
+            ThemeRefresh.Bind(this, nameof(StatusColor));
         }
 
         public bool StartStreaming()

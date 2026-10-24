@@ -36,7 +36,9 @@ namespace quasar_radio
         public double DeckA_VuLevel => _audioEngine.DeckA_VuLevel;
         public bool DeckA_IsActive => _audioEngine.DeckA_IsActive;
         public string DeckA_StatusText => DeckA_IsActive ? "REPRODUCIENDO" : (_audioEngine.DeckA_Track != null ? "PRE-LOADED (LISTO)" : "EN ESPERA");
-        public string DeckA_StatusColor => DeckA_IsActive ? "#00E676" : (_audioEngine.DeckA_Track != null ? "#00E676" : "#555555");
+        public string DeckA_StatusColor => DeckA_IsActive || _audioEngine.DeckA_Track != null
+            ? ThemeHex.Of("Brush.Accent.Success", "#00E676")
+            : ThemeHex.Of("Brush.Badge.Played", "#555555");
 
         // DECK B PROPIEDADES
         public string DeckB_Title => _audioEngine.DeckB_Track?.Title ?? "DECK B - VACÍO";
@@ -51,7 +53,9 @@ namespace quasar_radio
         public double DeckB_VuLevel => _audioEngine.DeckB_VuLevel;
         public bool DeckB_IsActive => _audioEngine.DeckB_IsActive;
         public string DeckB_StatusText => DeckB_IsActive ? "REPRODUCIENDO" : (_audioEngine.DeckB_Track != null ? "PRE-LOADED (LISTO)" : "EN ESPERA");
-        public string DeckB_StatusColor => DeckB_IsActive ? "#00E676" : (_audioEngine.DeckB_Track != null ? "#00E676" : "#555555");
+        public string DeckB_StatusColor => DeckB_IsActive || _audioEngine.DeckB_Track != null
+            ? ThemeHex.Of("Brush.Accent.Success", "#00E676")
+            : ThemeHex.Of("Brush.Badge.Played", "#555555");
 
         private TrackItem? _selectedTrack;
         public TrackItem? SelectedTrack
@@ -153,7 +157,12 @@ namespace quasar_radio
         }
 
         public string AutoModeText => IsAutoMode ? "MODO: AUTO" : "MODO: MANUAL";
-        public string AutoModeColor => IsAutoMode ? "#00CC66" : "#FF9900";
+        // UI-9: eran #00CC66/#FF9900 literales; ahora el token del papel (exito/aviso). El matiz
+        // contra el viejo literal es imperceptible en los temas oscuros y es lo que da el
+        // contraste de texto en el claro.
+        public string AutoModeColor => IsAutoMode
+            ? ThemeHex.Of("Brush.Accent.Success", "#00CC66")
+            : ThemeHex.Of("Brush.Accent.Orange", "#FF9900");
 
         private string _statusText = "ESTADO: LISTO";
         public string StatusText
@@ -242,6 +251,9 @@ namespace quasar_radio
             _audioEngine.TrackChanged += OnEngineTrackChanged;
             _audioEngine.PositionChanged += OnEnginePositionChanged;
             _audioEngine.PlaybackFinished += OnEnginePlaybackFinished;
+
+            // UI-9: los colores-cadena de este ViewModel se resuelven contra el tema activo.
+            ThemeRefresh.Bind(this, nameof(DeckA_StatusColor), nameof(DeckB_StatusColor), nameof(AutoModeColor));
 
             _playbackTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(100) };
             _playbackTimer.Tick += OnPlaybackTimerTick;

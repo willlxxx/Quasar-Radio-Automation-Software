@@ -314,6 +314,21 @@ function Close-Menu {
   L ('  MENU CERRADO: lineas restantes=' + $n)
 }
 
+# Esperar a que el submenu REALMENTE exista. ExpandCollapse.Expand() vuelve antes de que WPF
+# monte el Popup del submenu: las tres lecturas que se hacian justo despues de Expand() podian
+# ver solo las 8 lineas del padre (dos de tres submenus se quedaron sin hijos en la regrescion
+# del 2026-10-24; en la corrida de UI-8 habian caido del lado afortunado de la carrera).
+# Se espera hasta que el conteo supere el del padre, acotado, y entonces se lee.
+function Wait-SubmenuItems([int]$padre, [int]$Ms) {
+  [void](Wait-Until { (Get-MenuItems $script:proc.Id).Count -gt $padre } $Ms)
+  $leidos = Get-MenuItems $script:proc.Id
+  # 'return ,@($leidos)' y NO '@(Get-MenuItems)': Get-MenuItems ya devuelve su arbolito con el
+  # comma-outer, y volver a envolverlo deja en $items UN elemento que es el array entero — la
+  # membresia sobre ese objeto imprime TODAS las lineas pegadas y el RectOf del clic revienta
+  # con "System.Object[] -> System.Int32" (medido en la re-corrida de hoy).
+  return ,@($leidos)
+}
+
 # ---- WAV de ensayo: PCM 16 bits mono. Amplitud 0 = silencio absoluto (el pad con el que se mide
 # el ducking: no puede sumar nada a la salida, asi que lo que baja es la musica y solo la musica).
 function New-QsrWav([string]$Path, [double]$Seconds, [int]$Hz, [int]$Amp) {
@@ -621,7 +636,7 @@ try {
   # P4b: cambiar la profundidad MIENTRAS el pad suena tiene que notarse en ese clip.
   $items = Open-PadMenu $con $win 'F2' 'duck en vivo'
   [void](Expand-MenuItem (Find-MenuItem $items 'Bajar la') 'submenu de ducking')
-  $items = Get-MenuItems $script:proc.Id
+  $items = Wait-SubmenuItems $items.Count 6000
   $marca = @($items | Where-Object { $_.Current.Name.Contains($CHECK) } | Select-Object -First 1)
   L ('P4b_la_opcion_vigente_va_marcada_dentro_del_submenu=' + ($marca.Count -eq 1) + ' | marcada=[' + $(if ($marca.Count -eq 1) { $marca[0].Current.Name } else { '(ninguna)' }) + ']')
   # Las hojas del submenu empiezan por el numero ("    90 % (casi muda)"); la cabecera del submenu
@@ -660,7 +675,7 @@ try {
   L ('P5_pad_al_aire_ms=' + $msP5 + ' | fuentes=' + (Txt (ById $con 'BusSourcesText')) + ' | nivel70=' + $padBase.max)
   $items = Open-PadMenu $con $win 'F1' 'volumen en vivo'
   [void](Expand-MenuItem (Find-MenuItem $items 'Volumen del pad') 'submenu de volumen')
-  $items = Get-MenuItems $script:proc.Id
+  $items = Wait-SubmenuItems $items.Count 6000
   L ('P3_submenu_de_volumen_completo=' + (@($items | Where-Object { $_.Current.Name -match '^\s*\d+ %$' }).Count -ge 11) +
      ' | lineas_vistas=' + $items.Count)
   $treinta = @($items | Where-Object { ($_.Current.Name -notmatch $CHECK) -and ($_.Current.Name -match '^\s*30 %$') }) | Select-Object -First 1
@@ -778,7 +793,7 @@ try {
   # La cabecera del submenu de modo es fija ("Modo de disparo"): lo que cambia es la opcion marcada
   # dentro, asi que hay que desplegarlo para leer el modo que trajo el cart_pads.json.
   [void](Expand-MenuItem (Find-MenuItem $itemsB 'Modo de disparo') 'submenu de modo')
-  $itemsB = Get-MenuItems $script:proc.Id
+  $itemsB = Wait-SubmenuItems $itemsB.Count 6000
   $marcaModo = @($itemsB | Where-Object { $_.Current.Name.Contains($CHECK) }) | Select-Object -First 1
   L ('P8_relanzado_F3_sigue_en_disparar_y_dejar=' + ((Txt $marcaModo) -match 'disparar y dejar') + ' | marcada=[' + (Txt $marcaModo) + ']')
   Close-Menu

@@ -20,7 +20,9 @@ namespace quasar_radio
 
         public string StreamingStatusText => IsStreamingActive ? "EMITIENDO EN VIVO (ICECAST)" : "STREAMING OFF";
         public string StreamingButtonText => IsStreamingActive ? "⏹ DESCONECTAR STREAM" : "📡 CONECTAR STREAM";
-        public string StatusColor => IsStreamingActive ? "#00E5FF" : "#262D3D";
+        public string StatusColor => IsStreamingActive
+            ? ThemeHex.Of("Brush.Accent", "#00E5FF")
+            : ThemeHex.Of("Brush.Border.Default", "#262D3D");
 
         private string _serverUrl = "http://stream.quasar-radio.com:8000";
         public string ServerUrl
@@ -53,6 +55,13 @@ namespace quasar_radio
         public void ToggleStreaming()
         {
             IsStreamingActive = !IsStreamingActive;
+        }
+
+        // UI-9: el color del chip de estado se resuelve contra el tema activo, y hay que
+        // re-avisar cuando la piel cambie con el programa abierto.
+        public StreamingService()
+        {
+            ThemeRefresh.Bind(this, nameof(StatusColor));
         }
     }
 }

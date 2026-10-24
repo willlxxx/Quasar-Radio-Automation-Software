@@ -29,12 +29,13 @@ namespace quasar_radio
             { "Cyan Broadcast", "Theme.CyanBroadcast.xaml" },
             { "Charcoal Pro", "Theme.CharcoalPro.xaml" },
             { "Deep Navy FM", "Theme.DeepNavyFM.xaml" },
+            { "Studio Light", "Theme.StudioLight.xaml" },
         };
 
         private static readonly ILogger _log = Log.ForContext(typeof(ThemeService));
 
         public static IReadOnlyList<string> AvailableThemes { get; } =
-            new List<string> { "Studio Dark Neon", "Cyan Broadcast", "Charcoal Pro", "Deep Navy FM" };
+            new List<string> { "Studio Dark Neon", "Cyan Broadcast", "Charcoal Pro", "Deep Navy FM", "Studio Light" };
 
         public static string CurrentTheme { get; private set; } = DefaultTheme;
 

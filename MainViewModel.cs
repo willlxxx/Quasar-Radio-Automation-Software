@@ -265,7 +265,11 @@ namespace quasar_radio
         }
 
         public string MicStatusText => IsMicActive ? "MIC EN VIVO" : "MIC APAGADO";
-        public string MicButtonColor => IsMicActive ? "#FF1744" : "#1E2330";
+
+        // UI-9: el color lo decide el estado, el valor lo decide el tema. Ver ThemeHex.
+        public string MicButtonColor => IsMicActive
+            ? ThemeHex.Of("Brush.Button.Mic.Live", "#FF1744")
+            : ThemeHex.Of("Brush.Button.Mic.Idle", "#1E2330");
 
         // VU Meter
         private double _vuLeftLevel;
@@ -362,7 +366,9 @@ namespace quasar_radio
             }
         }
 
-        public string SilenceLevelColor => SilenceDetectorLevel < 0.05 ? "#FF1744" : "#00E676";
+        public string SilenceLevelColor => SilenceDetectorLevel < 0.05
+            ? ThemeHex.Of("Brush.Accent.Danger", "#FF1744")
+            : ThemeHex.Of("Brush.Accent.Success", "#00E676");
 
         private bool _isSilenceDetectionEnabled = true;
         public bool IsSilenceDetectionEnabled
@@ -402,9 +408,9 @@ namespace quasar_radio
 
         public string SilenceStatusColor => SilenceStatus switch
         {
-            "SILENCIO DETECTADO" => "#FF1744",
-            "VIGILANDO" => "#00E676",
-            _ => "#888888"
+            "SILENCIO DETECTADO" => ThemeHex.Of("Brush.Accent.Danger", "#FF1744"),
+            "VIGILANDO" => ThemeHex.Of("Brush.Accent.Success", "#00E676"),
+            _ => ThemeHex.Of("Brush.Text.Faint", "#888888")
         };
 
         /// <summary>Hay un aviso de aire mudo en pie. Pinta el pie de la consola en rojo.</summary>
@@ -556,6 +562,11 @@ namespace quasar_radio
             AudioPlayerViewModel.PropertyChanged += ForwardSubViewModelProperty;
             CartWallViewModel.PropertyChanged += OnCartWallPropertyChanged;
             StreamingViewModel.PropertyChanged += ForwardSubViewModelProperty;
+
+            // UI-9: los tres colores de estado que la consola pinta desde este ViewModel son
+            // cadenas resueltas contra el tema activo; si no se re-avisarian, el cambio de piel
+            // dejaria el micro "vivo" con el rojo del tema anterior hasta el próximo clic.
+            ThemeRefresh.Bind(this, nameof(MicButtonColor), nameof(SilenceLevelColor), nameof(SilenceStatusColor));
 
             // La franja de modulos de la consola marca la ventana que esta abierta; el
             // navigator ya es singleton, asi que el estado es el mismo que ve la consola.
