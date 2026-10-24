@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace quasar_radio;
 
@@ -94,6 +95,44 @@ public sealed class MasterBus
                 if (source.LastSampleUtc >= cutoff) count++;
             }
             return count;
+        }
+    }
+
+    /// <summary>
+    /// El nivel post-fader de UNA fuente concreta (UI-8). Hace falta para medir que el volumen de
+    /// un pad o el ducking de la musica son de verdad suyos: con solo la mezcla total, un pad que
+    /// suena mientras un deck esta en el aire no se puede separar de la suma de los dos.
+    /// Devuelve false si la fuente no ha empujado en la ventana.
+    /// </summary>
+    public bool Sample(string sourceId, out float left, out float right, int windowMs = 250)
+    {
+        var cutoff = DateTime.UtcNow.AddMilliseconds(-windowMs);
+        left = 0f;
+        right = 0f;
+
+        if (string.IsNullOrEmpty(sourceId)) return false;
+
+        lock (_sync)
+        {
+            if (!_sources.TryGetValue(sourceId, out var source)) return false;
+            if (source.LastSampleUtc < cutoff) return false;
+
+            left = source.Left;
+            right = source.Right;
+            return true;
+        }
+    }
+
+    /// <summary>Los ids de las fuentes vivas, ordenados. Para el estado de la consola y las mediciones.</summary>
+    public string LiveSources(int windowMs = 250)
+    {
+        var cutoff = DateTime.UtcNow.AddMilliseconds(-windowMs);
+        lock (_sync)
+        {
+            var vivas = _sources.Where(kv => kv.Value.LastSampleUtc >= cutoff)
+                                .Select(kv => kv.Key)
+                                .OrderBy(k => k, StringComparer.OrdinalIgnoreCase);
+            return string.Join(", ", vivas);
         }
     }
 

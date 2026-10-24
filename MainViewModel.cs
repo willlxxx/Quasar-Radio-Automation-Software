@@ -156,6 +156,9 @@ namespace quasar_radio
         }
         public string CartwallVolumePercentageText => CartWallViewModel.CartwallVolumePercentageText;
 
+        /// <summary>UI-8: cuantos pads tienen clip montado, para la cabecera de la botonera.</summary>
+        public string PadInventoryText => CartWallViewModel.PadInventoryText;
+
         // Propiedades de StreamingViewModel expuestas
         public IcecastStreamingService StreamingService => StreamingViewModel.StreamingService;
         public string CurrentNowPlayingText
@@ -193,6 +196,9 @@ namespace quasar_radio
         public ICommand AssignCartPadCommand => CartWallViewModel.AssignCartPadCommand;
         public ICommand ClearCartPadCommand => CartWallViewModel.ClearCartPadCommand;
         public ICommand StopAllCartPadsCommand => CartWallViewModel.StopAllCartPadsCommand;
+
+        /// <summary>UI-8: escribir cart_pads.json a mano, para cuando se monto la botonera a golpes.</summary>
+        public ICommand SaveCartPadsCommand => CartWallViewModel.SaveCartPadsCommand;
 
         // Comandos de StreamingViewModel expuestos
         public ICommand ToggleStreamingCommand => StreamingViewModel.ToggleStreamingCommand;
@@ -306,6 +312,42 @@ namespace quasar_radio
         /// <summary>Lineal 0..1 a dBFS con techo en la escala del medidor (-60 dB = barra vacia).</summary>
         private static string LevelToDb(float level) =>
             level <= 0.001f ? "--" : (20d * Math.Log10(Math.Max(level, 0.001d))).ToString("0.0") + " dB";
+
+        private string _busSourcesText = "SIN SEÑAL";
+
+        /// <summary>
+        /// Que fuentes estan metiendo senal en la salida ahora mismo ("DECK A", "PAD 3", "MICRO").
+        /// UI-8 lo pone en la cabecera de la botonera: con cuatro WaveOut independientes la duda
+        /// operativa no es cuanto suena, es quien esta sonando, y hasta ahora habia que adivinarlo.
+        /// </summary>
+        public string BusSourcesText
+        {
+            get => _busSourcesText;
+            private set
+            {
+                if (_busSourcesText == value) return;
+                _busSourcesText = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string _duckReadout = string.Empty;
+
+        /// <summary>
+        /// El ducking realmente aplicado a la musica, en cifras. Se ve mientras hay alguien bajando
+        /// la emision (micro, locucion de la hora, un pad con ducking) y se va solo al volver el
+        /// nivel, para que la consola no mienta con un "musica −50 %" que ya no es cierto.
+        /// </summary>
+        public string DuckReadout
+        {
+            get => _duckReadout;
+            private set
+            {
+                if (_duckReadout == value) return;
+                _duckReadout = value;
+                OnPropertyChanged();
+            }
+        }
 
         // Detección de silencio
         private double _silenceDetectorLevel;
@@ -512,7 +554,7 @@ namespace quasar_radio
             // llegaban nunca al operador. Los reenvios se llaman igual que los originales, asi que el
             // puente reavisa por el mismo nombre.
             AudioPlayerViewModel.PropertyChanged += ForwardSubViewModelProperty;
-            CartWallViewModel.PropertyChanged += ForwardSubViewModelProperty;
+            CartWallViewModel.PropertyChanged += OnCartWallPropertyChanged;
             StreamingViewModel.PropertyChanged += ForwardSubViewModelProperty;
 
             // La franja de modulos de la consola marca la ventana que esta abierta; el
@@ -553,6 +595,25 @@ namespace quasar_radio
                 Application.Current?.Dispatcher.BeginInvoke(RefreshAuthorizationState);
 
             _logger.Information("MainViewModel inicializado con DI");
+        }
+
+        /// <summary>
+        /// UI-8: el pie de la consola no puede ir por el reenvio generico cuando la propiedad se
+        /// llama igual en los dos modelos y significa otra cosa. <see cref="StatusText"/> de este
+        /// modelo es el del reproductor, y <see cref="CartWallViewModel.StatusText"/> es el de la
+        /// botonera: reavisar solo por el nombre hacia que la consola leyera siempre el texto del
+        /// deck, asi que "Pad F2 al aire", "no tiene clip montado" o "Botonera guardada" nunca
+        /// llegaban a verse. Aqui lo que hace falta es que el aviso de la botonera ESCRIBA en el pie.
+        /// </summary>
+        private void OnCartWallPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(CartWallViewModel.StatusText))
+            {
+                AudioPlayerViewModel.StatusText = CartWallViewModel.StatusText;
+                return;
+            }
+
+            ForwardSubViewModelProperty(sender, e);
         }
 
         /// <summary>
@@ -674,6 +735,18 @@ namespace quasar_radio
             VuLeftLevel = leftPercent;
             VuRightLevel = rightPercent;
             MasterLevelText = "SALIDA  L " + LevelToDb(left) + " · R " + LevelToDb(right);
+
+            // UI-8: quien esta en la salida y cuanto esta bajada la musica. Se leen del bus y del
+            // motor en el mismo tick que pinta los medidores, asi que lo que se ve es lo que hay
+            // en este instante, no un estado que alguien tuvo que acordarse de actualizar.
+            var sources = _audioEngine.Bus.LiveSources(300);
+            BusSourcesText = string.IsNullOrEmpty(sources) ? "SIN SEÑAL" : sources;
+
+            var duckFactor = _audioEngine.DuckFactor;
+            DuckReadout = duckFactor >= 0.995f
+                ? string.Empty
+                : string.Format("MÚSICA −{0}% ({1})",
+                    (int)Math.Round((1.0d - duckFactor) * 100.0), _audioEngine.ActiveDuckRequests);
 
             // El detector solo vigila habiendo algo en marcha. Con la consola parada el nivel que
             // sale por la tarjeta es cero por definicion, y eso no es aire pinchado: es la emisora
@@ -911,20 +984,22 @@ namespace quasar_radio
 
         private void ExecuteAnnounceTime()
         {
-            _audioEngine.IsDucked = true;
+            // UI-8: la locucion de la hora tiene su propia peticion de ducking en vez de usar el
+            // flag del micro. Antes compartian el mismo bool, por eso hacia falta el guardado de
+            // "no soltar el duck si el micro sigue abierto": con pedidos por origen, cada uno
+            // baja y sube lo suyo y el mas profundo manda.
+            _audioEngine.RequestDuck("HORA", _audioEngine.DuckingRatio);
             CustomTimeEngine.AnnounceTime(
                 onStart: () => Application.Current.Dispatcher.Invoke(() => AudioPlayerViewModel.StatusText = "LOCUCIÓN EN VIVO: Anunciando hora hablada..."),
                 onEnd: () =>
                 {
-                    Application.Current.Dispatcher.Invoke(() =>
-                    {
-                        if (!_micEngine.IsMicActive)
-                        {
-                            _audioEngine.IsDucked = false;
-                        }
-                    });
+                    Application.Current.Dispatcher.Invoke(() => _audioEngine.ReleaseDuck("HORA"));
                 },
-                onError: message => Application.Current.Dispatcher.BeginInvoke(() => AudioPlayerViewModel.StatusText = message));
+                onError: message => Application.Current.Dispatcher.BeginInvoke(() =>
+                {
+                    _audioEngine.ReleaseDuck("HORA");
+                    AudioPlayerViewModel.StatusText = message;
+                }));
         }
 
         private void AdjustSilenceThreshold(object? parameter)

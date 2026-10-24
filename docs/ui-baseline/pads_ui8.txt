@@ -1,0 +1,118 @@
+﻿TEMA=Studio Dark Neon | DATA_DIR(sandbox)=C:\Users\CY-KILL\AppData\Local\Temp\qsr_pads_test
+FIXTURES: 4 WAV QSRPAD en C:\Users\CY-KILL\AppData\Local\Temp\qsr_pads_test (y QSRPAD Perdido - No existe.wav a proposito sin crear)
+SEED: cart_pads.json con 4 pads (F1 70%/D50, F2 100%/D75, F3 OneShot, F4 archivo inexistente)
+ARRANQUE[sesion 1]: arbol uia completo en 361 ms | pad F12 visible a los 236 ms tras los 11 s de cortesia | consola=80,0 1440x860
+P0_doce_pads_como_botones=True | faltan=[]
+P0_mezcla_legible_F1=[70% · D50] F2=[100% · D75] F3=[100% · D0] F4=[100% · D0] F5=[100% · D0]
+P0_F1_es_70_con_D50=True | P0_F2_es_100_con_D75=True (los dos numeros vienen del JSON sembrado, no de un ajuste a mano)
+P0_inventario_de_la_botonera=True | chip=3 de 12 con clip
+P0_la_cara_del_pad_sin_archivo_lo_dice=True | texto=SIN ARCHIVO
+P1_los_nombres_del_json_estan_en_pantalla QSRTono=True QSRMudo=True QSRGolpe=True | en_carta=True
+P1_por_la_ruta_no_por_el_nombre_del_archivo=True
+P1_pie_de_consola_al_arrancar=Cargadas 1 canciones desde carpeta.
+  MENU F1 (contenido): abierto en 329 ms con 8 lineas
+P2_menu_abierto=True | lineas=8
+P2_estado_de_cada_linea=[▶ Sacar al aire «QSRTono»|on] [🎧 Pre-escuchar por el monitor|on] [Volumen del pad · 70 %|on] [Bajar la música · 50 %|on] [Modo de disparo|on] [✏ Renombrar pad…|on] [📁 Asignar audio…|on] [✖ Quitar el clip|on]
+P2_ocho_lineas_con_funcion=True | disparo=[▶ Sacar al aire «QSRTono»] | volumen=[Volumen del pad · 70 %] | duck=[Bajar la música · 50 %]
+P2_lineas_deshabilitadas=0 [] (el menu viejo salia con dos lineas muertas: el mando enlazaba contra la ventana desde el Popup)
+P2_el_nombre_del_pad_se_lee_en_la_primera_linea=True
+  MENU CERRADO: lineas restantes=0
+P7_faders_preparados: master=0 botonera=1
+  MENU F1 (pre-escucha): abierto en 257 ms con 8 lineas
+  CLIC menu pre-escucha por el monitor en 356,512
+P7_pre_escucha_anunciada_ms=247 | pie=Pre-escucha F1: «QSRTono» (por el monitor, no sale al aire).
+P7_dice_claramente_que_no_sale_al_aire=True
+P7_mientras_suena_la_pre-escucha [MasterLeftVu] lecturas=8 min=0 max=0 ultimo=0
+P7_no_contamina_la_salida=True | nivel=0 | fuentes_del_bus=SIN SEÑAL (el pad se oye por AUX 3, que no empuja al bus de salida)
+P7_la_pre-escucha_se_suelta_ms=180 | pie=Parados los pads de la botonera.
+P7_al_soltarla_la_salida_sigue_en_cero [MasterLeftVu] lecturas=5 min=0 max=0 ultimo=0
+P7_la_pre-escucha_no_dejo_el_pad_encendido=True | F1=[70% · D50]
+P4_al_aire_en_ms=224 | nowplaying=QSRPAD Musica - Cuarenta s
+P4_la_musica_sola [MasterLeftVu] lecturas=10 min=27.93 max=38.8 ultimo=38.79
+P4_fuentes_del_bus_sin_pad=DECK A
+P4_sin_aviso_de_ducking_al_parar=True | aviso=[]
+  CLIC ducking 75 en 455,673
+P4_aviso_de_musica_bajada_ms=486 | aviso=MÚSICA −75% (1)
+P4_el_pad_en_el_aire_aparece_en_el_bus_ms=111 | fuentes=DECK A, PAD 2 (un pad que suena ES aire: UI-7)
+P4_la_musica_con_el_pad_de_d75_en_el_aire [MasterLeftVu] lecturas=10 min=6.98 max=9.7 ultimo=9.7
+P4_la_salida_baja_al_factor_pedido=True | ratio=0.25 (duck 75 % => ~0,25) | 38.8 -> 9.7
+P4_la_bajada_tambien_se_ve_en_decibelios=True | lectura=SALIDA  L -20,5 dB · R -20,5 dB
+  MENU F2 (duck en vivo): abierto en 342 ms con 8 lineas
+  SUBMENU submenu de ducking: desplegado por ExpandCollapse
+P4b_la_opcion_vigente_va_marcada_dentro_del_submenu=True | marcada=[✓ 75 %]
+P4b_lineas_del_submenu_duck=18 | la del 90=[    90 % (casi muda)]
+  CLIC menu ducking 90 casi muda en 827,649
+P4b_con_el_duck_a_90_sonando_el_mismo_clip [MasterLeftVu] lecturas=8 min=2.79 max=3.88 ultimo=3.88
+P4b_la_nueva_profundidad_vale_para_lo_que_queda_de_clip_ms=200 | ratio=0.1 (duck 90 => ~0,10) | 38.8 -> 3.88
+P4b_bajada_medible_y_aun_aire=True | aviso=MÚSICA −90% (1)
+  CLIC cortar el pad en 455,673
+P4_cortar_el_pad_saca_del_bus_ms=140 | pie=Pad F2 cortado: «QSRMudo». | fuentes=DECK A
+P4_la_musica_vuelve_a_su_nivel_al_cortar [MasterLeftVu] lecturas=8 min=27.93 max=38.8 ultimo=38.8
+P4_la_recuperacion_es_completa=True | ratio=1 (suelta en 0,45 s, no de golpe)
+P4_el_aviso_de_bajada_desaparece=True | aviso=[]
+P5_la_salida_en_cero_con_el_deck_parado [MasterLeftVu] lecturas=6 min=0 max=0 ultimo=0
+P5_aire_parado_sin_nivel=True
+  CLIC tono al 70 en 226,673
+P5_el_pad_a_70_de_volumen [MasterLeftVu] lecturas=10 min=10.86 max=15.09 ultimo=15.08
+P5_pad_al_aire_ms=155 | fuentes=PAD 1 | nivel70=15.09
+  MENU F1 (volumen en vivo): abierto en 267 ms con 8 lineas
+  SUBMENU submenu de volumen: desplegado por ExpandCollapse
+P3_submenu_de_volumen_completo=True | lineas_vistas=30
+  CLIC menu volumen 30 % en 566,605
+P3_la_cara_del_pad_refleja_el_cambio_ms=289 | ayuda=30% · D50
+P3_el_pie_confirma_al_operador=True | pie=Pad F1 a 30 % de volumen.
+P5_el_mismo_clip_sonando_al_30_sin_re_disparar [MasterLeftVu] lecturas=8 min=4.66 max=6.47 ultimo=6.47
+P5_el_nivel_baja_con_el_volumen_en_vivo=True | ratio=0.429 (30/70 = ~0,43) | 15.09 -> 6.47
+P3_cart_pads.json_guardado_solo_al_ajustar=True | pad1: volumen=30 duck=50
+  CLIC cortar el pad 1 en 226,673
+P6_toggle:la_segunda_pulsacion_corta=True | pie=Pad F1 cortado: «QSRTono». | fuentes=SIN SEÑAL
+  CLIC golpe one-shot, primera pulsacion en 685,673
+P6_el_golpe_sale_al_aire [MasterLeftVu] lecturas=6 min=23.53 max=25.86 ultimo=25.86
+P6_oneshot_primera_pulsacion_en_el_bus_ms=137 | nivel=25.86 | pie=Pad F3 al aire: «QSRGolpe».
+  CLIC golpe one-shot, segunda pulsacion en 685,673
+P6_serie_tras_reiniciar=PAD 3/25.8368641138077 | PAD 3/25.8552044630051 | PAD 3/25.8557021617889 | PAD 3/18.6161145567894 | PAD 3/25.7970720529556 | PAD 3/25.8541315793991 | PAD 3/25.8556723594666 | PAD 3/18.6161145567894
+P6_oneshot:la_segunda_pulsacion_reinicia_y_no_deja_el_pad_mudo=True | pie=Pad F3 al aire: «QSRGolpe». | fuentes=PAD 3
+P6_oneshot:el_clip_se_deja_terminar_solo_ms=3065 (el WAV dura 6 s) | estaba_vivo_antes=True | fuentes=SIN SEÑAL
+  CLIC pad con archivo perdido en 915,673
+PX_sin_dialogo_encima_del_aire=True | ventanas 1 -> 1
+PX_lo_dice_en_el_pie=True | pie=El pad F4 apunta a un archivo que ya no esta: QSRPAD Perdido - No existe.wav.
+PF_el_pie_de_la_consola_muestra_los_avisos_de_la_botonera=True | cortes_leidos=[Pad F2 cortado: «QSRMudo».] / [El pad F4 apunta a un archivo que ya no esta: QSRPAD Perdido - No existe.wav.]
+  MENU F1 (puerta de nivel): abierto en 283 ms con 8 lineas
+  CLIC menu renombrar sin login en 356,610
+P9_la_linea_de_administrador_pide_identificarse_ms=210 | ventana=Quasar Radio | Primera cuenta
+  CLIC Volver de la identificacion en 707,589
+P9_cancelada_la_identificacion_ms=215 | modal_cerrado=True
+P9_sin_identificacion_el_nombre_no_cambio=True | pie=El pad F4 apunta a un archivo que ya no esta: QSRPAD Perdido - No existe.wav.
+P8_cart_pads.json: pads=12 | version=1
+P8_pad1_volumen=30 (esperado 30, el cambiado desde el menu) duck=50 (esperado 50) modo=Toggle title=QSRTono
+P8_pad2_duck=90 (esperado 90, el cambiado con el pad en el aire) modo=Toggle
+P8_pad3_modo=OneShot (esperado OneShot, del seed) | pad4_ruta_rota_conservada=True
+P8_escritura_atomica: backup=True sin_residuo_tmp=True
+P8_el_json_no_perdio_la_ruta_de_los_clips=True
+ARRANQUE[sesion 2 (persistencia)]: arbol uia completo en 306 ms | pad F12 visible a los 259 ms tras los 11 s de cortesia | consola=80,0 1440x860
+P8_relanzado_F1=[30% · D50] (esperado 30% · D50) | F2=[100% · D90] (esperado 100% · D90)
+P8_relanzado_inventario=3 de 12 con clip | chip_ok=True
+P8_relanzado_nombres_del_json=True
+  MENU F3 (modo del json en el menu): abierto en 333 ms con 8 lineas
+  SUBMENU submenu de modo: desplegado por ExpandCollapse
+P8_relanzado_F3_sigue_en_disparar_y_dejar=True | marcada=[✓ disparar y dejar]
+  MENU CERRADO: lineas restantes=8
+CAPC ui8_botonera : PrintWindow 1394x130 md5=38F8B40A2B62B95338096E02B65D820B
+CAP ui8_consola_final : PrintWindow=True 1440x860 md5=980A3BA69D3D8BC98672229332EAA685
+LOG=quasar_radio-20261023.log
+   2026-10-23 23:03:22.450 -04:00 [INF] Botonera leída de C:\Users\CY-KILL\AppData\Local\Temp\qsr_pads_test\cart_pads.json: 12 pad(s), 1 sin archivo
+   2026-10-23 23:07:51.506 -04:00 [INF] Botonera leída de C:\Users\CY-KILL\AppData\Local\Temp\qsr_pads_test\cart_pads.json: 4 pad(s), 1 sin archivo
+   2026-10-23 23:09:00.166 -04:00 [INF] Botonera leída de C:\Users\CY-KILL\AppData\Local\Temp\qsr_pads_test\cart_pads.json: 12 pad(s), 1 sin archivo
+   2026-10-23 23:03:06.022 -04:00 [INF] Botonera guardada: 12 pad(s), 4 con clip, en C:\Users\CY-KILL\AppData\Local\Temp\qsr_pads_test\cart_pads.json
+   2026-10-23 23:08:24.458 -04:00 [INF] Botonera guardada: 12 pad(s), 4 con clip, en C:\Users\CY-KILL\AppData\Local\Temp\qsr_pads_test\cart_pads.json
+   2026-10-23 23:08:37.474 -04:00 [INF] Botonera guardada: 12 pad(s), 4 con clip, en C:\Users\CY-KILL\AppData\Local\Temp\qsr_pads_test\cart_pads.json
+   2026-10-23 22:18:57.267 -04:00 [INF] Accion sin permiso: hace falta "Admin" y no se identifico nadie (sesion actual: invitado)
+   2026-10-23 23:03:17.422 -04:00 [INF] Accion sin permiso: hace falta "Admin" y no se identifico nadie (sesion actual: invitado)
+   2026-10-23 23:08:55.152 -04:00 [INF] Accion sin permiso: hace falta "Admin" y no se identifico nadie (sesion actual: invitado)
+   2026-10-23 18:01:38.658 -04:00 [INF] Audio asignado a pad 1: I:\Will Colina\Music\Tips Cactus FM\Identificadores\Ivan Loscher\¡Cactus.-Efe-Eme!.mp3
+   2026-10-23 18:01:38.658 -04:00 [INF] Audio asignado a pad 1: I:\Will Colina\Music\Tips Cactus FM\Identificadores\Ivan Loscher\¡Cactus.-Efe-Eme!.mp3
+RESTANTES=0
+BIN_track_metadata_antes=80D7FA9AE494 despues=80D7FA9AE494 | intacto=True
+BIN_musica=14 -> 14 | efectos=0 -> 0 | sin_fixtures_QSRPAD_en_bin=True
+DATOS_REALES_cart_pads_antes=(no existe) despues=(no existe) | intacto=True (la prueba escribe en el sandbox por QUASAR_RADIO_DATA_DIR)
+SANDBOX_CONSERVADO=C:\Users\CY-KILL\AppData\Local\Temp\qsr_pads_test

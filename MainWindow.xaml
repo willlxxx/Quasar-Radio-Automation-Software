@@ -679,11 +679,30 @@
 
                 <DockPanel Grid.Row="0" LastChildFill="False" Margin="0,0,0,6">
                     <TextBlock Text="BOTONERA SFX [F1-F12]" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent}" VerticalAlignment="Center" DockPanel.Dock="Left"/>
+
+                    <!-- UI-8: el estado de la botonera, leído del bus y del motor. "3 de 12 con clip"
+                         dice si hay material montado, "EN SALIDA DECK A, PAD 3" dice quien esta
+                         sonando ahora mismo entre los cuatro WaveOut, y el aviso de musica bajada
+                         solo aparece mientras hay un ducking en marcha. -->
+                    <Border DockPanel.Dock="Left" Background="{DynamicResource Brush.Surface.Inset}" CornerRadius="4" Padding="6,2" Margin="10,0,0,0" BorderBrush="{DynamicResource Brush.Border.Subtle}" BorderThickness="1">
+                        <TextBlock x:Name="PadInventoryChip" Text="{Binding PadInventoryText}" FontSize="9" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.Secondary}"
+                                   AutomationProperties.HelpText="Pads de la botonera que tienen un clip montado"/>
+                    </Border>
+                    <Border DockPanel.Dock="Left" Background="{DynamicResource Brush.Surface.Inset}" CornerRadius="4" Padding="6,2" Margin="6,0,0,0" BorderBrush="{DynamicResource Brush.Border.Subtle}" BorderThickness="1">
+                        <TextBlock x:Name="BusSourcesText" Text="{Binding BusSourcesText}" FontSize="9" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent}"
+                                   AutomationProperties.HelpText="Fuentes que están metiendo señal en la salida"/>
+                    </Border>
+                    <TextBlock x:Name="DuckReadout" DockPanel.Dock="Left" Text="{Binding DuckReadout}" FontSize="9" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent.Warn}" VerticalAlignment="Center" Margin="8,0,0,0"
+                               AutomationProperties.HelpText="Nivel al que la música está rebajada por el ducking en curso"/>
+
                     <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" VerticalAlignment="Center">
                         <TextBlock Text="VOLUMEN" FontSize="9" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.Secondary}" VerticalAlignment="Center" Margin="0,0,6,0"/>
-                        <Slider Width="120" Value="{Binding CartwallMasterVolume}" Minimum="0" Maximum="1" TickFrequency="0.05" IsSnapToTickEnabled="True" VerticalAlignment="Center" IsEnabled="{Binding CanOperate}"/>
+                        <Slider Width="120" Value="{Binding CartwallMasterVolume}" Minimum="0" Maximum="1" TickFrequency="0.05" IsSnapToTickEnabled="True" VerticalAlignment="Center" IsEnabled="{Binding CanOperate}"
+                                AutomationProperties.Name="Volumen de la botonera SFX"/>
                         <TextBlock Text="{Binding CartwallVolumePercentageText}" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource Brush.Accent}" Width="38" VerticalAlignment="Center" Margin="6,0,10,0"/>
                         <Button Command="{Binding StopAllCartPadsCommand}" Style="{StaticResource StudioButtonStyle}" Padding="8,3" FontSize="10" Content="⏹ PARAR SFX"/>
+                        <Button x:Name="SavePadsButton" Command="{Binding SaveCartPadsCommand}" Style="{StaticResource StudioButtonStyle}" Padding="8,3" FontSize="10" Margin="6,0,0,0" Content="💾 BOTONERA"
+                                ToolTip="Escribe cart_pads.json. Los ajustes se guardan solos al cambiarlos; este mando es para forzar el escribido y ver quantos clips hay montados."/>
                     </StackPanel>
                 </DockPanel>
 
@@ -695,15 +714,48 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Border Margin="2" Height="42" CornerRadius="5" Background="{DynamicResource Brush.Surface.Deep}" BorderBrush="{Binding StatusBorderColor}" BorderThickness="2">
+                            <Border Margin="2" Height="42" CornerRadius="5" Background="{DynamicResource Brush.Surface.Deep}" BorderThickness="2">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Subtle}"/>
+                                        <!-- UI-8: el testigo de aire pasa por el tema, no por un
+                                             hex fijo en el modelo, para que UI-9 (tema claro)
+                                             no se encuentre un verde escrito a mano. -->
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsPlaying}" Value="True">
+                                                <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Success}"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
                                 <Button Command="{Binding DataContext.TriggerCartPadCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                         CommandParameter="{Binding}" Background="Transparent" BorderThickness="0" Padding="5,2"
-                                        ToolTip="{Binding Title}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center"
-                                        AutomationProperties.Name="{Binding ShortcutText}">
+                                        ToolTip="{Binding PadToolTip}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center"
+                                        AutomationProperties.Name="{Binding ShortcutText}"
+                                        AutomationProperties.HelpText="{Binding MixLabel}">
+                                    <!-- UI-8: el menu de antes tenia dos lineas y ninguna funcionaba.
+                                         Enlazaban el mando contra la ventana con
+                                         RelativeSource AncestorType=Window, y un ContextMenu no
+                                         cuelga de la consola: vive en la ventana Popup del propio
+                                         menu. El enlace no resolvia, el mando llegaba nulo y la
+                                         linea salia apagada. Ahora el pad trae sus mandos puestos
+                                         (CartPadMenu), atados a si mismo, y el DataContext del
+                                         menu se fija del target explicitamente. -->
                                     <Button.ContextMenu>
-                                        <ContextMenu>
-                                            <MenuItem Header="Asignar Audio..." Command="{Binding DataContext.AssignCartPadCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}"/>
-                                            <MenuItem Header="Vaciar Pad" Command="{Binding DataContext.ClearCartPadCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}"/>
+                                        <ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
+                                            <MenuItem Header="{Binding TriggerMenuHeader}" Command="{Binding Menu.TriggerCommand}"/>
+                                            <MenuItem Header="{Binding PreListenMenuHeader}" Command="{Binding Menu.PreListenCommand}"/>
+                                            <Separator/>
+                                            <MenuItem Header="{Binding VolumeMenuHeader}" ItemsSource="{Binding Menu.VolumeItems}"
+                                                      ItemContainerStyle="{StaticResource PadValueMenuItemStyle}"/>
+                                            <MenuItem Header="{Binding DuckMenuHeader}" ItemsSource="{Binding Menu.DuckItems}"
+                                                      ItemContainerStyle="{StaticResource PadValueMenuItemStyle}"/>
+                                            <MenuItem Header="Modo de disparo" ItemsSource="{Binding Menu.ModeItems}"
+                                                      ItemContainerStyle="{StaticResource PadValueMenuItemStyle}"/>
+                                            <Separator/>
+                                            <MenuItem Header="✏ Renombrar pad…" Command="{Binding Menu.RenameCommand}"/>
+                                            <MenuItem Header="📁 Asignar audio…" Command="{Binding Menu.AssignCommand}"/>
+                                            <MenuItem Header="✖ Quitar el clip" Command="{Binding Menu.ClearCommand}"/>
                                         </ContextMenu>
                                     </Button.ContextMenu>
                                     <Grid>
@@ -712,12 +764,22 @@
                                             <ColumnDefinition Width="*"/>
                                             <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="*"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
 
-                                        <Border Grid.Column="0" Background="{Binding ColorHex}" CornerRadius="3" Padding="4,1" VerticalAlignment="Center">
+                                        <Border Grid.Column="0" Grid.RowSpan="2" Background="{Binding ColorHex}" CornerRadius="3" Padding="4,1" VerticalAlignment="Center">
                                             <TextBlock Text="{Binding ShortcutText}" FontSize="9" FontWeight="Bold" Foreground="{DynamicResource Brush.Text.OnAccent}"/>
                                         </Border>
-                                        <TextBlock Grid.Column="1" Text="{Binding Title}" FontSize="10" FontWeight="SemiBold" Foreground="{DynamicResource Brush.Text.High}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="6,0"/>
-                                        <Ellipse Grid.Column="2" Width="7" Height="7" Fill="{DynamicResource Brush.Accent.Success}" VerticalAlignment="Center">
+                                        <TextBlock Grid.Column="1" Grid.Row="0" Text="{Binding Title}" FontSize="10" FontWeight="SemiBold" Foreground="{DynamicResource Brush.Text.High}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="6,2,0,0"/>
+                                        <!-- UI-8: volumen y ducking del pad a la vista. Estan en la
+                                             cara del pad porque son lo unico que distingue dos pads
+                                             con el mismo clip y lo que el operador necesita confirmar
+                                             sin abrir el menu en medio del aire. Si no hay clip, esa
+                                             misma linea dice VACIO o SIN ARCHIVO. -->
+                                        <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding FaceFooterText}" FontSize="8" Foreground="{DynamicResource Brush.Text.Secondary}" VerticalAlignment="Center" Margin="6,0,0,2"/>
+                                        <Ellipse Grid.Column="2" Grid.RowSpan="2" Width="7" Height="7" Fill="{DynamicResource Brush.Accent.Success}" VerticalAlignment="Center">
                                             <Ellipse.Style>
                                                 <Style TargetType="Ellipse">
                                                     <Setter Property="Visibility" Value="Collapsed"/>

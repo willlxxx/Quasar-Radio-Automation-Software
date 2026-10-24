@@ -619,5 +619,14 @@
             </DataTrigger>
         </Style.Triggers>
     </Style>
+    <!-- UI-8: las lineas de los submenues del pad (volumen, ducking, modo). El contenido del
+         submenu viene de CartPadMenu, que ya trae el mando atado al pad, asi que aqui solo se
+         traduce el dato a la linea: Header y Command. Sin este estilo las opciones se escribirian
+         con el ToString del objeto en vez de con su etiqueta. -->
+    <Style x:Key="PadValueMenuItemStyle" TargetType="MenuItem">
+        <Setter Property="Header" Value="{Binding Header}" />
+        <Setter Property="Command" Value="{Binding Command}" />
+        <Setter Property="Padding" Value="8,3" />
+    </Style>
 
 </ResourceDictionary>

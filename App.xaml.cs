@@ -34,6 +34,11 @@ public partial class App : Application
         services.AddSingleton<AudioEngine>();
         services.AddSingleton(sp => sp.GetRequiredService<AudioEngine>().DspProcessor);
         services.AddSingleton<CartwallEngine>();
+
+        // UI-8: lo montado en la botonera SFX vive en cart_pads.json. Es singleton porque es el
+        // estado de la emisora, no de una ventana: la consola y cualquiermodulo futuro tienen que
+        // ver los mismos doce pads.
+        services.AddSingleton<CartPadService>();
         services.AddSingleton<CommercialScheduler>();
 
         // UI-4 paso C: la rejilla horaria de siete dias por veinticuatro horas. Singleton y

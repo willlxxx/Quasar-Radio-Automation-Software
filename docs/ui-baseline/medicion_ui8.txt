@@ -1,0 +1,106 @@
+﻿TEMA=Studio Dark Neon
+FIXTURES: QSRMED Larga - Noventa s.wav (90 s, 240 Hz) y nada mas en musica/ -> C:\Users\CY-KILL\AppData\Local\Temp\qsr_med_test
+ARRANQUE[sesion 1]: arbol uia completo en 468 ms tras los 11 s de cortesia | consola=80,0 1440x860
+G1_medidor [DeckAVu] class=LedVuMeter name=VU deck A rect=212,224 220x20 valor_al_parar=0 legible_por_uia=True
+G1_medidor [DeckBVu] class=LedVuMeter name=VU deck B rect=665,224 220x20 valor_al_parar=0 legible_por_uia=True
+G1_medidor [MasterLeftVu] class=LedVuMeter name=VU master izquierdo rect=1044,232 180x20 valor_al_parar=0 legible_por_uia=True
+G1_medidor [MasterRightVu] class=LedVuMeter name=VU master derecho rect=1284,232 180x20 valor_al_parar=0 legible_por_uia=True
+G1_boton [DeckARepeatButton] name=Repetir la pista del deck A rect=109,274 211x26 habilitado=True
+G1_boton [DeckAPreListenButton] name=Pre-escucha por el monitor lo que el deck A tiene cargado, sin sacarlo al aire rect=324,274 211x26 habilitado=True
+G1_boton [DeckBRepeatButton] name=Repetir la pista del deck B rect=565,274 208x26 habilitado=True
+G1_boton [DeckBPreListenButton] name=Pre-escucha por el monitor lo que el deck B tiene cargado, sin sacarlo al aire rect=777,274 209x26 habilitado=True
+G1_franja_debajo_del_vu=True | dentro_de_la_ventana=True | botones_lado_a_lado=True
+G1_ledvu_en_la_consola=4 (esperados 4: deck A, deck B, master L, master R)
+G2_estado_del_detector_al_parar=SIN AIRE | aviso_fijo=🔇 SIN AIRE | segundos=[]
+G2_sin_aviso_con_la_consola_parada=True
+G2_master_parada [MasterLeftVu] lecturas=6 min=0 max=0 ultimo=0
+G2_master_sin_aire_en_cero=True
+G2_lectura_de_salida=SALIDA  L -- · R --
+AIRE_master_preparado=0
+AIRE_al_aire_en_ms=214 | nowplaying=QSRMED Larga - Noventa s
+C2_el_pie_de_la_consola_refleja_el_aire=True (a los 172 ms) | pie=AL AIRE (DECK A): Noventa s [MODO: AUTO]
+M1_master_arriba [DeckAVu] lecturas=12 min=75.99 max=75.99 ultimo=75.99
+M1_master_arriba [MasterLeftVu] lecturas=12 min=27.93 max=38.8 ultimo=38.71
+M1_master_arriba [MasterRightVu] lecturas=12 min=35.54 max=38.8 ultimo=38.8
+M1_master_arriba [DeckBVu] lecturas=5 min=0 max=0 ultimo=0
+M1_lectura_de_salida=SALIDA  L -8,2 dB · R -8,2 dB
+M1_barra_del_detector_con_nivel=True | valor_lineal=0.388 | estado=VIGILANDO
+M1_lectura_con_cifras_de_decibelios=True
+M1_deck_A_mide_senal=True | master_L_mide_senal=True | master_R_mide_senal=True (el WAV es monofonico: L y R van iguales; que los tres SE MOVERIAN con el fader lo demuestran M1b, M2 y M3)
+M1_deck_B_en_cero_sin_sonar=True
+CAPC ui8r_deckA_franja : PrintWindow 620x96 md5=F2977125714C8853DA13C95F93DB13F3
+CAP ui8r_con_aire_master_arriba : PrintWindow=True 1440x860 md5=1F045BB16B162C9AFD86072AA9D61719
+M1b_master_al_30 [DeckAVu] lecturas=9 min=75.99 max=75.99 ultimo=75.99
+M1b_master_al_30 [MasterLeftVu] lecturas=9 min=8.38 max=11.64 ultimo=11.64
+M1b_master_baja_con_el_fader=True | ratio_nivel=0.3 (fader 0,30 => ~0,30)
+M1b_deck_no_baja_con_el_fader=True | ratio_deck=1 (min 75.99 -> 75.99; max 75.99 -> 75.99, la toma del deck es pre-fader)
+M1b_aun_vigilando_sin_aviso=True | estado=VIGILANDO (0,30 x 0,27 = 0,08, por encima del umbral de -26 dB)
+M2_dispara_en_ms=2649 (umbral -26 dB, 2 s minimos: la ventana del historial son 12 lecturas de 100 ms)
+M2_dispara_dentro_de_lo_esperado=True
+M2_master_a_cero [DeckAVu] lecturas=7 min=75.99 max=75.99 ultimo=75.99
+M2_master_a_cero [MasterLeftVu] lecturas=7 min=0 max=0 ultimo=0
+M2_master_a_cero [MasterRightVu] lecturas=7 min=0 max=0 ultimo=0
+M2_deck_sigue_vivo=True | salida_en_cero=True (con el master bajado el VU de salida NO pinta tope: ese era el bug que reporto el fundador)
+M2_lectura_de_salida=SALIDA  L -- · R --
+M2_barra_del_detector_baja_al_umbral=True | valor_lineal=0 (el umbral del detector es 0,05 = -26 dB)
+M2_aviso_fijo_en_el_pie=True | 🔇 SILENCIO DETECTADO [6,8 s] -> 🔇 SILENCIO DETECTADO [10,2 s]
+M2_segundos_acumulados=True | 6.8 s -> 10.2 s (cuenta, no parpadeo)
+CAPC ui8r_pie_aviso_silencio : PrintWindow 539x44 md5=BFC7BD1FF3169F5CDFD4E33B96A9BC0C
+CAP ui8r_silencio_detectado : PrintWindow=True 1440x860 md5=93BEF9F1C572A963B7CBDD9513A27AB6
+M3_el_aviso_se_apaga_al_volver_el_nivel_en_ms=306 | estado=VIGILANDO | segundos=[]
+M3_master_de_nuevo_arriba [MasterLeftVu] lecturas=7 min=27.93 max=38.8 ultimo=38.5
+M3_la_salida_vuelve_a_moverse=True
+P1_deck_en_el_aire=A (leido del estado de la consola, no supuesto)
+P1_repetir_al_pulsar=True | estado=Deck A: repitiendo la pista actual.
+P1_repetir_al_quitarlo=True | estado=Deck A: rotacion normal.
+P2_pre_escucha_on_ms=201 | estado=Pre-escucha deck A: Noventa s (por el monitor, no sale al aire).
+P2_dice_que_no_sale_al_aire=True
+P2_pre_escucha_off_ms=193 | estado=Pre-escucha del deck A apagada.
+S1_tras_parar [DeckAVu] lecturas=5 min=0 max=0 ultimo=0
+S1_tras_parar [MasterLeftVu] lecturas=5 min=0 max=0 ultimo=0
+S1_deck_en_cero=True | salida_en_cero=True (Bus.Forget al parar, sin esperar la ventana de 250 ms del bus)
+S1_detector_vuelve_a_sin_aire_ms=54 | estado=SIN AIRE
+P3_pre_escucha_sin_pista=True | estado=El deck A no tiene ninguna pista cargada que pre-escuchar.
+CAP ui8r_consola_sesion1_final : PrintWindow=True 1440x860 md5=4DB46C551C373D78A7C96B7A0D9362EA
+FIXTURES: QSRMED Bucle - Seis s.wav (6 s, 240 Hz) y nada mas en musica/ -> C:\Users\CY-KILL\AppData\Local\Temp\qsr_med_test
+ARRANQUE[sesion 2]: arbol uia completo en 331 ms tras los 11 s de cortesia | consola=80,0 1440x860
+R0_al_aire_en_ms=211 | deck=A | estado=AL AIRE (DECK A): Seis s [MODO: AUTO]
+R1_repetir_puesto=True | a los 1.3 s de una pista de 6 s | estado=Deck A: repitiendo la pista actual.
+R1_ficha_contador_al_empezar=1 (-1 = aun sin ficha en el JSON del sandbox)
+R2_durante_el_bucle [DeckAVu] lecturas=5 min=75.99 max=75.99 ultimo=75.99
+R2_durante_el_bucle [MasterLeftVu] lecturas=5 min=0 max=0 ultimo=0
+R2_sigue_el_mismo_tema_a_los_16.4_s=True | nowplaying=QSRMED Bucle - Seis s (pista de 6 s: habria acabado 2 veces)
+R2_el_deck_sigue_vivo=True | la_salida_sigue_en_cero=True (el bucle no abre el master)
+R2_repetir_no_vuelve_a_atribuir=True | contador=1 -> 1 tras 2 vueltas
+R3_aviso_fijo_durante_el_bucle=True | SILENCIO DETECTADO [18,6 s]
+CAP ui8r_bucle_con_aviso_fijo : PrintWindow=True 1440x860 md5=12DEF335B8F364DD6AA74C50D6C442D6
+R4_al_quitar_el_repetir_termina_en_ms=3564 | nowplaying=Quasar Radio Pro - En Vivo
+R4_el_aire_se_cerro_solo=True
+R4_contador_final=1 | emitida_al_menos_una_vez=True
+R4_detector_vuelve_a_sin_aire_al_terminar_ms=53 | estado=SIN AIRE
+R4_salida_al_terminar [MasterLeftVu] lecturas=4 min=0 max=0 ultimo=0
+R4_la_salida_queda_en_cero=True
+SRC_itemscontrol_de_espectro=0 | barras_animadas_en_xaml=4 | vu_falso_del_deck_enlazado_a_ProgressBar=0 | Deck[AB]_VuLevel_mencionado=2 (2: solo los dos LedVuMeter)
+SRC_botones_repetir=2 | botones_pre_escucha=2
+LOG=quasar_radio-20261023.log
+   2026-10-23 23:08:26.846 -04:00 [WRN] Silencio prolongado en la salida: 2,1 s sin nivel por la tarjeta
+   2026-10-23 23:10:31.986 -04:00 [WRN] Silencio prolongado en la salida: 2,1 s sin nivel por la tarjeta
+   2026-10-23 23:11:08.449 -04:00 [WRN] Silencio prolongado en la salida: 2,1 s sin nivel por la tarjeta
+   2026-10-23 23:02:56.338 -04:00 [INF] Aire recuperado tras el silencio detectado
+   2026-10-23 23:08:27.711 -04:00 [INF] Aire recuperado tras el silencio detectado
+   2026-10-23 23:10:41.322 -04:00 [INF] Aire recuperado tras el silencio detectado
+   2026-10-23 23:10:44.331 -04:00 [INF] Boton REPETIR del deck A: false
+   2026-10-23 23:11:06.702 -04:00 [INF] Boton REPETIR del deck A: true
+   2026-10-23 23:11:25.444 -04:00 [INF] Boton REPETIR del deck A: false
+   2026-10-23 23:11:17.809 -04:00 [INF] REPETIR DECK A: Seis s vuelve a "00:00:00"
+   2026-10-23 23:11:23.636 -04:00 [INF] REPETIR DECK A: Seis s vuelve a "00:00:00"
+   2026-10-23 23:11:25.444 -04:00 [INF] Boton REPETIR del deck A: false
+   2026-10-23 21:32:51.313 -04:00 [INF] PFL deck A: Noventa s (true)
+   2026-10-23 22:16:36.713 -04:00 [INF] PFL deck B: What's Up (Cumbia) (true)
+   2026-10-23 23:10:45.258 -04:00 [INF] PFL deck A: Noventa s (true)
+   2026-10-23 22:16:33.620 -04:00 [INF] Deck B en REPETIR
+   2026-10-23 23:10:43.402 -04:00 [INF] Deck A en REPETIR
+   2026-10-23 23:11:06.701 -04:00 [INF] Deck A en REPETIR
+RESTANTES=0
+BIN_track_metadata_antes=80D7FA9AE494 despues=80D7FA9AE494 | intacto=True
+BIN_musica_archivos=14 -> 14 | sin_fixtures_QSRMED_en_bin=True

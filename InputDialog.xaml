@@ -1,0 +1,44 @@
+<Window x:Class="quasar_radio.InputDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="{Binding TitleText}" Height="172" Width="420"
+        WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
+        Background="{DynamicResource Brush.Surface.Base}" Foreground="{DynamicResource Brush.Text.Default}">
+
+    <!-- UI-8: el cuadro de texto que necesitaba renombrar un pad. Es una ventana aparte y modal
+         porque lo que se edita es el nombre que se ve en el aire; los mandos del pad siguen
+         respondiendo detras, pero el texto se escribe en una ventana de verdad, no en un menu. -->
+    <Grid Margin="14">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="{Binding PromptText}" FontSize="12" FontWeight="Bold"
+                   Foreground="{DynamicResource Brush.Accent}" Margin="0,0,0,8" TextWrapping="Wrap"/>
+
+        <TextBlock Grid.Row="1" Text="{Binding HintText}" FontSize="10"
+                   Foreground="{DynamicResource Brush.Text.Secondary}" Margin="0,0,0,8" TextWrapping="Wrap"/>
+
+        <TextBox Grid.Row="2" x:Name="ValueBox" VerticalAlignment="Top" Height="30" Padding="6,4"
+                 FontSize="13" MaxLength="60"
+                 Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}"
+                 Background="{DynamicResource Brush.Surface.Deep}" Foreground="{DynamicResource Brush.Text.High}"
+                 BorderBrush="{DynamicResource Brush.Border.Default}"
+                 AutomationProperties.Name="Valor"
+                 AutomationProperties.HelpText="El texto que se va a guardar"/>
+
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
+            <Button x:Name="OkButton" Content="ACEPTAR" Width="104" Height="28" Margin="0,0,6,0"
+                    Click="OnOkClick" IsDefault="True"
+                    Background="{DynamicResource Brush.Accent.Play}" Foreground="{DynamicResource Brush.Text.High}"
+                    FontWeight="Bold" AutomationProperties.Name="ACEPTAR"/>
+            <Button x:Name="CancelButton" Content="CANCELAR" Width="104" Height="28"
+                    Click="OnCancelClick" IsCancel="True"
+                    Background="{DynamicResource Brush.Surface.Raised}" Foreground="{DynamicResource Brush.Text.High}"
+                    AutomationProperties.Name="CANCELAR"/>
+        </StackPanel>
+    </Grid>
+</Window>

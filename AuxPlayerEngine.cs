@@ -106,16 +106,25 @@ namespace quasar_radio
         public AuxPlayer Aux1 { get; } = new AuxPlayer("AUX 1 (PFL)");
         public AuxPlayer Aux2 { get; } = new AuxPlayer("AUX 2 (PFL)");
 
+        /// <summary>
+        /// El monitor de la botonera (UI-8). Va aparte de los dos PFL de los decks para que oir un
+        /// efecto antes de sacarlo no corte la pre-escucha de la pista que esta cargada, y para que
+        /// "PARAR SFX" y "quitar la escucha previa" sigan siendo mandos independientes.
+        /// </summary>
+        public AuxPlayer Aux3 { get; } = new AuxPlayer("AUX 3 (PFL pads)");
+
         public void StopAll()
         {
             Aux1.Stop();
             Aux2.Stop();
+            Aux3.Stop();
         }
 
         public void Dispose()
         {
             Aux1.Dispose();
             Aux2.Dispose();
+            Aux3.Dispose();
         }
     }
 }

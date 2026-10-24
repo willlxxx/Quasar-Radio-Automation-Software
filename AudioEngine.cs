@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Windows.Threading;
@@ -97,18 +98,108 @@ namespace quasar_radio
         /// </summary>
         public MasterBus Bus { get; }
 
-        private bool _isDucked;
+        /// <summary>
+        /// Quién está pidiendo bajar la música. Cada origen deja su factor objetivo: 1 no baja
+        /// nada, 0,25 deja la música a un cuarto. Manda el más profundo mientras haya pedidos,
+        /// así que micro + pad + pisador no se pisan entre sí ni se reactivan al soltarse uno.
+        /// </summary>
+        private readonly Dictionary<string, float> _duckRequests = new(StringComparer.OrdinalIgnoreCase);
+        private readonly object _duckSync = new object();
+
+        /// <summary>El factor realmente aplicado. Persegue al objetivo con rampa, no a salto.</summary>
+        private float _duckApplied = 1.0f;
+
+        private readonly DispatcherTimer _duckTimer;
+
+        /// <summary>La petición del micro; <see cref="IsDucked"/> es la puerta de toda la vida.</summary>
+        private const string MicroDuckSource = "MICRO";
+
+        private const int DuckTickMs = 50;
+
+        /// <summary>Segundos en bajar la música cuando alguien empieza a hablar o suena un pad.</summary>
+        public float DuckAttackSeconds { get; set; } = 0.18f;
+
+        /// <summary>Segundos en devolverla cuando ese origen calla.</summary>
+        public float DuckReleaseSeconds { get; set; } = 0.45f;
+
         public bool IsDucked
         {
-            get => _isDucked;
+            get { lock (_duckSync) return _duckRequests.ContainsKey(MicroDuckSource); }
             set
             {
-                _isDucked = value;
-                UpdateActiveDeckVolume();
+                if (value) RequestDuck(MicroDuckSource, DuckingRatio);
+                else ReleaseDuck(MicroDuckSource);
             }
         }
 
         public float DuckingRatio { get; set; } = 0.25f;
+
+        /// <summary>El factor que se está aplicando a la música ahora mismo (1 = sin ducking).</summary>
+        public float DuckFactor => _duckApplied;
+
+        /// <summary>Cuantos origenes estan pidiendo bajar la musica (estado de la consola y verificación).</summary>
+        public int ActiveDuckRequests
+        {
+            get { lock (_duckSync) return _duckRequests.Count; }
+        }
+
+        /// <summary>
+        /// Pide que la música baje al <paramref name="targetFactor"/> mientras se mantenga la
+        /// petición. Se puede repetir con el mismo origen para cambiar la profundidad en vivo.
+        /// </summary>
+        public void RequestDuck(string sourceId, float targetFactor)
+        {
+            if (string.IsNullOrEmpty(sourceId)) return;
+            lock (_duckSync) _duckRequests[sourceId] = Math.Clamp(targetFactor, 0f, 1f);
+            if (!_duckTimer.IsEnabled) _duckTimer.Start();
+            StepDuck();
+        }
+
+        /// <summary>Retira la petición de un origen; si no queda ninguna, la música vuelve subiendo.</summary>
+        public void ReleaseDuck(string sourceId)
+        {
+            if (string.IsNullOrEmpty(sourceId)) return;
+            lock (_duckSync) _duckRequests.Remove(sourceId);
+            if (!_duckTimer.IsEnabled) _duckTimer.Start();
+            StepDuck();
+        }
+
+        private float DuckTarget()
+        {
+            lock (_duckSync)
+            {
+                float deepest = 1.0f;
+                foreach (var factor in _duckRequests.Values)
+                {
+                    if (factor < deepest) deepest = factor;
+                }
+                return deepest;
+            }
+        }
+
+        /// <summary>
+        /// Un paso de la rampa. Se llama en cada tick y también justo al pedir o soltar, para que
+        /// el primer salto sea inmediato y el operador no espere 50 ms en empezar a oír el cambio.
+        /// </summary>
+        private void StepDuck()
+        {
+            float target = DuckTarget();
+
+            if (_duckApplied > target)
+            {
+                float step = DuckTickMs / 1000f / Math.Max(0.05f, DuckAttackSeconds);
+                _duckApplied = _duckApplied - step <= target ? target : _duckApplied - step;
+            }
+            else if (_duckApplied < target)
+            {
+                float step = DuckTickMs / 1000f / Math.Max(0.05f, DuckReleaseSeconds);
+                _duckApplied = _duckApplied + step >= target ? target : _duckApplied + step;
+            }
+
+            UpdateActiveDeckVolume();
+
+            if (_duckApplied == target && target >= 1.0f) _duckTimer.Stop();
+        }
 
         private float _masterVolume = 1.0f;
         public float MasterVolume
@@ -123,11 +214,13 @@ namespace quasar_radio
 
         private void UpdateActiveDeckVolume()
         {
-            if (_activeDeck != null)
-            {
-                float duckFactor = IsDucked ? DuckingRatio : 1.0f;
-                _activeDeck.SetVolume(_activeDeck.TargetVolume * _masterVolume * duckFactor);
-            }
+            if (_activeDeck == null) return;
+
+            // Un deck que está subiendo en un fundido cruzado lleva su propia rampa: el tick del
+            // fade ya le aplica el ducking, y escribirle aqui el destino cortaria la rampa.
+            if (_activeDeck.IsFading) return;
+
+            _activeDeck.SetVolume(_activeDeck.TargetVolume * _masterVolume * _duckApplied);
         }
 
         public double CrossfadeSeconds { get; set; } = 4.0;
@@ -243,6 +336,14 @@ namespace quasar_radio
                 Interval = TimeSpan.FromMilliseconds(50)
             };
             _fadeTimer.Tick += OnFadeTimerTick;
+
+            // UI-8: la rampa del ducking. Solo corre mientras hay algo que bajar o devolver,
+            // asi que con la consola en reposo no despierta a nadie.
+            _duckTimer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromMilliseconds(DuckTickMs)
+            };
+            _duckTimer.Tick += (_, _) => StepDuck();
         }
 
         public TimeSpan CurrentPosition => _activeDeck?.AudioFile?.CurrentTime ?? TimeSpan.Zero;
@@ -586,6 +687,12 @@ namespace quasar_radio
 
             float step = (float)(0.05 / Math.Max(0.5, CrossfadeSeconds));
 
+            // UI-8: el techo del fundido es el volumen con el ducking ya aplicado. Sin esto, un
+            // pad con pisador que entra a media transicion se queda la pista nueva sonando entera
+            // mientras el anterior seguia bajando, porque el tick del fade escribia MasterVolume
+            // a secas y no pasaba por UpdateActiveDeckVolume.
+            float ceiling = MasterVolume * _duckApplied;
+
             // Bajar saliente
             if (outgoingDeck.IsFading && outgoingDeck.AudioFile != null)
             {
@@ -605,9 +712,9 @@ namespace quasar_radio
             if (incomingDeck.IsFading && incomingDeck.AudioFile != null)
             {
                 float newVol = incomingDeck.CurrentVolume + step * MasterVolume;
-                if (newVol >= MasterVolume)
+                if (newVol >= ceiling)
                 {
-                    incomingDeck.SetVolume(MasterVolume);
+                    incomingDeck.SetVolume(ceiling);
                     incomingDeck.IsFading = false;
                 }
                 else
@@ -665,6 +772,7 @@ namespace quasar_radio
         public void Dispose()
         {
             StopAll();
+            _duckTimer.Stop();
         }
     }
 }
